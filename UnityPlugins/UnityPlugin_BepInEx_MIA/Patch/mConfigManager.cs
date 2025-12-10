@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mConfigManager
     {

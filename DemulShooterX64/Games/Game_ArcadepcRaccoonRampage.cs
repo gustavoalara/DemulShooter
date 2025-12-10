@@ -63,7 +63,11 @@ namespace DemulShooterX64
         private UInt64 _P1_OuterWater_CaveAddress = 0;
         private UInt64 _P1_Damage_CaveAddress = 0;
 
-        private HardwareScanCode _Settings_Key = HardwareScanCode.DIK_9;        
+        private HardwareScanCode _P1_Start_Key = HardwareScanCode.DIK_1;
+        private HardwareScanCode _P2_Start_Key = HardwareScanCode.DIK_2;
+        private HardwareScanCode _P3_Start_Key = HardwareScanCode.DIK_3;
+        private HardwareScanCode _P4_Start_Key = HardwareScanCode.DIK_4;
+        private HardwareScanCode _Settings_Key = HardwareScanCode.DIK_0;        
         private HardwareScanCode _P1_Credits_Key = HardwareScanCode.DIK_5;
         private HardwareScanCode _P2_Credits_Key = HardwareScanCode.DIK_6;
         private HardwareScanCode _P3_Credits_Key = HardwareScanCode.DIK_7;
@@ -534,16 +538,6 @@ namespace DemulShooterX64
                 if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.OnScreenTriggerUp) != 0)
                 {
                     int bData = 0x10 << (4 - PlayerData.ID);
-                    Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), (byte)~bData);  
-                }
-                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.ActionDown) != 0)
-                {
-                    int bData = 0x10 << (4 - PlayerData.ID);
-                    Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), (byte)bData);
-                }
-                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.ActionUp) != 0)
-                {
-                    int bData = 0x10 << (4 - PlayerData.ID);
                     Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), (byte)~bData);
                 }
             }
@@ -558,22 +552,22 @@ namespace DemulShooterX64
                     KBDLLHOOKSTRUCT s = (KBDLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(KBDLLHOOKSTRUCT));
                     if ((UInt32)wParam == Win32Define.WM_KEYDOWN)
                     {
-                        /*if (s.scanCode == _P1_Start_Key)                        
+                        if (s.scanCode == _P1_Start_Key)                        
                             Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x80);                        
                         else if (s.scanCode == _P2_Start_Key)                        
                             Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x40);                        
                         if (s.scanCode == _P3_Start_Key)                        
                             Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x20);                        
                         else if (s.scanCode == _P4_Start_Key)                        
-                            Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x10); */                       
-                        if (s.scanCode == _Settings_Key)                        
-                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x04);                       
-                        else if (s.scanCode == _MenuUp_Key)                        
-                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x04);                        
-                        else if (s.scanCode == _MenuDown_Key)                        
-                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x02);                        
-                        else if (s.scanCode == _MenuEnter_Key)                        
-                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x01);                        
+                            Apply_OR_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x10);
+                        else if (s.scanCode == _Settings_Key)
+                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x04);
+                        else if (s.scanCode == _MenuUp_Key)
+                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x04);
+                        else if (s.scanCode == _MenuDown_Key)
+                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x02);
+                        else if (s.scanCode == _MenuEnter_Key)
+                            Apply_OR_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0x01);
                         else if (s.scanCode == _P1_Credits_Key)
                         {
                             byte c = ReadByte((IntPtr)_P1_Coins_CaveAddress);
@@ -613,14 +607,14 @@ namespace DemulShooterX64
                     }
                     else if ((UInt32)wParam == Win32Define.WM_KEYUP)
                     {
-                        /*if (s.scanCode == _P1_Start_Key)                        
+                        if (s.scanCode == _P1_Start_Key)                        
                             Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0x7F);                        
                         else if (s.scanCode == _P2_Start_Key)                        
                             Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0xBF);                        
                         if (s.scanCode == _P3_Start_Key)                        
                             Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0xDF);                        
                         else if (s.scanCode == _P4_Start_Key)                        
-                            Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0xEF); */                       
+                            Apply_AND_ByteMask((IntPtr)(_StartButtonsAndWater_CaveAddress), 0xEF);                     
                         if (s.scanCode == _Settings_Key)                        
                             Apply_AND_ByteMask((IntPtr)(_SystemButtons_CaveAddress), 0xFB);                        
                         else if (s.scanCode == _MenuUp_Key)                        
@@ -646,37 +640,37 @@ namespace DemulShooterX64
         {
             _Outputs = new List<GameOutput>();
 
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun, OutputId.P1_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGun, OutputId.P2_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_LmpGun, OutputId.P3_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_LmpGun, OutputId.P4_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpLeft, OutputId.LmpLeft));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpRight, OutputId.LmpRight));
-            _Outputs.Add(new GameOutput("Lmp_Disinfection", (OutputId)10000));
-            _Outputs.Add(new GameOutput("Lmp_P1-P2_OutOfTickets", (OutputId)10001));
-            _Outputs.Add(new GameOutput("Lmp_P3-P4_OutOfTickets", (OutputId)10002));
-            _Outputs.Add(new GameOutput("Lmp_Marquee_1", (OutputId)10003));
-            _Outputs.Add(new GameOutput("Lmp_Marquee_2", (OutputId)10004));
-            _Outputs.Add(new GameOutput("P1_InnerWater", (OutputId)10005));
-            _Outputs.Add(new GameOutput("P2_InnerWater", (OutputId)10006));
-            _Outputs.Add(new GameOutput("P3_InnerWater", (OutputId)10007));
-            _Outputs.Add(new GameOutput("P4_InnerWater", (OutputId)10008));
-            _Outputs.Add(new GameOutput("P1_OuterWater", (OutputId)10009));
-            _Outputs.Add(new GameOutput("P2_OuterWater", (OutputId)10010));
-            _Outputs.Add(new GameOutput("P3_OuterWater", (OutputId)10011));
-            _Outputs.Add(new GameOutput("P4_OuterWater", (OutputId)10012));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_GunMotor, OutputId.P1_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_GunMotor, OutputId.P2_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_GunMotor, OutputId.P3_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_GunMotor, OutputId.P4_GunMotor));           
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P3_Damaged, OutputId.P3_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P4_Damaged, OutputId.P4_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Credits, OutputId.P1_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Credits, OutputId.P2_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_Credits, OutputId.P3_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_Credits, OutputId.P4_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.P3_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.P4_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.LmpLeft));
+            _Outputs.Add(new GameOutput(OutputId.LmpRight));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Disinfection));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_P1_P2_OutOfTickets));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_P3_P4_OutOfTickets));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Marquee_1));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Marquee_2));
+            _Outputs.Add(new GameOutput(OutputId.P1_InnerWater));
+            _Outputs.Add(new GameOutput(OutputId.P2_InnerWater));
+            _Outputs.Add(new GameOutput(OutputId.P3_InnerWater));
+            _Outputs.Add(new GameOutput(OutputId.P4_InnerWater));
+            _Outputs.Add(new GameOutput(OutputId.P1_OuterWater));
+            _Outputs.Add(new GameOutput(OutputId.P2_OuterWater));
+            _Outputs.Add(new GameOutput(OutputId.P3_OuterWater));
+            _Outputs.Add(new GameOutput(OutputId.P4_OuterWater));
+            _Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P3_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P4_GunMotor));           
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P3_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P4_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P2_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P3_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P4_Credits));
         }
 
         /// <summary>
@@ -701,28 +695,28 @@ namespace DemulShooterX64
             //-- TODO : Only one value as the state is changed with 2 calls : one to set the desired LED and one to set the State. Impossible to read everytime both sides status
 
             //Disinfection LED
-            SetOutputValue((OutputId)10000, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.DisinfectionLight)));
+            SetOutputValue(OutputId.Lmp_Disinfection, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.DisinfectionLight)));
 
             //Tickets LED status can have different states (BIND_SetLackTicketLight())
             // 0 = OFF 
             // 1 = Continuous 
             // 2 = Flash 
-            SetOutputValue((OutputId)10001, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.LackTicketLight_12P)));
-            SetOutputValue((OutputId)10002, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.LackTicketLight_34P)));
+            SetOutputValue(OutputId.Lmp_P1_P2_OutOfTickets, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.LackTicketLight_12P)));
+            SetOutputValue(OutputId.Lmp_P3_P4_OutOfTickets, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.LackTicketLight_34P)));
 
             //MarqueeLEDs (BIND_SetICO_1() and BIND_SetICO_2())
-            SetOutputValue((OutputId)10003, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.Marquee_Character1)));
-            SetOutputValue((OutputId)10004, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.Marquee_Character2)));
+            SetOutputValue(OutputId.Lmp_Marquee_1, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.Marquee_Character1)));
+            SetOutputValue(OutputId.Lmp_Marquee_2, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.Marquee_Character2)));
 
             //Water mechanics
-            SetOutputValue((OutputId)10005, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P1_InnerWater)));
-            SetOutputValue((OutputId)10006, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P2_InnerWater)));
-            SetOutputValue((OutputId)10007, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P3_InnerWater)));
-            SetOutputValue((OutputId)10008, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P4_InnerWater)));
-            SetOutputValue((OutputId)10009, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P1_OuterWater)));
-            SetOutputValue((OutputId)10010, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P2_OuterWater)));
-            SetOutputValue((OutputId)10011, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P3_OuterWater)));
-            SetOutputValue((OutputId)10012, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P4_OuterWater)));
+            SetOutputValue(OutputId.P1_InnerWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P1_InnerWater)));
+            SetOutputValue(OutputId.P2_InnerWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P2_InnerWater)));
+            SetOutputValue(OutputId.P3_InnerWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P3_InnerWater)));
+            SetOutputValue(OutputId.P4_InnerWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P4_InnerWater)));
+            SetOutputValue(OutputId.P1_OuterWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P1_OuterWater)));
+            SetOutputValue(OutputId.P2_OuterWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P2_OuterWater)));
+            SetOutputValue(OutputId.P3_OuterWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P3_OuterWater)));
+            SetOutputValue(OutputId.P4_OuterWater, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P4_OuterWater)));
 
             //Gun motor data goes from 0 to 2. Power of rumble ?
             SetOutputValue(OutputId.P1_GunMotor, ReadByte((IntPtr)((UInt64)_UsbPluginsDll_BaseAddress + _Outputs_BaseOffset + (uint)OutputIndex.P1_GunShock)));

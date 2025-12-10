@@ -208,7 +208,7 @@ namespace DemulShooter
             String FoundMd5 = String.Empty;
             foreach (KeyValuePair<String, String> pair in _KnownMd5Prints)
             {
-                if (pair.Value == _TargetProcess_Md5Hash)
+                if (pair.Value.ToLower() == _TargetProcess_Md5Hash)
                 {
                     FoundMd5 = pair.Key;
                     break;

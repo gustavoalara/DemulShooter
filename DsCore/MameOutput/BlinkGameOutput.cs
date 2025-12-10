@@ -40,7 +40,7 @@ namespace DsCore.MameOutput
             }
         }
 
-        public BlinkGameOutput(String Name, OutputId Id, int BlinkTimerInterval): base(Name, Id)
+        public BlinkGameOutput(OutputId Id, int BlinkTimerInterval): base(Id)
         {
             _BlinkTimer = new Timer();
             _BlinkTimer.Interval = BlinkTimerInterval;

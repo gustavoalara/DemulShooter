@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using DemulShooter.Games;
+using DsCore;
+using DsCore.Config;
+using DsCore.IPC;
+using DsCore.MameOutput;
+using DsCore.RawInput;
+
+namespace DemulShooter
+{
+    public class Game_ArcadepcTopGun : Game__Unity
+    {
+        private class InputData : Base_InputData
+        {
+            public float[] Axis_X = null;
+            public float[] Axis_Y = null;
+            public byte[] Trigger = null;
+
+            public InputData(int PlayerNumber) : base(PlayerNumber)
+            {
+            }
+        }
+
+        private class OutputData : Base_OutputData
+        {
+            public byte IsPlaying = 0;
+            public byte Recoil = 0;
+            public int Ammo = 0;
+            public int Credits = 0;
+            public byte[] GiftDoor = null;
+            public byte LeftKeyLight = 0;
+            public byte CenterKeyLight = 0;
+            public byte RightKeyLight = 0;
+            public byte ScreenSideLight = 0;
+            public byte GiftLight = 0;
+            public byte TicketFeeder = 0;
+
+            public OutputData(int PlayerNumber) : base(PlayerNumber)
+            {
+            }
+        }
+
+        private const int MAX_PLAYERS = 1;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Game_ArcadepcTopGun(String RomName)
+            : base(RomName, "BiuBiuGun", "BiuBiuGun")
+        {
+            _KnownMd5Prints.Add("TopGun v2.0.0.3.1.18", "c091dfa6112dcd0b6270d6f636fce5af");
+
+            _InputData = new InputData(MAX_PLAYERS);
+            _OutputData = new OutputData(MAX_PLAYERS);
+
+            _tProcess.Start();
+            Logger.WriteLog("Waiting for " + _RomName + " game to hook.....");
+        }
+        
+        #region Inputs
+
+        /// <summary>
+        /// Writing Axis and Buttons data in memory
+        /// </summary>
+        public override void SendInput(PlayerSettings PlayerData)
+        {
+            if (!_DisableInputHack && PlayerData.ID <= MAX_PLAYERS)
+            {
+                float AxisX = PlayerData.RIController.Computed_X;
+                float AxisY = PlayerData.RIController.Computed_Y;
+
+                ((InputData)_InputData).Axis_X[PlayerData.ID - 1] = AxisX;
+                ((InputData)_InputData).Axis_Y[PlayerData.ID - 1] = AxisY;
+
+                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.OnScreenTriggerDown) != 0)
+                    ((InputData)_InputData).Trigger[PlayerData.ID - 1] = 1;
+                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.OnScreenTriggerUp) != 0)
+                    ((InputData)_InputData).Trigger[PlayerData.ID - 1] = 0;
+
+                if (_HideCrosshair)
+                    _InputData.HideCrosshairs = 1;
+                else
+                    _InputData.HideCrosshairs = 0;
+
+                _Tcpclient.SendMessage(_InputData.ToByteArray());
+            }
+        }
+
+        #endregion
+
+        #region Outputs
+
+        /// <summary>
+        /// Create the Output list that we will be looking for and forward to MameHooker
+        /// </summary>
+        protected override void CreateOutputList()
+        {
+            _Outputs = new List<GameOutput>();
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
+        }
+
+        /// <summary>
+        /// Update all Outputs values before sending them to MameHooker
+        /// </summary>
+        public override void UpdateOutputValues()
+        {
+            //Nothing to do here, update will be done by the Tcp packet received event
+        }
+
+        protected override void DsTcp_Client_PacketReceived(Object Sender, DsTcp_Client.PacketReceivedEventArgs e)
+        {
+            if (e.Packet.GetHeader() == DsTcp_TcpPacket.PacketHeader.Outputs)
+            {
+                _OutputData.Update(e.Packet.GetPayload());
+                SetOutputValue(OutputId.P1_CtmRecoil, ((OutputData)_OutputData).Recoil);
+                SetOutputValue(OutputId.P1_Ammo, (int)((OutputData)_OutputData).Ammo);
+                SetOutputValue(OutputId.Credits, (int)((OutputData)_OutputData).Credits);
+            }
+        }
+
+        #endregion
+    }
+}

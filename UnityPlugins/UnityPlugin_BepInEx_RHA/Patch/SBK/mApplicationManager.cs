@@ -3,7 +3,7 @@ using HarmonyLib;
 using Microsoft.Win32;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mApplicationManager
     {
@@ -17,33 +17,40 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
             static void Postfix()
             {
                 DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake(), Screen=" + Screen.width + ", " + Screen.height + "," + Screen.fullScreen);
-                try
+                if (DemulShooter_Plugin.ForceResolution)
                 {
-                    RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Sarbakan\\RabbidsShooter");
-                    if (key != null)
+                    Screen.SetResolution(DemulShooter_Plugin.ScreenWidth, DemulShooter_Plugin.ScreenHeight, DemulShooter_Plugin.Fullscreen);
+                }
+                else
+                {
+                    try
                     {
-                        System.Object o = key.GetValue("Screenmanager Is Fullscreen mode_h3981298716");
-                        if (o != null)
+                        RegistryKey key = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Sarbakan\\RabbidsShooter");
+                        if (key != null)
                         {
-                            if ((int)o == 1)
-                                Screen.SetResolution(Screen.width, Screen.height, true);
-                            else if ((int)o == 0)
-                                Screen.SetResolution(Screen.width, Screen.height, false);
-                            DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake(), FullScreen now is " + Screen.fullScreen);                
+                            System.Object o = key.GetValue("Screenmanager Is Fullscreen mode_h3981298716");
+                            if (o != null)
+                            {
+                                if ((int)o == 1)
+                                    Screen.SetResolution(Screen.width, Screen.height, true);
+                                else if ((int)o == 0)
+                                    Screen.SetResolution(Screen.width, Screen.height, false);
+                                DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake(), FullScreen now is " + Screen.fullScreen);
+                            }
+                            else
+                            {
+                                DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Can't find Registry Value : HK_CURRENT_USER\\SOFTWARE\\Sarbakan\\RabbidsShooter\\Screenmanager Is Fullscreen mode_h3981298716");
+                            }
                         }
                         else
                         {
-                            DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Can't find Registry Value : HK_CURRENT_USER\\SOFTWARE\\Sarbakan\\RabbidsShooter\\Screenmanager Is Fullscreen mode_h3981298716");
+                            DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Can't find Registry Key : HK_CURRENT_USER\\SOFTWARE\\Sarbakan\\RabbidsShooter");
                         }
                     }
-                    else
+                    catch (Exception Ex)
                     {
-                        DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Can't find Registry Key : HK_CURRENT_USER\\SOFTWARE\\Sarbakan\\RabbidsShooter");
+                        DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Error reading fullscreen registry value. " + Ex.Message.ToString());
                     }
-                }
-                catch (Exception Ex)
-                {
-                    DemulShooter_Plugin.MyLogger.LogMessage("mApplicationManager.Awake() : Error reading fullscreen registry value. " + Ex.Message.ToString());
                 }
             }
         }

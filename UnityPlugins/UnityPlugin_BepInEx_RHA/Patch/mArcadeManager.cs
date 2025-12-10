@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
+using SixenseCore;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mArcadeManager
     {
@@ -9,8 +10,18 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mArcadeManager.CheckIOBoard()");
+                DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.CheckIOBoard()");
                 return false;         
+            }
+        }
+
+        [HarmonyPatch(typeof(ArcadeManager), "GunFatalError")]
+        class GunFatalError
+        {
+            static bool Prefix(LocID i_Loc, Hardware i_Hardware, int i_Error)
+            {
+                DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.GunFatalError()");
+                return false;
             }
         }
 
@@ -19,18 +30,33 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mArcadeManager.GunMalfunctionCheck()");
+                DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.GunMalfunctionCheck()");
                 return false;
             }
         }
 
-        //Removes the error screen
+        /// <summary>
+        /// No !
+        /// </summary>
+        [HarmonyPatch(typeof(ArcadeManager), "KillGame")]
+        class KillGame
+        {
+            static bool Prefix()
+            {
+                DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.KillGame()");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Removes the error screen
+        /// </summary>
         [HarmonyPatch(typeof(ArcadeManager), "PushErrorPopup")]
         class PushErrorPopup
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mArcadeManager.PushErrorPopup()");
+                DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.PushErrorPopup()");
                 return false;
             }
         }

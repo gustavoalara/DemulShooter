@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace PointBlankX_BepInEx_DemulShooter_Plugin.patch
+namespace BepInEx_DemulShooter_Plugin.patch
 {
     class mTitleController
     {

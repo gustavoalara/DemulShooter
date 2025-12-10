@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mGameBeginUIController
     {

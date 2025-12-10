@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;DEBUG_ASYNCGAMEOUTPUTS, DEBUG_DSTCPDATA</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -64,37 +64,13 @@
   <ItemGroup>
     <Compile Include="Config\Configurator.cs" />
     <Compile Include="Config\PlayerSettings.cs" />
-    <Compile Include="IPC\DsTcp_InputData.cs" />
-    <Compile Include="IPC\DsTcp_InputData_Dcop.cs" />
-    <Compile Include="IPC\DsTcp_InputData_Drakon.cs" />
-    <Compile Include="IPC\DsTcp_InputData_Marss.cs" />
-    <Compile Include="IPC\DsTcp_InputData_PointBlankX.cs" />
-    <Compile Include="IPC\DsTcp_InputData_OpwolfReturn.cs" />
-    <Compile Include="IPC\DsTcp_InputData_Pvz.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_Dcop.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_DinoInvasion.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_Drakon.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_Marss.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_MechaDino.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_MechaTornado.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_MissionImpossible.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_Nerf.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_OnePoint.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_PointBlankX.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_Rha.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_WaterSprite2.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_WaterWar2.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_WisdomZombies.cs" />
+    <Compile Include="INIFile.cs" />
+    <Compile Include="IPC\DsTcpData.cs" />
     <Compile Include="IPC\MappedMemoryFileHelper.cs" />
     <Compile Include="IPC\MappedMemoryFile_Helper_old.cs" />
     <Compile Include="IPC\MMFH_HotdRemakeArcade.cs" />
-    <Compile Include="IPC\MMFH_NightHunterArcade.cs" />
-    <Compile Include="IPC\MMFH_RabbidsHollywood.cs" />
-    <Compile Include="IPC\MMFH_TombRaider.cs" />
     <Compile Include="IPC\MMF_DataStruct.cs" />
-    <Compile Include="IPC\MMFH_WildWestShoutout.cs" />
     <Compile Include="IPC\DsTcp_Client.cs" />
-    <Compile Include="IPC\DsTcp_OutputData_OpWolfReturn.cs" />
     <Compile Include="IPC\DsTcp_TcpPacket.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="MameOutput\AsyncGameOutput.cs" />
@@ -108,7 +84,6 @@
     <Compile Include="MameOutput\WindowMessage\Wm_OutputHelper.cs" />
     <Compile Include="MameOutput\WindowMessage\Wm_OutputClient.cs" />
     <Compile Include="MameOutput\WindowMessage\Wm_OutputDataStruct.cs" />
-    <Compile Include="MameOutput\OutputDescription.cs" />
     <Compile Include="MemoryX64\InjectionStruct.cs" />
     <Compile Include="MemoryX64\NopStruct.cs" />
     <Compile Include="Memory\Codecave.cs" />

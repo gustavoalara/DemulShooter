@@ -1,11 +1,10 @@
-﻿using System;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
 using SBK;
 using SBK.Audio;
 using TRA.Arcade.Manager;
+using UnityEngine;
 
-namespace TombRaider_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mInputManager
     {
@@ -21,8 +20,9 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
                 {
                     for (int i = 0; i < playerList.Length; i++)
                     {
-                        i_Arg.x = BitConverter.ToSingle(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_INGAME_X + 16 * i);
-                        i_Arg.y = BitConverter.ToSingle(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_INGAME_Y + 16 * i);
+                        i_Arg = DemulShooter_Plugin.PluginControllers[i].GetAimingPosition();
+                        i_Arg.x = i_Arg.x / (float)Screen.width;
+                        i_Arg.y = i_Arg.y / (float)Screen.height;
 
                         /*if (i == 0)
                         {
@@ -49,12 +49,13 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
 
                 for (int i = 0; i < 4; i++)
                 {
-                    i_Arg.x = BitConverter.ToSingle(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_INGAME_X + 16 * i);
-                    i_Arg.y = BitConverter.ToSingle(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_INGAME_Y + 16 * i);
+                    i_Arg = DemulShooter_Plugin.PluginControllers[i].GetAimingPosition();
+                    i_Arg.x = i_Arg.x / (float)Screen.width;
+                    i_Arg.y = i_Arg.y / (float)Screen.height;
 
                     if (Singleton<ArcadeManager>.Instance.GunEnabled(i))
                     {
-                        if (Demulshooter_Plugin.TRA_Mmf.Payload[TRA_MemoryMappedFile_Controller.INDEX_P1_TRIGGER + 4 * i] == 1 && Singleton<PlayerManager>.Instance.GetPlayerByID((ID)i).Alive)
+                        if (DemulShooter_Plugin.PluginControllers[i].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger) && Singleton<PlayerManager>.Instance.GetPlayerByID((ID)i).Alive)
                         {
                             Singleton<PlayerManager>.Instance.PlayerPressTrigger(i_Arg, (ID)i);
                             if (___m_AreCrosshairsEnabled)
@@ -74,12 +75,12 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
                                 }
                             }
                         }
-                        if (Demulshooter_Plugin.TRA_Mmf.Payload[TRA_MemoryMappedFile_Controller.INDEX_P1_RELOAD + 4 * i] == 1)
+                        if (DemulShooter_Plugin.PluginControllers[i].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Reload))
                         {
                             Singleton<PlayerManager>.Instance.PlayerReload((ID)i);
                         }
                     }
-                    if (Singleton<ArcadeManager>.Instance.GunEnabled(i) && Demulshooter_Plugin.TRA_Mmf.Payload[TRA_MemoryMappedFile_Controller.INDEX_P1_TRIGGER + 4 * i] == 0)
+                    if (Singleton<ArcadeManager>.Instance.GunEnabled(i) && !DemulShooter_Plugin.PluginControllers[i].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
                     {
                         if (___m_AreCrosshairsEnabled)
                         {

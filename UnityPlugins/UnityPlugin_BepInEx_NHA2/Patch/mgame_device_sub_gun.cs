@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
 	class mgame_device_sub_gun
 	{
@@ -13,8 +13,8 @@ namespace UnityPlugin_BepInEx_NHA2
             static bool Prefix(game_device_sub_gun __instance)
             {
                 int PlayerNum = __instance.get_player_num();
-                //NightHunterArcade2_Plugin.MyLogger.LogMessage("mgame_device_sub_gun.fire_obj_list() => Player: " + PlayerNum);
-                DemulShooter_Plugin.Players_RecoilEnabled[PlayerNum - 1] = true;                
+                //DemulShooter_Plugin.MyLogger.LogMessage("mgame_device_sub_gun.fire_obj_list() => Player: " + PlayerNum);
+                DemulShooter_Plugin.OutputData.Recoil[PlayerNum - 1] = 1;                
                 return true;
             }
         }

@@ -385,11 +385,11 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Lmp_R, OutputId.P1_Lmp_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Lmp_B, OutputId.P1_Lmp_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Lmp_R, OutputId.P2_Lmp_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Lmp_B, OutputId.P2_Lmp_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_Lmp_R));
+            _Outputs.Add(new GameOutput(OutputId.P1_Lmp_B));
+            _Outputs.Add(new GameOutput(OutputId.P2_Lmp_R));
+            _Outputs.Add(new GameOutput(OutputId.P2_Lmp_B));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

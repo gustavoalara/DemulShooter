@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mshow_info_manage_for_objs
     {

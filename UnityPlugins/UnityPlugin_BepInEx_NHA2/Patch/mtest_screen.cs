@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mtest_screen
     {
@@ -13,9 +12,13 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("test_screen.start() => Changing resolution to " + DemulShooter_Plugin.Configurator.ResolutionWidth + "x" + DemulShooter_Plugin.Configurator.ResolutionHeight + " fullscreen: " + DemulShooter_Plugin.Configurator.Fullscreen);
-                UnityEngine.Screen.SetResolution((int)DemulShooter_Plugin.Configurator.ResolutionWidth, (int)DemulShooter_Plugin.Configurator.ResolutionHeight, DemulShooter_Plugin.Configurator.Fullscreen);
-                return false;
+                if (DemulShooter_Plugin.ForceResolution)
+                {
+                    DemulShooter_Plugin.MyLogger.LogMessage("test_screen.start() => Changing resolution to " + DemulShooter_Plugin.ScreenWidth + "x" + DemulShooter_Plugin.ScreenHeight + " fullscreen: " + DemulShooter_Plugin.Fullscreen);
+                    UnityEngine.Screen.SetResolution(DemulShooter_Plugin.ScreenWidth, (int)DemulShooter_Plugin.ScreenHeight, DemulShooter_Plugin.Fullscreen);
+                    return false;
+                }
+                return true;
             }
         }
     }

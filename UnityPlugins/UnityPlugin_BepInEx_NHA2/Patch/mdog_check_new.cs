@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mdog_check_new
     {
@@ -28,7 +28,7 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix(ref bool __result)
             {
-                //NightHunterArcadePlugin.MyLogger.LogMessage("mdog_check_new.is_dog_ok_in_update()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mdog_check_new.is_dog_ok_in_update()");
                 __result = true;
                 return false;
             }

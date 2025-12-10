@@ -151,11 +151,11 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Ammo, OutputId.P1_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Clip, OutputId.P1_Clip));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Life, OutputId.P1_Life));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P1_Clip));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Life));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
         }
 
         /// <summary>

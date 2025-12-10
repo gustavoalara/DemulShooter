@@ -1,95 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 
 namespace UnityPlugin_BepInEx_Core
 {
     public class PluginController
     {
-        public enum PluginButton : int
+        private const int INPUTBUTTONS_LENGTH = 5;
+
+        public enum MyInputButtons
         {
-            Trigger = 0,
+            Start = 0,
+            Trigger,
+            Action,
             Reload,
-            Action
+            Coin
         }
-        public static readonly int ButtonsCount = 3;
 
-        private byte[] _ButtonsBefore;
-        private byte[] _ButtonsCurrent;
-        private byte[] _ButtonsChangedStateRead;
+        private int _ID = 0;
+        public int ID
+        { get { return _ID; } }
 
-        private float _AxisX;
-        private float _AxisY;
+        public PluginControllerButton[] InputButtons;
 
-        private int _PlayerId;
+        public float Axis_X { get; private set; }
+        public float Axis_Y { get; private set; }
 
-        public PluginController(int PlayerId)
+        public PluginController(int ID)
         {
-            _PlayerId = PlayerId;
-            _ButtonsBefore = new byte[ButtonsCount];
-            _ButtonsCurrent = new byte[ButtonsCount];
-            _ButtonsChangedStateRead = new byte[ButtonsCount];
-        }
-        
-
-
-        public void SetButton(PluginButton Button, byte State)
-        {
-            if (_ButtonsCurrent[(int)Button] != State)
+            _ID = ID;
+            InputButtons = new PluginControllerButton[INPUTBUTTONS_LENGTH];
+            for (int i = 0; i < INPUTBUTTONS_LENGTH; i++)
             {
-                _ButtonsBefore[(int)Button] = _ButtonsCurrent[(int)Button];
-                _ButtonsCurrent[(int)Button] = State;
-                _ButtonsChangedStateRead[(int)Button] = 0;
-            }            
-        }
-        public void SetAxis(UInt16 AxisX, UInt16 AxisY)
-        {
-            _AxisX = (float)AxisX;
-            _AxisY = (float)AxisY;
-        }
-
-        public bool GetButtonDown(PluginButton Button)
-        {
-            if (_ButtonsChangedStateRead[(int)Button] == 0)
-            {
-                if (_ButtonsCurrent[(int)Button] == 1 && _ButtonsBefore[(int)Button] == 0)
-                {
-                    _ButtonsChangedStateRead[(int)Button] = 1;
-                    return true;
-                }
+                InputButtons[i] = new PluginControllerButton();
             }
-            return false;
-        }
-        public bool GetButtonUp(PluginButton Button)
-        {
-            if (_ButtonsChangedStateRead[(int)Button] == 0)
-            {
-                if (_ButtonsCurrent[(int)Button] == 0 && _ButtonsBefore[(int)Button] == 1)
-                {
-                    _ButtonsChangedStateRead[(int)Button] = 1;
-                    return true;
-                }
-            }
-            return false;
-        }
-        public bool GetButton(PluginButton Button)
-        {
-            if (_ButtonsCurrent[(int)Button] == 1 && _ButtonsChangedStateRead[(int)Button] == 1)
-            {
-                return true;
-            }
-            return false;
-        }
-        public float GetAxisX()
-        {
-            return _AxisX;
-        }
-        public float GetAxisY()
-        {
-            return _AxisY;
+            InputButtons[(int)MyInputButtons.Start].SetKeyCode(49 + ID);
+            InputButtons[(int)MyInputButtons.Coin].SetKeyCode(53 + ID);
         }
 
+        public void SetAimingValues(Vector3 Position)
+        {
+            Axis_X = Position.x;
+            Axis_Y = Position.y;
+        }
 
+        public void SetButton(MyInputButtons ButtonId, byte Value)
+        {
+            InputButtons[(int)ButtonId].SetButton(Value == 1 ? true : false);
+        }
+
+        public bool GetButton(MyInputButtons ButtonId)
+        {
+            return InputButtons[(int)ButtonId].GetButton();
+        }
+
+        public bool GetButtonDown(MyInputButtons ButtonId)
+        {
+            return InputButtons[(int)ButtonId].GetButtonDown();
+        }
+
+        public bool GetButtonUp(MyInputButtons ButtonId)
+        {
+            return InputButtons[(int)ButtonId].GetButtonUp();
+        }
+
+        public Vector3 GetAimingPosition()
+        {
+            return new Vector3(Axis_X, Axis_Y);
+        }
     }
 }

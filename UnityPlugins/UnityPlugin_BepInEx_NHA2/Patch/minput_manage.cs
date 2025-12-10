@@ -1,10 +1,9 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
-using System.Collections.Generic;
+using UnityPlugin_BepInEx_Core;
 
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     /// <summary>
     /// Change Keyboard KEYS
@@ -19,21 +18,21 @@ namespace UnityPlugin_BepInEx_NHA2
                 DemulShooter_Plugin.MyLogger.LogMessage("minput_manage.init_input_obj_list()");
 
                 input_manage my_base = __instance;
-                my_base.add_input_obj(new input_obj_start_game(KeyCode.Alpha1, 1));
-                my_base.add_input_obj(new input_obj_start_game(KeyCode.Alpha2, 2));
-                my_base.add_input_obj(new input_obj_pass_movie(KeyCode.Space));
-                my_base.add_input_obj(new input_obj_pass_movie(KeyCode.Alpha1));
-                my_base.add_input_obj(new input_obj_pass_movie(KeyCode.Alpha2));
-                my_base.add_input_obj(new input_obj_goto_houtai(KeyCode.Alpha0));
-                my_base.add_input_obj(new input_obj_insert_coin(KeyCode.Alpha5, 1));
-                my_base.add_input_obj(new input_obj_insert_coin(KeyCode.Alpha6, 2));
+                my_base.add_input_obj(new input_obj_start_game((KeyCode)DemulShooter_Plugin.PluginControllers[0].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode, 1));
+                my_base.add_input_obj(new input_obj_start_game((KeyCode)DemulShooter_Plugin.PluginControllers[1].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode, 2));
+                //my_base.add_input_obj(new input_obj_pass_movie(KeyCode.Space));
+                my_base.add_input_obj(new input_obj_pass_movie((KeyCode)DemulShooter_Plugin.PluginControllers[0].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode));
+                my_base.add_input_obj(new input_obj_pass_movie((KeyCode)DemulShooter_Plugin.PluginControllers[1].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode));
+                my_base.add_input_obj(new input_obj_goto_houtai((KeyCode)DemulShooter_Plugin.Test_Key.KeyCode));
+                my_base.add_input_obj(new input_obj_insert_coin((KeyCode)DemulShooter_Plugin.Coin_Key.KeyCode, 1));
+                my_base.add_input_obj(new input_obj_insert_coin((KeyCode)DemulShooter_Plugin.Coin_Key.KeyCode, 2));
                 /*my_base.add_input_obj(new input_obj_change_gun(KeyCode.Keypad1, 1));                
                 my_base.add_input_obj(new input_obj_change_gun(KeyCode.Keypad2, 2));
                 my_base.add_input_obj(new input_obj_xiaoqiang(KeyCode.Keypad3, 1));
                 my_base.add_input_obj(new input_obj_xiaoqiang(KeyCode.Keypad4, 2));
                  my_base.add_input_obj(new input_obj_change_input_way(KeyCode.Y));*/
 
-                if (DemulShooter_Plugin.Configurator.InputMode == DemulShooter_Plugin.InputMode.Mouse)
+                /*if (!DemulShooter_Plugin.EnableInputHack)
                 {
                     my_base.add_input_obj(new input_obj_change_bullet(KeyCode.Mouse1, 1));
                     my_base.add_input_obj(new input_obj_change_bullet(KeyCode.Mouse1, 2));
@@ -43,7 +42,7 @@ namespace UnityPlugin_BepInEx_NHA2
                 else
                 {
                     //DemulShooter is handling
-                }
+                }*/
                 return false;                
             }
         }

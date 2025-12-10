@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using static SBK.Attribute.TimeSpanAttribute;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mLanguageLocalizer
     {
@@ -22,51 +23,35 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                 }
 
                 DemulShooter_Plugin.MyLogger.LogMessage("mLanguageLocalizer.SwitchLanguage() : Trying to read custom config file...");
-                try
+                switch (DemulShooter_Plugin.GameLanguage)
                 {
-                    String[] lines = System.IO.File.ReadAllLines("RabbidsHollywood_Operator.conf");
-                    foreach (String line in lines)
-                    {
-                        String[] buffer = line.Split(':');
-                        String Key = buffer[0];
-                        String Value = buffer[1];
-
-                        if (Key.Equals("Language"))
+                    case "EN":
                         {
-                            switch (Value)
-                            {
-                                case "EN":
-                                    {
-                                        i_Code = SBK.Localization.LanguageCode.EN;
-                                    } break;
-                                case "FR":
-                                    {
-                                        i_Code = SBK.Localization.LanguageCode.FR;
-                                    } break;
-                                case "JA":
-                                    {
-                                        i_Code = SBK.Localization.LanguageCode.JA;
-                                    } break;
-                                case "ZH":
-                                    {
-                                        i_Code = SBK.Localization.LanguageCode.ZH;
-                                    } break;
-                                default:
-                                    {
-                                        i_Code = SBK.Localization.LanguageCode.EN;
-                                    } break;
-                            }
-                            break;
+                            i_Code = SBK.Localization.LanguageCode.EN;
                         }
-                    }
-                    DemulShooter_Plugin.MyLogger.LogMessage("mLanguageLocalizer.SwitchLanguage() : Succesfully sets Language to " + i_Code.ToString());
+                        break;
+                    case "FR":
+                        {
+                            i_Code = SBK.Localization.LanguageCode.FR;
+                        }
+                        break;
+                    case "JA":
+                        {
+                            i_Code = SBK.Localization.LanguageCode.JA;
+                        }
+                        break;
+                    case "ZH":
+                        {
+                            i_Code = SBK.Localization.LanguageCode.ZH;
+                        }
+                        break;
+                    default:
+                        {
+                            i_Code = SBK.Localization.LanguageCode.EN;
+                        }
+                        break;
                 }
-                catch (Exception Ex)
-                {
-                    DemulShooter_Plugin.MyLogger.LogMessage("mLanguageLocalizer.SwitchLanguage() : Can't read config data, using custom default values.");
-                    DemulShooter_Plugin.MyLogger.LogMessage("mLanguageLocalizer.SwitchLanguage() : " + Ex.Message.ToString());
-                }
-                
+
                 return true;
             }
         }

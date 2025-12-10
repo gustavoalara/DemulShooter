@@ -1,8 +1,7 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mGameUIController
     {
@@ -16,22 +15,15 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
             {
                 for (int i = 0; i < __instance.gunPoint.Length; ++i)
                 {
-                    if (GameData.GetPlayerData(i).CanShoot() && !___isLoadEnd)
+                    if (GameData.GetPlayerData(i).CanShoot() && !___isLoadEnd && DemulShooter_Plugin.CrossHairVisibility)
                     {
-                        int r = Demulshooter_Plugin.WWS_Mmf.ReadAll();
-                        if (r == 0)
-                        {
-                            __instance.gunPoint[i].mRectTF.parent.GetComponent<RectTransform>();
-                            Vector3 vAxis = new Vector3();
-                            vAxis.x = BitConverter.ToSingle(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_X + (16 * i));
-                            vAxis.y = BitConverter.ToSingle(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_Y + (16 * i));
-                            __instance.gunPoint[i].mRectTF.anchoredPosition = vAxis;
-                        }
-                        else
-                        {
-                            UnityEngine.Debug.LogError("mGameUIController.Update() => DemulShooter MMF read error : " + r.ToString());
-                            __instance.gunPoint[i].transform.localPosition = new Vector3(-1000f, -600f);
-                        }
+                        Vector2 v = DemulShooter_Plugin.PluginControllers[i].GetAimingPosition();
+
+                        float fRatio = (float)Screen.width / Screen.height;
+                        v.x = v.x / (float)Screen.width * 1920.0f;
+                        v.y = v.y / (float)Screen.height * 1920.0f / fRatio;
+
+                        __instance.gunPoint[i].mRectTF.anchoredPosition = v;
                     }
                     else
                         __instance.gunPoint[i].transform.localPosition = new Vector3(-1000f, -600f);

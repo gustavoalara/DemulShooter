@@ -4,34 +4,36 @@ namespace UnityPlugin_BepInEx_Core
 {
     public class PluginController
     {
-        private const int INPUTBUTTONS_LENGTH = 4;
+        private const int INPUTBUTTONS_LENGTH = 5;
 
         public enum MyInputButtons
         {
             Start = 0,
             Trigger,
             Action,
-            Reload
+            Reload,
+            Coin
         }
 
         private int _ID = 0;
         public int ID
         { get { return _ID; } }
 
-        public byte[] InputButtons { get; private set; }
-        public byte[] InputButtonsBefore { get; private set; }
+        public PluginControllerButton[] InputButtons;
 
         public float Axis_X { get; private set; }
         public float Axis_Y { get; private set; }
 
-        private bool _FlagButtonDown = false;
-        private bool _FlagButtonUp = false;
-
         public PluginController(int ID)
         {
             _ID = ID;
-            InputButtons = new byte[INPUTBUTTONS_LENGTH];
-            InputButtonsBefore = new byte[INPUTBUTTONS_LENGTH];
+            InputButtons = new PluginControllerButton[INPUTBUTTONS_LENGTH];
+            for (int i = 0; i < INPUTBUTTONS_LENGTH; i++)
+            {
+                InputButtons[i] = new PluginControllerButton();
+            }
+            InputButtons[(int)MyInputButtons.Start].SetKeyCode(49 + ID);
+            InputButtons[(int)MyInputButtons.Coin].SetKeyCode(53 + ID);
         }
 
         public void SetAimingValues(Vector3 Position)
@@ -42,48 +44,22 @@ namespace UnityPlugin_BepInEx_Core
 
         public void SetButton(MyInputButtons ButtonId, byte Value)
         {
-            //Setting Up/Down events
-            if (InputButtons[(int)ButtonId] != Value)
-            {
-                if (Value == 1)
-                {
-                    _FlagButtonDown = true;
-                    _FlagButtonUp = false;
-                }
-                else if (Value == 0)
-                {
-                    _FlagButtonDown = false;
-                    _FlagButtonUp = true;
-                }
-            }
-            InputButtons[(int)ButtonId] = Value;
+            InputButtons[(int)ButtonId].SetButton(Value == 1 ? true : false);
         }
 
         public bool GetButton(MyInputButtons ButtonId)
         {
-            if (InputButtons[(int)ButtonId] == 1)
-                return true;
-            return false;
+            return InputButtons[(int)ButtonId].GetButton();
         }
 
         public bool GetButtonDown(MyInputButtons ButtonId)
         {
-            if (_FlagButtonDown)
-            {
-                _FlagButtonDown = false;
-                return true;
-            }
-            return false;
+            return InputButtons[(int)ButtonId].GetButtonDown();
         }
 
         public bool GetButtonUp(MyInputButtons ButtonId)
         {
-            if (_FlagButtonUp)
-            {
-                _FlagButtonUp = false;
-                return true;
-            }
-            return false;
+            return InputButtons[(int)ButtonId].GetButtonUp();
         }
 
         public Vector3 GetAimingPosition()

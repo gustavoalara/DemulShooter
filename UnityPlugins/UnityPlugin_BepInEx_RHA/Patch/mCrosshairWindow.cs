@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mCrosshairWindow
     {
@@ -20,32 +20,28 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                 if (DemulShooter_Plugin.IsDemoMode)
                     return true;
 
-                if (DemulShooter_Plugin.EnableInputHack)
+                //UnityEngine.Debug.Log("mCrosshairWindow.CrosshairMove(), i_PlayerID=" + i_PlayerID.ToString() + ", i_Viewport=" + i_Viewport.ToString());
+                if (SBK.SceneSingleton<GameplayCamera>.Exists())
                 {
-                    //UnityEngine.Debug.Log("mCrosshairWindow.CrosshairMove(), i_PlayerID=" + i_PlayerID.ToString() + ", i_Viewport=" + i_Viewport.ToString());
-                    if (SBK.SceneSingleton<GameplayCamera>.Exists())
+                    for (int i = 0; i < __instance.m_Crosshairs.Length; i++)
                     {
-                        for (int i = 0; i < __instance.m_Crosshairs.Length; i++)
+                        if (__instance.m_Crosshairs[i].m_ID == i_PlayerID && SBK.Singleton<PlayerManager>.Instance.GetPlayerByID(i_PlayerID).Alive)
                         {
-                            if (__instance.m_Crosshairs[i].m_ID == i_PlayerID && SBK.Singleton<PlayerManager>.Instance.GetPlayerByID(i_PlayerID).Alive)
-                            {
-                                float fRatio = (float)Screen.width / (float)Screen.height;
-                                float fMaxY = 1080.0f;
-                                float fMaxX = fRatio * fMaxY;
-                                Vector3 v = new Vector3();
-                                v.x = DemulShooter_Plugin.PluginControllers[(int)i_PlayerID].Axis_X * fMaxX;
-                                v.y = DemulShooter_Plugin.PluginControllers[(int)i_PlayerID].Axis_Y * fMaxY;
-                                //UnityEngine.Debug.LogError("mCrosshairWindow.CrosshairMove() => v = " + v.ToString());                        
-                                __instance.m_Crosshairs[i].m_CrosshairTr.anchoredPosition = v;
+                            float fRatio = (float)Screen.width / (float)Screen.height;
+                            float fMaxY = 1080.0f;
+                            float fMaxX = fRatio * fMaxY;
+                            Vector3 v = new Vector3();
+                            v.x = DemulShooter_Plugin.PluginControllers[(int)i_PlayerID].Axis_X / (float)Screen.width * fMaxX;
+                            v.y = DemulShooter_Plugin.PluginControllers[(int)i_PlayerID].Axis_Y / (float)Screen.height * fMaxY;
+                            //UnityEngine.Debug.LogError("mCrosshairWindow.CrosshairMove() => v = " + v.ToString());                        
+                            __instance.m_Crosshairs[i].m_CrosshairTr.anchoredPosition = v;
 
-                                break;
-                            }
+                            break;
                         }
-                        return false;
                     }
                     return false;
                 }
-                return true;
+                return false;
             }
 
             /// <summary>

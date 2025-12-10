@@ -1,47 +1,44 @@
-﻿using System;
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Threading;
 using BepInEx;
 using HarmonyLib;
-using System.Net.Sockets;
-using System.Threading;
-using System.Net;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
-using System.Collections.Generic;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
-    /*
-    /// Need to change HideManagerGameObject = true in BepInEx.cfg, or Unity is destroying the Plugin after Awake()
-    */
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
-        public const String pluginGuid = "argonlefou.demulshooter.owr";
+        public const String pluginGuid = "argonlefou.demulshooter.operationwolf";
         public const String pluginName = "OperationWolf_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "4.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
+        public const String pluginConfigFile = "OperationWolf_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 2;
         public enum PlayerType : int
         {
             Player1 = 0,
             Player2
         }
 
-        //Thread-safe operation on input/output data
-        public static System.Object MutexLocker_Outputs;
-        public static System.Object MutexLocker_Inputs;
-
-        //Custom Outputs data
-        public static byte P1_LastLife = 0;
-        public static ushort P1_LastAmmo = 0;
-        public static ushort P2_LastAmmo = 0;
-
         //custom Input Data
-        public static List<PluginController> PluginControllers;
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
+        public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+        public static PluginControllerButton Test_Key = new PluginControllerButton((int) KeyCode.Alpha0);
+        public static PluginControllerButton P2_Grenade_Key = new PluginControllerButton((int) KeyCode.F);
 
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
@@ -51,52 +48,116 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
         private static NetworkStream _TcpStream;
 
         public static bool IsMouseLockedRequired = false;
+
         public static TcpOutputData OutputData;
+        private TcpOutputData _OutputDataBefore;
         private TcpInputData _InputData;
 
-        public static readonly KeyCode P2_Grenade_KeyCode = KeyCode.F;
-
-        public static byte DisableCrosshair = 0;
+        public static bool CrossHairVisibility = true;
 
         public void Awake()
         {
             Instance = this;
 
-            MutexLocker_Outputs = new System.Object();
-            MutexLocker_Inputs = new System.Object();
-
             MyLogger = Logger;
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
 
-            PluginControllers = new List<PluginController>();
-            PluginControllers.Add(new PluginController(1));
-            PluginControllers.Add(new PluginController(2));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i] = new PluginController(i);
+            }
 
             // Start TcpServer	
             _TcpListenerThread = new Thread(new ThreadStart(TcpClientThreadLoop));
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+
+            if (File.Exists(Plugin_IniFile.FInfo.FullName))
+            {
+                try
+                {
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
+                    P2_Grenade_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P2_GRENADE"));
+                }
+                catch (Exception Ex)
+                {
+                    MyLogger.LogError(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Error reading config file : " + Plugin_IniFile.FInfo.FullName);
+                    MyLogger.LogError(Ex.Message.ToString());
+                }
+            }
+            else
+            {
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
+            }
+
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
             harmony.PatchAll();
         }
 
         public void Start()
-        {
-            MyLogger.LogMessage("OpwOlfPlugin.Start() => Removing mouse cursor");
-            Cursor.visible = false;
-        }
+        {}
 
         public void Update()
         {
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            P2_Grenade_Key.SetButton(Input.GetKey((KeyCode)P2_Grenade_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, Input.GetMouseButton(1) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Action, Input.GetMouseButton(2) ? (byte)1 : (byte)0);
+                }
+            }
+
+            //Quit
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
+
+
+            //Checking for a change in output to send or not
+            byte[] bOutputData = OutputData.ToByteArray();
+            byte[] bOutputDataBefore = _OutputDataBefore.ToByteArray();
+            for (int i = 0; i < bOutputData.Length; i++)
+            {
+                if (bOutputData[i] != bOutputDataBefore[i])
+                {
+                    SendOutputs();
+                    break;
+                }
+            }
+
+            //Save current state
+            _OutputDataBefore.Update(bOutputData);
         }
 
         public void OnDestroy()
         {
-            Logger.LogMessage("OpwOlfPlugin.OnDestroy() => Closing TCP Server....");
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "()");
             _TcpListener.Server.Close();
         }
 
@@ -117,18 +178,18 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                 // Create listener on localhost port 8052. 			
                 _TcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), _TcpPort);
                 _TcpListener.Start();
-                MyLogger.LogMessage("OpWolf_Plugin.TcpClientThreadLoop() => TCP Server is listening on Port " + _TcpPort);
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): TCP Server is listening on Port " + _TcpPort);
 
                 Byte[] bytes = new Byte[1024];
                 while (true)
                 {
                     using (_TcpClient = _TcpListener.AcceptTcpClient())
                     {
-                        MyLogger.LogMessage("OpWolf_Plugin.TcpClientThreadLoop() => TCP Client connected !");
+                        MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): TCP Client connected !");
                         using (_TcpStream = _TcpClient.GetStream())
                         {
                             //Send outputs at connection, if DemulShooter connects during game, between events
-                            SendOutputs();                        
+                            SendOutputs();
                             while (true)
                             {
                                 int Length = 0;
@@ -141,20 +202,22 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                                     byte[] InputBuffer = new byte[Length];
                                     Array.Copy(bytes, 0, InputBuffer, 0, Length);
                                     _InputData.Update(InputBuffer);
-                                    MyLogger.LogMessage("OpWolf_Plugin.TcpClientThreadLoop() => client message received as: " + _InputData.ToString());
+                                    //- Debug ONLY
+                                    //MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): client message received as: " + _InputData.ToString());
+                                    //- Debug ONLY
 
-                                    lock (MutexLocker_Inputs)
+                                    //lock (MutexLocker_Inputs)
+                                    //{
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
                                     {
-                                        PluginControllers[(int)PlayerType.Player1].SetAxis(_InputData.P1_X, _InputData.P1_Y);
-                                        PluginControllers[(int)PlayerType.Player1].SetButton(PluginController.PluginButton.Trigger, _InputData.P1_Trigger);
-                                        PluginControllers[(int)PlayerType.Player1].SetButton(PluginController.PluginButton.Reload, _InputData.P1_Reload);
-                                        PluginControllers[(int)PlayerType.Player1].SetButton(PluginController.PluginButton.Action, _InputData.P1_ChangeWeapon);
-                                        PluginControllers[(int)PlayerType.Player2].SetAxis(_InputData.P2_X, _InputData.P2_Y);
-                                        PluginControllers[(int)PlayerType.Player2].SetButton(PluginController.PluginButton.Trigger, _InputData.P2_Trigger);
-                                        PluginControllers[(int)PlayerType.Player2].SetButton(PluginController.PluginButton.Reload, _InputData.P2_Reload);
-                                        PluginControllers[(int)PlayerType.Player2].SetButton(PluginController.PluginButton.Action, _InputData.P2_ChangeWeapon);
-                                        DisableCrosshair = _InputData.HideCrosshair;
+                                        PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, _InputData.Reload[i]);
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Action, _InputData.ChangeWeapon[i]);
                                     }
+                                    CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
+                                    EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
+                                    //}
                                 }
                                 catch
                                 {
@@ -168,7 +231,7 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
             }
             catch (SocketException socketException)
             {
-                MyLogger.LogError("OpWolf_Plugin.TcpClientThreadLoop() => SocketException " + socketException.ToString());
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): SocketException " + socketException.ToString());
             }
         }
 
@@ -181,7 +244,7 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
             try
             {
                 if (Instance._TcpClient == null)
-                    return;                
+                    return;
 
                 if (_TcpStream == null)
                     return;
@@ -191,22 +254,33 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                 {
                     TcpPacket p = new TcpPacket(OutputData.ToByteArray(), TcpPacket.PacketHeader.Outputs);
                     byte[] Buffer = p.GetFullPacket();
-                    //Resetting event flags for next packets
-                    MyLogger.LogMessage("OpWolf_Plugin.SendOutputs() => Sending data : " + p.ToString());
-                    lock (MutexLocker_Outputs)
+                    //- Debug ONLY
+                    //MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():  Sending data : " + p.ToString());
+                    //- Debug ONLY
+                    //lock (MutexLocker_Outputs)
+                    //{
+                    //Resetting event flags for next packets                    
+                    for (int i = 0; i < MAX_PLAYERS; i++)
                     {
-                        OutputData.P1_Recoil = 0;
-                        OutputData.P1_Damage = 0;
-                        OutputData.P2_Recoil = 0;
-                        OutputData.P2_Damage = 0;
+                        OutputData.Recoil[i] = 0;
+                        OutputData.Damaged[i] = 0;
                     }
+                    //}
                     _TcpStream.Write(Buffer, 0, Buffer.Length);
                 }
             }
             catch (Exception Ex)
             {
-                MyLogger.LogError("OpWolf_Plugin.SendOutputs() => Socket exception: " + Ex);
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

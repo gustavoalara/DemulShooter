@@ -281,16 +281,6 @@ namespace DsCore.Config
         }
         #endregion
 
-        //Rabbids Hollywood Arcade Path
-        private String _Rha_Path = string.Empty;
-        #region Accessors
-        public String Rha_Path
-        {
-            get { return _Rha_Path; }
-            set { _Rha_Path = value; }
-        }
-        #endregion
-
         //RPCS3 Settings (only for System 357)
         private HardwareScanCode _DIK_Rpcs3_P1_Start = HardwareScanCode.DIK_1;
         private HardwareScanCode _DIK_Rpcs3_P2_Start = HardwareScanCode.DIK_2;
@@ -417,34 +407,6 @@ namespace DsCore.Config
         {
             get { return _DIK_Tsr_Credits; }
             set { _DIK_Tsr_Credits = value; }
-        }
-        #endregion
-
-        //Wild West Shoutout Path and Keys
-        private String _Wws_Path = string.Empty;
-        private HardwareScanCode _DIK_Wws_Test = HardwareScanCode.DIK_0;
-        private HardwareScanCode _DIK_Wws_P1Coin = HardwareScanCode.DIK_5;
-        private HardwareScanCode _DIK_Wws_P2Coin = HardwareScanCode.DIK_6;
-        #region Accessors
-        public String Wws_Path
-        {
-            get { return _Wws_Path; }
-            set { _Wws_Path = value; }
-        }
-        public HardwareScanCode DIK_Wws_Test
-        {
-            get { return _DIK_Wws_Test; }
-            set { _DIK_Wws_Test = value; }
-        }
-        public HardwareScanCode DIK_Wws_P1Coin
-        {
-            get { return _DIK_Wws_P1Coin; }
-            set { _DIK_Wws_P1Coin = value; }
-        }
-        public HardwareScanCode DIK_Wws_P2Coin
-        {
-            get { return _DIK_Wws_P2Coin; }
-            set { _DIK_Wws_P2Coin = value; }
         }
         #endregion
 
@@ -665,41 +627,7 @@ namespace DsCore.Config
                                 {
                                     if (!bool.TryParse(StrValue, out _HF_ReverseCover))
                                         Logger.WriteLog("Error parsing " + StrKey + " value in INI file : " + StrValue + " is not valid");
-                                } 
-                                else if (StrKey.ToLower().Equals("wws_path"))
-                                {
-                                    _Wws_Path = StrValue;
-                                }
-                                else if (StrKey.ToLower().Equals("wws_p1_coin_key"))
-                                {
-                                    try
-                                    {
-                                        _DIK_Wws_P1Coin = (HardwareScanCode)Enum.Parse(typeof(HardwareScanCode), StrValue);
-                                    }
-                                    catch { Logger.WriteLog("Error parsing " + StrKey + " value in INI file : " + StrValue + " is not valid"); }
-                                }
-                                else if (StrKey.ToLower().Equals("wws_p2_coin_key"))
-                                {
-                                    try
-                                    {
-                                        _DIK_Wws_P2Coin = (HardwareScanCode)Enum.Parse(typeof(HardwareScanCode), StrValue);
-                                    }
-                                    catch { Logger.WriteLog("Error parsing " + StrKey + " value in INI file : " + StrValue + " is not valid"); }
-                                }
-                                else if (StrKey.ToLower().Equals("wws_p1_test_key"))
-                                {
-                                    try
-                                    {
-                                        _DIK_Wws_Test = (HardwareScanCode)Enum.Parse(typeof(HardwareScanCode), StrValue);
-                                    }
-                                    catch { Logger.WriteLog("Error parsing " + StrKey + " value in INI file : " + StrValue + " is not valid"); }
-                                }
-
-                                else if (StrKey.ToLower().Equals("rha_path"))
-                                {
-                                    _Rha_Path = StrValue;
-                                }
-
+                                }                                 
                                 else if (StrKey.ToLower().Equals("opghost_enablefreeplay"))
                                 {
                                     if (!bool.TryParse(StrValue, out _OpGHost_EnableFreeplay))
@@ -1079,16 +1007,7 @@ namespace DsCore.Config
                     sr.WriteLine("HF_UseMiddleButtonAsGrenade = " + _HF_UseMiddleButtonAsGrenade);
                     sr.WriteLine("HF_CoverSensibility = " + _HF_CoverSensibility.ToString());
                     sr.WriteLine("HF_ReverseCover = " + _HF_ReverseCover.ToString());
-                    sr.WriteLine("");                    
-                    sr.WriteLine(";Wild West Shoutout settings");
-                    sr.WriteLine("WWS_Path = " + _Wws_Path);
-                    sr.WriteLine("WWS_P1_COIN_KEY = " + _DIK_Wws_P1Coin.ToString());
-                    sr.WriteLine("WWS_P2_COIN_KEY = " + _DIK_Wws_P2Coin.ToString());
-                    sr.WriteLine("WWS_TEST_KEY = " + _DIK_Wws_Test.ToString());
-                    sr.WriteLine("");
-                    sr.WriteLine(";Rabbids Hollywood settings");
-                    sr.WriteLine("RHA_Path = " + _Rha_Path);
-                    sr.WriteLine("");
+                    sr.WriteLine(""); 
                     sr.WriteLine(";Operation G.H.O.S.T credits settings");
                     sr.WriteLine("OpGhost_EnableFreeplay = " + _OpGHost_EnableFreeplay.ToString());
                     sr.WriteLine("OpGhost_CreditsToStart = " + _OpGhost_CreditsToStart.ToString());

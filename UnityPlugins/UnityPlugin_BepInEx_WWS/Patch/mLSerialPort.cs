@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using HarmonyLib;
+using UnityEngine;
+using UnityPlugin_BepInEx_Core;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mLSerialPort
     {
@@ -16,14 +18,17 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
             return s;
         }
 
+        /// <summary>
+        /// Simulate COM connection OK
+        /// </summary>
         [HarmonyPatch(typeof(LSerialPort), "Start")]
         class Start
         {
             static bool Prefix(bool ___m_com_opened, bool ___m_loop_thread)
             {
-                UnityEngine.Debug.Log("mLSerialPort.Start()");
+                DemulShooter_Plugin.MyLogger.LogMessage("mLSerialPort.Start()");
                 ___m_loop_thread = true;
-                ___m_com_opened = Demulshooter_Plugin.WWS_Mmf.IsOpened;                
+                ___m_com_opened = true;                
                 return false;
             }
         }
@@ -36,131 +41,96 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {   
             static bool Prefix(ref List<byte[]> msg_list, List<Byte[]> ___m_recv_pack)
             {
-                //Check Shared Memory parameters instead of reading COM port messages
-                int r = Demulshooter_Plugin.WWS_Mmf.ReadAll();
-                if (r != 00)
-                    UnityEngine.Debug.LogError("mLSerialPort.GetAllMsg() => Error reading MemoryMappedFile : " + r.ToString());
-                else
+                //Entering TEST mode // Moving down in Test Mode
+                if (DemulShooter_Plugin.Test_Key.GetButtonDown())
+                    DemulShooter_Plugin.InputGunByte_Payload |= 0x10;
+                else if (DemulShooter_Plugin.Test_Key.GetButtonUp())
+                    DemulShooter_Plugin.InputGunByte_Payload &= 0xEF;
+
+                //Select in TEST mode
+                if (DemulShooter_Plugin.MenuSelect_Key.GetButtonDown())
+                    DemulShooter_Plugin.InputGunByte_Payload |= 0x80;
+                else if (DemulShooter_Plugin.MenuSelect_Key.GetButtonUp())
+                    DemulShooter_Plugin.InputGunByte_Payload &= 0x7F;
+
+                //Move Up TEST mode
+                /*if (Input.GetKeyDown(KeyCode.UpArrow))                
+                    DemulShooter_Plugin.InputGunByte_Payload |= 0x20;
+                else if (Input.GetKeyUp(KeyCode.UpArrow))
+                    DemulShooter_Plugin.InputGunByte_Payload &= 0xDF;*/
+
+                if (DemulShooter_Plugin.InputGunByte_Payload != DemulShooter_Plugin.InputGunByte_Payload_Before)
                 {
-                    //Entering TEST mode
-                    if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_TEST] != 0)
-                    {
-                        byte[] b = new Byte[7];
-                        b[0] = 0xDD;
-                        b[1] = 16;
-                        b[2] = 0;
-                        b[3] = 0;
-                        b[4] = 0;
-                        b[5] = 0;
-                        b[6] = 0;
-                        ___m_recv_pack.Add(b);
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_TEST] = 0;   
-                    }
+                    byte[] b = new Byte[7];
+                    b[0] = 0xDD;
+                    b[1] = DemulShooter_Plugin.InputGunByte_Payload;
+                    b[2] = 0;
+                    b[3] = 0;
+                    b[4] = 0;
+                    b[5] = 0;
+                    b[6] = 0;
+                    ___m_recv_pack.Add(b);
 
-                    //For Triggers, DemulShooter will output "1" for ButtonUp and "2" for ButtonDown. 0 When no inputs
-                    if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_TRIGGER] != 0 || Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_TRIGGER] != 0)
-                    {
-                        byte[] b = new Byte[7];
-                        b[0] = 0xDD;
-                        b[1] = 0;
-                        if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_TRIGGER] != 0)
-                            b[1] = (byte)(Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_TRIGGER] - 1);
-                        b[2] = 0;
-                        if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_TRIGGER] != 0)
-                            b[2] = (byte)(Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_TRIGGER] - 1);
-                        b[3] = 0;
-                        b[4] = 0;
-                        b[5] = 0;
-                        b[6] = 0;
-                        ___m_recv_pack.Add(b);
+                    DemulShooter_Plugin.InputGunByte_Payload_Before = DemulShooter_Plugin.InputGunByte_Payload;
+                }
 
-                        //Removed triggers value reset, causing bugs with autofire and simultaneous trigger press :
-                        /*Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_TRIGGER] = 0;
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_TRIGGER] = 0;*/
-                    }
-                    
-                    //Adding CREDITS to Player 1
-                    UInt32 ibuffer = BitConverter.ToUInt32(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_COIN);
-                    if (ibuffer != 0)
+                //Trigger 
+                bool bFlag = false;
+                for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                {
+                    if (DemulShooter_Plugin.PluginControllers[i].GetButtonDown(PluginController.MyInputButtons.Trigger) || DemulShooter_Plugin.PluginControllers[i].GetButtonUp(PluginController.MyInputButtons.Trigger))
                     {
+                        bFlag = true;
+                        break;
+                    }
+                }
+                if (bFlag)
+                {
+                    byte[] b = new Byte[7];
+                    b[0] = 0xDD;
+                    for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                    {
+                        b[i + 1] = DemulShooter_Plugin.PluginControllers[i].GetButton(PluginController.MyInputButtons.Trigger) ? (byte)1 : (byte)0;
+                    }
+                    ___m_recv_pack.Add(b);
+                }
+
+                //COIN
+                for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                {
+                    if (DemulShooter_Plugin.PluginControllers[i].GetButtonDown(PluginController.MyInputButtons.Coin))
+                    {
+                        UInt32 ibuffer = 1;                         //COIN to add
                         byte[] b = new Byte[7];
                         b[0] = 0xCC;
-                        b[1] = 1;
+                        b[1] = (byte)( i + 1);                     //PLAYER ID
                         b[2] = (byte)((ibuffer >> 12) & 0x0F);
                         b[3] = (byte)((ibuffer >> 8) & 0x0F);
                         b[4] = (byte)((ibuffer >> 4) & 0x0F);
                         b[5] = (byte)(ibuffer & 0x0F);
                         b[6] = 0;
                         ___m_recv_pack.Add(b);
-                        Array.Copy(new Byte[] { 0, 0, 0, 0 }, 0, Demulshooter_Plugin.WWS_Mmf.Payload, (long)WWS_MemoryMappedFile_Controller.INDEX_P1_COIN, 4);                        
                     }
+                }                    
 
-                    //Adding CREDITS to Player 2
-                    ibuffer = BitConverter.ToUInt32(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P2_COIN);
-                    if (ibuffer != 0)
-                    {
-                        byte[] b = new Byte[7];
-                        b[0] = 0xCC;
-                        b[1] = 2;
-                        b[2] = (byte)((ibuffer >> 12) & 0x0F);
-                        b[3] = (byte)((ibuffer >> 8) & 0x0F);
-                        b[4] = (byte)((ibuffer >> 4) & 0x0F);
-                        b[5] = (byte)(ibuffer & 0x0F);
-                        b[6] = 0;
-                        ___m_recv_pack.Add(b);
-                        Array.Copy(new Byte[] { 0, 0, 0, 0 }, 0, Demulshooter_Plugin.WWS_Mmf.Payload, (long)WWS_MemoryMappedFile_Controller.INDEX_P2_COIN, 4);                        
-                    }
-
-                    //Reload command for Player 1
-                    if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_RELOAD] != 0)
+                //Reload command
+                for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                {
+                    if (DemulShooter_Plugin.PluginControllers[i].GetButtonDown(PluginController.MyInputButtons.Reload))
                     {
                         try
                         {
-                            if (GameUIController.Instance.playerUI[0] != null)
-                                GameUIController.Instance.playerUI[0].ReLoadBullets();                            
+                            if (GameUIController.Instance.playerUI[i] != null)
+                                GameUIController.Instance.playerUI[i].ReLoadBullets();
                         }
                         catch { }
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_RELOAD] = 0;
                     }
-
-                    //Reload command for Player 2
-                    if (Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_RELOAD] != 0)
-                    {
-                        try
-                        {
-                            if (GameUIController.Instance.playerUI[1] != null)
-                                GameUIController.Instance.playerUI[1].ReLoadBullets();
-                        }
-                        catch { }
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_RELOAD] = 0;
-                    }
-
-
-                    /*-----------------------------------------------------*/
-                    // Sending Data to DemulShooter as Well during this loop
-                    PlayerData Pdata = GameData.GetPlayerData(PlayerType.Player1);
-                    if (Pdata != null)
-                    {
-                        Array.Copy(BitConverter.GetBytes(Pdata.coins), 0, Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_CREDITS, 4);
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_LIFE] = (byte)Pdata.life;
-                    }
-                    Pdata = GameData.GetPlayerData(PlayerType.Player2);
-                    if (Pdata != null)
-                    {
-                        Array.Copy(BitConverter.GetBytes(Pdata.coins), 0, Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P2_CREDITS, 4);
-                        Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_LIFE] = (byte)Pdata.life;
-                    }
-                    Array.Copy(BitConverter.GetBytes(UnityEngine.Screen.width), 0, Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_VIEWPORT_WIDTH, 4);
-                    Array.Copy(BitConverter.GetBytes(UnityEngine.Screen.height), 0, Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_VIEWPORT_HEIGHT, 4);
-                    
-                    //Rewrite Updated Memory
-                    Demulshooter_Plugin.WWS_Mmf.Writeall();
-                }    
+                }
 
                 //Putting results into BaseCom array given as parameter for further actions
                 for (int index = 0; index < ___m_recv_pack.Count; ++index)
                 {
-                    //UnityEngine.Debug.Log("Received Data Packet = " + ByteArrayToString(___m_recv_pack[index]));
+                    //DemulShooter_Plugin.MyLogger.LogMessage("Received Data Packet = " + ByteArrayToString(___m_recv_pack[index]));
                     msg_list.Add(___m_recv_pack[index]);
                 }
                 ___m_recv_pack.Clear();
@@ -172,13 +142,14 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         /// <summary>
         /// Only used by BaseCom.SendGunSignal()
         /// ??? Purpose ???
+        /// Frame = FF F8 [P1] [P2] [P3] [P4] etc...
         /// </summary>
         [HarmonyPatch(typeof(LSerialPort), "DiretSend")]
         class DiretSend
 	    {
             static bool Prefix(byte[] buf)
             {
-                UnityEngine.Debug.Log("mLSerialPort.DirectSend(byte[]) => data_buf = " + ByteArrayToString(buf));
+                //DemulShooter_Plugin.MyLogger.LogMessage("mLSerialPort.DirectSend(byte[]) => data_buf = " + ByteArrayToString(buf));
                 return false;
             }
 	    }              
@@ -191,7 +162,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
                 byte[] destinationArray = new byte[8];
                 destinationArray[0] = byte.MaxValue;
                 Array.Copy((Array) data_buf, 0, (Array) destinationArray, 1, data_buf.Length);
-                //UnityEngine.Debug.Log("mLSerialPort.SendData(byte[]) => data_buf = " + ByteArrayToString(destinationArray));
+                //DemulShooter_Plugin.MyLogger.LogMessage("mLSerialPort.SendData(byte[]) => data_buf = " + ByteArrayToString(destinationArray));
 
                 if (destinationArray[1] == 0x5A) //CheckIO Board
                 {
@@ -199,36 +170,38 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
                 }
                 else
                 {
-                    int r = Demulshooter_Plugin.WWS_Mmf.ReadAll();
-                    if (r == 0)
+                    if (destinationArray[1] == 0xF9)    //SendOpen()
                     {
-                        if (destinationArray[1] == 0xF9)    //SendOpen()
-                        {
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_GUNOPEN] = destinationArray[2];
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_GUNOPEN] = destinationArray[3];
-                            Demulshooter_Plugin.WWS_Mmf.Writeall();
-                        }
-                        else if (destinationArray[1] == 0xD6)    //SendTestGun()
-                        {
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_GUNTEST] = destinationArray[2];
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_GUNTEST] = destinationArray[3];
-                            Demulshooter_Plugin.WWS_Mmf.Writeall();
-                        }
-                        else if (destinationArray[1] == 0xD9)    //SendState()
-                        {
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_GUNSTATE] = destinationArray[2];
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_GUNSTATE] = destinationArray[3];
-                            Demulshooter_Plugin.WWS_Mmf.Writeall();
-                        }
-                        else if (destinationArray[1] == 0xD9)    //SendGunSignal()
-                        {
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P1_GUNSIGNAL] = destinationArray[2];
-                            Demulshooter_Plugin.WWS_Mmf.Payload[WWS_MemoryMappedFile_Controller.INDEX_P2_GUNSIGNAL] = destinationArray[3];
-                            Demulshooter_Plugin.WWS_Mmf.Writeall();
-                        }
+                        //for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                        //{
+                        //    DemulShooter_Plugin.OutputData.GunOpened[i] = destinationArray[2 + i];
+                        //}
                     }
-                    else
-                        UnityEngine.Debug.LogError("mLSerialPort.SendData(byte[]) => DemulShooter MMF read error : " + r.ToString());
+                    else if (destinationArray[1] == 0xD6)    //SendTestGun() but only activate recoil on repeated shoot (trigger maintained)
+                    {
+                        /*for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                        {
+                            DemulShooter_Plugin.OutputData.Recoil[i]= destinationArray[2 + i];
+                        }*/
+                    }
+                    else if (destinationArray[1] == 0xD9)    //SendState()
+                    {
+                        //for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
+                        //{
+                        //    DemulShooter_Plugin.OutputData.GunState[i] = destinationArray[2 + i];
+                        //}
+                    }
+                    else if (destinationArray[1] == 0xBB)   //Clear Lack Ticket
+                    {
+                    }
+                    else if (destinationArray[1] == 0xD0)   //Open Click Verify
+                    {
+                        //Do nothing, Just sent once at start
+                    }
+                    else if (destinationArray[1] == 0xEE)   //Send Tickets
+                    {                        
+                    }
+                    
                 }
                 return false;
             }            
@@ -242,10 +215,10 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(List<byte> data_buf, int send_count = 1)
             {
-                UnityEngine.Debug.Log("mLSerialPort.SendData(List<Byte>)");
+                DemulShooter_Plugin.MyLogger.LogMessage("mLSerialPort.SendData(List<Byte>)");
                 byte[] destinationArray = new byte[data_buf.Count];
                 Array.Copy((Array)data_buf.ToArray(), 0, (Array)destinationArray, 0, data_buf.Count);
-                //UnityEngine.Debug.Log("data_buf = " + ByteArrayToString(destinationArray));
+                //DemulShooter_Plugin.MyLogger.LogMessage("data_buf = " + ByteArrayToString(destinationArray));
 
                 /*this.frame_ready.WaitOne();
                 this.frame_ready.Reset();

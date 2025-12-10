@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -7,19 +8,31 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace PvZ_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
-        public const String pluginGuid = "argonlefou.demulshooter.PvzLastStand";
-        public const String pluginName = "PvZ_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "2.0.0.0";
+        public const String pluginGuid = "argonlefou.demulshooter.pvz";
+        public const String pluginName = "PVZ_BepInEx_DemulShooter_Plugin";
+        public const String pluginVersion = "17.0.0.0";
+        public const String pluginConfigFile = "PVZ_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
+
+        public static readonly int MAX_PLAYERS = 1;
+
+        //custom Input Data
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
+        public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key;
+        public static PluginControllerButton Test_Key;
 
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
@@ -30,40 +43,101 @@ namespace PvZ_BepInEx_DemulShooter_Plugin
 
         private TcpInputData _InputData;
 
-        //custom Input Data
-        public static PluginController PluginPlayerController;
-        public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        public static byte P1_Trigger_ButtonState = 0;
         public static bool CrossHairVisibility = true;
+
+        //Custom resolution
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+        public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
 
         public void Awake()
         {
-            Instance = this;            
+            Instance = this;
 
             MyLogger = Logger;
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            _InputData = new TcpInputData();
-            PluginPlayerController = new PluginController(0);
+            _InputData = new TcpInputData(MAX_PLAYERS);
+
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i] = new PluginController(i);
+            }
+
+            Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+            Test_Key = new PluginControllerButton((int)KeyCode.Alpha0);
 
             // Start TcpServer	
             _TcpListenerThread = new Thread(new ThreadStart(TcpClientThreadLoop));
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+
+            if (File.Exists(Plugin_IniFile.FInfo.FullName))
+            {
+                try
+                {
+                    Plugin_IniFile.IniReadIntValue("VIDEO", "WIDTH", ref ScreenWidth);
+					Plugin_IniFile.IniReadIntValue("VIDEO", "HEIGHT", ref ScreenHeight);
+
+					Plugin_IniFile.IniReadBoolValue("VIDEO", "FULLSCREEN", ref Fullscreen);
+					Plugin_IniFile.IniReadBoolValue("VIDEO", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
+                }
+                catch (Exception Ex)
+                {
+                    MyLogger.LogError(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Error reading config file : " + Plugin_IniFile.FInfo.FullName);
+                    MyLogger.LogError(Ex.Message.ToString());
+                }
+            }
+            else
+            {
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
+            }
+
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
             harmony.PatchAll();
         }
 
         public void Start()
-        {
-        }
+        {}
 
         public void Update()
-        {
+        {           
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, Input.GetMouseButton(1) ? (byte)1 : (byte)0);
+                }
+            }
+
             //Quit
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Application.Quit();
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
+
         }
 
         public void OnDestroy()
@@ -112,14 +186,16 @@ namespace PvZ_BepInEx_DemulShooter_Plugin
                                     Array.Copy(bytes, 0, InputBuffer, 0, Length);
                                     _InputData.Update(InputBuffer);
                                     //- Debug ONLY
-                                    MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): client message received as: " + _InputData.ToString());
+                                    //MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): client message received as: " + _InputData.ToString());
                                     //- Debug ONLY
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-
-                                    PluginPlayerController.SetAimingValues(new Vector2(_InputData.P1_X, _InputData.P1_Y));
-                                    PluginPlayerController.SetButton(PluginController.MyInputButtons.Trigger, _InputData.P1_Trigger);
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
+                                    {
+                                        PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
+                                    }
                                     CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
                                     EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
                                     //}
@@ -138,6 +214,14 @@ namespace PvZ_BepInEx_DemulShooter_Plugin
             {
                 MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): SocketException " + socketException.ToString());
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

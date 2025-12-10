@@ -2,8 +2,9 @@
 using HarmonyLib;
 using Pvz;
 using UnityEngine;
+using System;
 
-namespace PvZ_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mPvzCore
     {
@@ -22,7 +23,7 @@ namespace PvZ_BepInEx_DemulShooter_Plugin
                     {
                         if (Pi.Name.Equals("inputPosition"))
                         {
-                            Pi.SetValue(__instance, new Vector3(DemulShooter_Plugin.PluginPlayerController.Axis_X, DemulShooter_Plugin.PluginPlayerController.Axis_Y), null);
+                            Pi.SetValue(__instance, new Vector3(DemulShooter_Plugin.PluginControllers[0].Axis_X, DemulShooter_Plugin.PluginControllers[0].Axis_Y), null);
                             break;
                         }
                     }

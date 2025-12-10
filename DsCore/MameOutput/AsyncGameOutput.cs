@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Timers;
 
 namespace DsCore.MameOutput
 {
@@ -27,14 +26,16 @@ namespace DsCore.MameOutput
                         _OutputValue = value;
                         _AsyncResetTimer.Period = _AsyncResetTimerOnInterval;
                         _AsyncResetTimer.Start();
-                        Logger.WriteLog("[Tick=" + Environment.TickCount + "] Starting " + this._Name + " OutputTimer with value = " + value);
+                        #if DEBUG_ASYNCGAMEOUTPUTS
+                            Logger.WriteLog("[Tick=" + Environment.TickCount + "] Starting " + this._Name + " OutputTimer with value = " + value);
+                        #endif
                     }
                 }
             }
         }
 
-        public AsyncGameOutput(String Name, OutputId Id, int AsyncResetTimerOnInterval, int AsyncResetTimerOffInterval, int RestValue)
-            : base(Name, Id)
+        public AsyncGameOutput(OutputId Id, int AsyncResetTimerOnInterval, int AsyncResetTimerOffInterval, int RestValue)
+            : base(Id)
         {
             _OffValue = RestValue;
             _AsyncResetTimerOnInterval = (UInt32)AsyncResetTimerOnInterval;
@@ -51,12 +52,16 @@ namespace DsCore.MameOutput
             {
                 _AsyncResetTimer.Period = _AsyncResetTimerOffInterval;
                 _OutputValue = _OffValue;
-                Logger.WriteLog("[Tick=" + Environment.TickCount + "] Forcing " + this._Name + " OutputTimer with value = " + _OffValue);
+                #if DEBUG_ASYNCGAMEOUTPUTS
+                    Logger.WriteLog("[Tick=" + Environment.TickCount + "] Forcing " + this._Name + " OutputTimer with value = " + _OffValue);
+                #endif
                 //MameOutputHelper.Instance().SendValue(this._Id, this._OutputValue);
             }
             else
             {
-                Logger.WriteLog("[Tick=" + Environment.TickCount + "] Stopping " + this._Name + " OutputTimer with value = " + _OffValue);
+                #if DEBUG_ASYNCGAMEOUTPUTS
+                    Logger.WriteLog("[Tick=" + Environment.TickCount + "] Stopping " + this._Name + " OutputTimer with value = " + _OffValue);
+                #endif
                 _AsyncResetTimer.Stop();
                 _IsTimerRunning = false;
             }            

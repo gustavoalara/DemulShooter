@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace DCop_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mLifeTracker
     {
@@ -12,7 +12,6 @@ namespace DCop_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(int ___lifes)
             {
-                //Dcop_Plugin.MyLogger.LogMessage("mLifeTracker.Update()");
                 DemulShooter_Plugin.OutputData.P1_Life = (byte)___lifes;                    
                 return true;
             }

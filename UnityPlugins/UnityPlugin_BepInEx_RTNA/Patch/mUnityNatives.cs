@@ -2,7 +2,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace NerfArcade_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mUnityNatives
     {
@@ -198,7 +198,7 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             {
                 DemulShooter_Plugin.MyLogger.LogMessage("DongleControl.HaspReadCabTemplate() : handle=" + handle);
                 __result = (int)HaspErrorCode.STATUS_OK;
-                cabTemplate = DemulShooter_Plugin.CabTemplate;
+                cabTemplate = (byte)DemulShooter_Plugin.CabTemplate;
                 return false;
             }
         }

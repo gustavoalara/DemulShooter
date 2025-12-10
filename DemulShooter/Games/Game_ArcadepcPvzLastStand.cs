@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using DsCore;
 using DsCore.Config;
@@ -11,12 +14,28 @@ using DsCore.Memory;
 using DsCore.RawInput;
 using DsCore.Win32;
 
-namespace DemulShooter
+namespace DemulShooter.Games
 {
-    class Game_ArcadepcPvzLastStand : Game
+    internal class Game_ArcadepcPvzLastStand : Game
     {
+        private class InputData : DsTcpData
+        {
+            public float[] Axis_X = null;
+            public float[] Axis_Y = null;
+            public byte[] Trigger = null;
+            public byte HideCrosshairs = 0;
+            public byte EnableInputsHack = 0;
+
+            public InputData(int PlayerNumber) : base(PlayerNumber)
+            {
+            }
+        }
+
+        protected string _MainWindowTitle = string.Empty;
         private DsTcp_Client _Tcpclient;
-        private DsTcp_InputData_Pvz _InputData;
+        private InputData _InputData;
+
+        private const int MAX_PLAYERS = 1;
 
         //Inputs
         private UInt32 _SystemButtons_Offset = 0x00119A41;
@@ -48,8 +67,10 @@ namespace DemulShooter
             _KnownMd5Prints.Add("Shell.exe v1.0.0 - Patch_v2 by Ducon", "48fdf6363dde5fac142864689d5757c8");
             _KnownMd5Prints.Add("Shell.exe v1.0.0 - Patch_vArgon by Ducon", "878736c94d934bc105d15a2c19192889");
 
+            _InputData = new InputData(MAX_PLAYERS);
+
             _tProcess.Start();
-            Logger.WriteLog("Waiting for TTX " + _RomName + " game to hook.....");
+            Logger.WriteLog("Waiting for " + _RomName + " game to hook.....");
         }
 
         /// <summary>
@@ -80,8 +101,6 @@ namespace DemulShooter
                                 Logger.WriteLog(_Target_Process_Name + ".exe = 0x" + _TargetProcess_MemoryBaseAddress.ToString("X8"));
                                 CheckExeMd5();
                                 Apply_MemoryHacks();
-
-                                _InputData = new DsTcp_InputData_Pvz();
 
                                 //Start TcpClient to dial with Unity Game
                                 _Tcpclient = new DsTcp_Client("127.0.0.1", DsTcp_Client.DS_TCP_CLIENT_PORT);
@@ -138,7 +157,6 @@ namespace DemulShooter
             _Tcpclient.SendMessage(_InputData.ToByteArray());
         }
 
-
         #region Screen
 
         public override bool GameScale(PlayerSettings PlayerData)
@@ -150,7 +168,7 @@ namespace DemulShooter
                     double TotalResX = _ClientRect.Right - _ClientRect.Left;
                     double TotalResY = _ClientRect.Bottom - _ClientRect.Top;
                     Logger.WriteLog("Game Window Rect (Px) = [ " + TotalResX + "x" + TotalResY + " ]");
-                    
+
                     if (PlayerData.RIController.Computed_X < 0)
                         PlayerData.RIController.Computed_X = 0;
                     if (PlayerData.RIController.Computed_Y < 0)
@@ -200,46 +218,35 @@ namespace DemulShooter
             CaveMemory.Write_StrBytes("01");
             //push Shell.exe+OFFSET
             CaveMemory.Write_StrBytes("68");
-            CaveMemory.Write_Bytes(BitConverter.GetBytes((UInt32)_TargetProcess_MemoryBaseAddress +_CustomDamageOriginalDword_Offset));
-            
+            CaveMemory.Write_Bytes(BitConverter.GetBytes((UInt32)_TargetProcess_MemoryBaseAddress + _CustomDamageOriginalDword_Offset));
+
             //Inject it
             CaveMemory.InjectToOffset(_CustomDamage_InjectionStruct, "Dammage");
         }
 
         #endregion
 
-        
         #region Inputs
 
         /// <summary>
         /// Writing Axis and Buttons data in memory
         /// </summary>
         public override void SendInput(PlayerSettings PlayerData)
-        { 
+        {
             if (PlayerData.ID == 1)
             {
-                _InputData.P1_X = (float)PlayerData.RIController.Computed_X;
-                _InputData.P1_Y = (float)PlayerData.RIController.Computed_Y;
+                _InputData.Axis_X[0] = (float)PlayerData.RIController.Computed_X;
+                _InputData.Axis_Y[0] = (float)PlayerData.RIController.Computed_Y;
 
                 if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.OnScreenTriggerDown) != 0)
                 {
                     WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _TriggerButton_Offset, 0x01);
-                    _InputData.P1_Trigger = 1;
+                    _InputData.Trigger[0] = 1;
                 }
                 if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.OnScreenTriggerUp) != 0)
                 {
                     WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _TriggerButton_Offset, 0x00);
-                    _InputData.P1_Trigger = 0;
-                }
-                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.ActionDown) != 0)
-                {
-                    WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _TriggerButton_Offset, 0x01);
-                    _InputData.P1_Trigger = 1;
-                }
-                if ((PlayerData.RIController.Computed_Buttons & RawInputcontrollerButtonEvent.ActionUp) != 0)
-                {
-                    WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _TriggerButton_Offset, 0x00);
-                    _InputData.P1_Trigger = 0;
+                    _InputData.Trigger[0] = 0;
                 }
             }
 
@@ -287,7 +294,6 @@ namespace DemulShooter
         }
 
         #endregion
-        
 
         #region Outputs
 
@@ -298,17 +304,17 @@ namespace DemulShooter
         {
             //Gun motor : Is activated for every bullet fired AND when player gets
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun_R, OutputId.P1_LmpGun_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun_G, OutputId.P1_LmpGun_G));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun_B, OutputId.P1_LmpGun_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_GunRecoil, OutputId.P1_GunRecoil));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Lmp_R, OutputId.P1_Lmp_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Lmp_G, OutputId.P1_Lmp_G));
-            _Outputs.Add(new GameOutput(OutputDesciption.TicketDrive, OutputId.TicketDrive));
-            _Outputs.Add(new GameOutput(OutputDesciption.TicketMeter, OutputId.TicketMeter));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun_R));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun_G));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun_B));
+            _Outputs.Add(new GameOutput(OutputId.P1_GunRecoil));
+            _Outputs.Add(new GameOutput(OutputId.P1_Lmp_R));
+            _Outputs.Add(new GameOutput(OutputId.P1_Lmp_G));
+            _Outputs.Add(new GameOutput(OutputId.TicketDrive));
+            _Outputs.Add(new GameOutput(OutputId.TicketMeter));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>
@@ -320,11 +326,11 @@ namespace DemulShooter
             byte OutputData = ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _Outputs_Offset);
             SetOutputValue(OutputId.P1_LmpGun_R, OutputData & 0x01);
             SetOutputValue(OutputId.P1_LmpGun_G, OutputData >> 1 & 0x01);
-            SetOutputValue(OutputId.P1_LmpGun_B, OutputData >> 2 & 0x01);            
+            SetOutputValue(OutputId.P1_LmpGun_B, OutputData >> 2 & 0x01);
             SetOutputValue(OutputId.P1_GunRecoil, OutputData >> 3 & 0x01);
             SetOutputValue(OutputId.P1_Lmp_R, OutputData >> 4 & 0x01);
             SetOutputValue(OutputId.P1_Lmp_G, OutputData >> 5 & 0x01);
-            SetOutputValue(OutputId.TicketDrive, ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _Outputs_Offset +1) >> 1 & 0x01);
+            SetOutputValue(OutputId.TicketDrive, ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _Outputs_Offset + 1) >> 1 & 0x01);
 
             //[Recoil] custom Output
             SetOutputValue(OutputId.P1_CtmRecoil, OutputData >> 3 & 0x01);
@@ -335,7 +341,7 @@ namespace DemulShooter
             {
                 SetOutputValue(OutputId.P1_Damaged, 1);
                 WriteByte(_P1_DamageStatus_CaveAddress, 0x00);
-            }           
+            }
 
             //Credits
             SetOutputValue(OutputId.Credits, ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _Credits_Offset));

@@ -364,22 +364,22 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_GunMotor, OutputId.P1_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_GunMotor, OutputId.P2_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LedKills1, OutputId.P1_LedKills1));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LedKills2, OutputId.P1_LedKills2));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LedKills1, OutputId.P2_LedKills1));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LedKills2, OutputId.P2_LedKills2));            
+            _Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P1_LedKills1));
+            _Outputs.Add(new GameOutput(OutputId.P1_LedKills2));
+            _Outputs.Add(new GameOutput(OutputId.P2_LedKills1));
+            _Outputs.Add(new GameOutput(OutputId.P2_LedKills2));            
             //Custom Outputs
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P1_CtmLmpStart, OutputId.P1_CtmLmpStart, 500));
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P2_CtmLmpStart, OutputId.P2_CtmLmpStart, 500));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Life, OutputId.P1_Life));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Life, OutputId.P2_Life));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            //_Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P1_CtmLmpStart, 500));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P2_CtmLmpStart, 500));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Life));
+            _Outputs.Add(new GameOutput(OutputId.P2_Life));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            //_Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

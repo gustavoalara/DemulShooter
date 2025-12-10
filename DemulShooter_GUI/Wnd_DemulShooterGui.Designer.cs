@@ -136,6 +136,12 @@
             this.TXT_CH_VIS = new System.Windows.Forms.TextBox();
             this.Btn_M2Scripts = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.Tab_MissionImpossible = new System.Windows.Forms.TabPage();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.Rdo_MIA_Merge = new System.Windows.Forms.RadioButton();
+            this.Rdo_MIA_Separate = new System.Windows.Forms.RadioButton();
+            this.label42 = new System.Windows.Forms.Label();
+            this.Btn_MisImp_Save = new System.Windows.Forms.Button();
             this.Tab_OpGhost = new System.Windows.Forms.TabPage();
             this.label67 = new System.Windows.Forms.Label();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
@@ -154,12 +160,8 @@
             this.label63 = new System.Windows.Forms.Label();
             this.TXT_OPGHOST_ACTION_P1 = new System.Windows.Forms.TextBox();
             this.Chk_OpGhost_SeparateButton = new System.Windows.Forms.CheckBox();
-            this.Tab_RabbidsHollywod = new System.Windows.Forms.TabPage();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.Tab_UnityPlugins = new System.Windows.Forms.TabPage();
             this.label36 = new System.Windows.Forms.Label();
-            this.Btn_Rha_GamePath = new System.Windows.Forms.Button();
-            this.Btn_Rha_InstallUnity = new System.Windows.Forms.Button();
-            this.Txt_Rha_GamePath = new System.Windows.Forms.TextBox();
             this.Tab_Raccoon = new System.Windows.Forms.TabPage();
             this.groupBox21 = new System.Windows.Forms.GroupBox();
             this.Btn_Raccoon_Patch = new System.Windows.Forms.Button();
@@ -207,21 +209,6 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.TXT_P2_T = new System.Windows.Forms.TextBox();
-            this.Tab_WildWest = new System.Windows.Forms.TabPage();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
-            this.Btn_Wws_SaveKeys = new System.Windows.Forms.Button();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label32 = new System.Windows.Forms.Label();
-            this.Txt_Wws_P2Coin = new System.Windows.Forms.TextBox();
-            this.label29 = new System.Windows.Forms.Label();
-            this.Txt_Wws_P1Coin = new System.Windows.Forms.TextBox();
-            this.Txt_Wws_Test = new System.Windows.Forms.TextBox();
-            this.label30 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label31 = new System.Windows.Forms.Label();
-            this.Btn_Wws_GamePath = new System.Windows.Forms.Button();
-            this.Btn_Wws_InstallUnity = new System.Windows.Forms.Button();
-            this.Txt_Wws_GamePath = new System.Windows.Forms.TextBox();
             this.Tab_Outputs = new System.Windows.Forms.TabPage();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
             this.Cbox_NetOutputs = new System.Windows.Forms.CheckBox();
@@ -245,12 +232,19 @@
             this.Bgw_XInput = new System.ComponentModel.BackgroundWorker();
             this.Cbo_PageSettings = new System.Windows.Forms.ComboBox();
             this.label39 = new System.Windows.Forms.Label();
-            this.Tab_MissionImpossible = new System.Windows.Forms.TabPage();
-            this.Btn_MisImp_Save = new System.Windows.Forms.Button();
-            this.Rdo_MIA_Merge = new System.Windows.Forms.RadioButton();
-            this.Rdo_MIA_Separate = new System.Windows.Forms.RadioButton();
-            this.label42 = new System.Windows.Forms.Label();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.Btn_Dcop = new System.Windows.Forms.Button();
+            this.Btn_Drk = new System.Windows.Forms.Button();
+            this.Btn_MarsS = new System.Windows.Forms.Button();
+            this.Btn_Mib = new System.Windows.Forms.Button();
+            this.Btn_Mia = new System.Windows.Forms.Button();
+            this.Btn_Nerfa = new System.Windows.Forms.Button();
+            this.Btn_Nha = new System.Windows.Forms.Button();
+            this.Btn_Owr = new System.Windows.Forms.Button();
+            this.Btn_PvZ = new System.Windows.Forms.Button();
+            this.Btn_Rha = new System.Windows.Forms.Button();
+            this.Btn_Tra = new System.Windows.Forms.Button();
+            this.Btn_Pbx = new System.Windows.Forms.Button();
+            this.Btn_Wws = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.Tab_P1.SuspendLayout();
             this.Tab_P2.SuspendLayout();
@@ -275,25 +269,21 @@
             this.groupBox15.SuspendLayout();
             this.Tab_M2.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.Tab_MissionImpossible.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.Tab_OpGhost.SuspendLayout();
             this.groupBox18.SuspendLayout();
             this.Gbox_OpGhost_Buttons.SuspendLayout();
-            this.Tab_RabbidsHollywod.SuspendLayout();
-            this.groupBox11.SuspendLayout();
+            this.Tab_UnityPlugins.SuspendLayout();
             this.Tab_Raccoon.SuspendLayout();
             this.groupBox21.SuspendLayout();
             this.Tab_RPCS3.SuspendLayout();
             this.groupBox13.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.Tab_SHA.SuspendLayout();
-            this.Tab_WildWest.SuspendLayout();
-            this.groupBox10.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.Tab_Outputs.SuspendLayout();
             this.groupBox19.SuspendLayout();
             this.Grp_Outputs.SuspendLayout();
-            this.Tab_MissionImpossible.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // Btn_Save_P1
@@ -325,11 +315,10 @@
             this.tabControl1.Controls.Add(this.Tab_M2);
             this.tabControl1.Controls.Add(this.Tab_MissionImpossible);
             this.tabControl1.Controls.Add(this.Tab_OpGhost);
-            this.tabControl1.Controls.Add(this.Tab_RabbidsHollywod);
             this.tabControl1.Controls.Add(this.Tab_Raccoon);
             this.tabControl1.Controls.Add(this.Tab_RPCS3);
             this.tabControl1.Controls.Add(this.Tab_SHA);
-            this.tabControl1.Controls.Add(this.Tab_WildWest);
+            this.tabControl1.Controls.Add(this.Tab_UnityPlugins);
             this.tabControl1.Controls.Add(this.Tab_Outputs);
             this.tabControl1.ItemSize = new System.Drawing.Size(0, 1);
             this.tabControl1.Location = new System.Drawing.Point(2, 47);
@@ -524,7 +513,7 @@
             this.label47.AutoSize = true;
             this.label47.Location = new System.Drawing.Point(279, 114);
             this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(77, 16);
+            this.label47.Size = new System.Drawing.Size(76, 16);
             this.label47.TabIndex = 67;
             this.label47.Text = "P4 Y offset :";
             // 
@@ -544,7 +533,7 @@
             this.label48.AutoSize = true;
             this.label48.Location = new System.Drawing.Point(279, 90);
             this.label48.Name = "label48";
-            this.label48.Size = new System.Drawing.Size(76, 16);
+            this.label48.Size = new System.Drawing.Size(75, 16);
             this.label48.TabIndex = 65;
             this.label48.Text = "P4 X offset :";
             // 
@@ -564,7 +553,7 @@
             this.label49.AutoSize = true;
             this.label49.Location = new System.Drawing.Point(71, 114);
             this.label49.Name = "label49";
-            this.label49.Size = new System.Drawing.Size(77, 16);
+            this.label49.Size = new System.Drawing.Size(76, 16);
             this.label49.TabIndex = 63;
             this.label49.Text = "P3 Y offset :";
             // 
@@ -584,7 +573,7 @@
             this.label50.AutoSize = true;
             this.label50.Location = new System.Drawing.Point(71, 90);
             this.label50.Name = "label50";
-            this.label50.Size = new System.Drawing.Size(76, 16);
+            this.label50.Size = new System.Drawing.Size(75, 16);
             this.label50.TabIndex = 61;
             this.label50.Text = "P3 X offset :";
             // 
@@ -604,7 +593,7 @@
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(279, 55);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(77, 16);
+            this.label18.Size = new System.Drawing.Size(76, 16);
             this.label18.TabIndex = 59;
             this.label18.Text = "P2 Y offset :";
             // 
@@ -624,7 +613,7 @@
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(279, 31);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(76, 16);
+            this.label19.Size = new System.Drawing.Size(75, 16);
             this.label19.TabIndex = 57;
             this.label19.Text = "P2 X offset :";
             // 
@@ -646,7 +635,7 @@
             this.Chk_DspCorrectedCrosshair.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Chk_DspCorrectedCrosshair.Location = new System.Drawing.Point(13, 149);
             this.Chk_DspCorrectedCrosshair.Name = "Chk_DspCorrectedCrosshair";
-            this.Chk_DspCorrectedCrosshair.Size = new System.Drawing.Size(296, 20);
+            this.Chk_DspCorrectedCrosshair.Size = new System.Drawing.Size(295, 20);
             this.Chk_DspCorrectedCrosshair.TabIndex = 55;
             this.Chk_DspCorrectedCrosshair.Text = "Show a mark on shoot for \"corrected\" location";
             this.Chk_DspCorrectedCrosshair.UseVisualStyleBackColor = true;
@@ -657,7 +646,7 @@
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(71, 55);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(77, 16);
+            this.label17.Size = new System.Drawing.Size(76, 16);
             this.label17.TabIndex = 4;
             this.label17.Text = "P1 Y offset :";
             // 
@@ -677,7 +666,7 @@
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(71, 31);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(76, 16);
+            this.label16.Size = new System.Drawing.Size(75, 16);
             this.label16.TabIndex = 2;
             this.label16.Text = "P1 X offset :";
             // 
@@ -697,7 +686,7 @@
             this.Cb_ActLabsOffset.AutoSize = true;
             this.Cb_ActLabsOffset.Location = new System.Drawing.Point(13, 0);
             this.Cb_ActLabsOffset.Name = "Cb_ActLabsOffset";
-            this.Cb_ActLabsOffset.Size = new System.Drawing.Size(265, 20);
+            this.Cb_ActLabsOffset.Size = new System.Drawing.Size(264, 20);
             this.Cb_ActLabsOffset.TabIndex = 0;
             this.Cb_ActLabsOffset.Text = "Enable X / Y offset   (offsets are in pixels)";
             this.Cb_ActLabsOffset.UseVisualStyleBackColor = true;
@@ -735,8 +724,8 @@
             this.label2.Size = new System.Drawing.Size(320, 60);
             this.label2.TabIndex = 50;
             this.label2.Text = "Click the button to copy the file \"WiimoteNew.ini\" to \r\n\"MyDocuments\\Dolphin Emul" +
-                "ator\\Config\\WiimoteNew.ini\"\r\n\r\nExisting file will be backed-up and overwritten !" +
-                "";
+    "ator\\Config\\WiimoteNew.ini\"\r\n\r\nExisting file will be backed-up and overwritten !" +
+    "";
             // 
             // Btn_Dolphin5
             // 
@@ -1054,11 +1043,11 @@
             this.label34.AutoSize = true;
             this.label34.Location = new System.Drawing.Point(9, 200);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(318, 96);
+            this.label34.Size = new System.Drawing.Size(317, 96);
             this.label34.TabIndex = 55;
             this.label34.Text = "Default : \r\nHide in game by pointing the gun out of screen.\r\n\r\nPedal-Mode :\r\nUse " +
-                "a supplementary button to hide, like Time Crisis.\r\nPointing the gun out of scree" +
-                "n won\'t hide anymore.";
+    "a supplementary button to hide, like Time Crisis.\r\nPointing the gun out of scree" +
+    "n won\'t hide anymore.";
             // 
             // groupBox6
             // 
@@ -1077,7 +1066,7 @@
             this.label33.AutoSize = true;
             this.label33.Location = new System.Drawing.Point(228, 36);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(118, 16);
+            this.label33.Size = new System.Drawing.Size(117, 16);
             this.label33.TabIndex = 54;
             this.label33.Text = "Set the pedal key :";
             // 
@@ -1099,7 +1088,7 @@
             this.Chk_GundamP2Pedal.AutoSize = true;
             this.Chk_GundamP2Pedal.Location = new System.Drawing.Point(9, 36);
             this.Chk_GundamP2Pedal.Name = "Chk_GundamP2Pedal";
-            this.Chk_GundamP2Pedal.Size = new System.Drawing.Size(158, 20);
+            this.Chk_GundamP2Pedal.Size = new System.Drawing.Size(157, 20);
             this.Chk_GundamP2Pedal.TabIndex = 53;
             this.Chk_GundamP2Pedal.Text = "Enable \"Pedal-Mode\"";
             this.Chk_GundamP2Pedal.UseVisualStyleBackColor = true;
@@ -1122,7 +1111,7 @@
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(228, 36);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(118, 16);
+            this.label9.Size = new System.Drawing.Size(117, 16);
             this.label9.TabIndex = 53;
             this.label9.Text = "Set the pedal key :";
             // 
@@ -1144,7 +1133,7 @@
             this.Chk_GundamP1Pedal.AutoSize = true;
             this.Chk_GundamP1Pedal.Location = new System.Drawing.Point(9, 36);
             this.Chk_GundamP1Pedal.Name = "Chk_GundamP1Pedal";
-            this.Chk_GundamP1Pedal.Size = new System.Drawing.Size(158, 20);
+            this.Chk_GundamP1Pedal.Size = new System.Drawing.Size(157, 20);
             this.Chk_GundamP1Pedal.TabIndex = 0;
             this.Chk_GundamP1Pedal.Text = "Enable \"Pedal-Mode\"";
             this.Chk_GundamP1Pedal.UseVisualStyleBackColor = true;
@@ -1172,7 +1161,7 @@
             this.Rdo_HF_MiddleGrenade.Checked = true;
             this.Rdo_HF_MiddleGrenade.Location = new System.Drawing.Point(30, 188);
             this.Rdo_HF_MiddleGrenade.Name = "Rdo_HF_MiddleGrenade";
-            this.Rdo_HF_MiddleGrenade.Size = new System.Drawing.Size(253, 20);
+            this.Rdo_HF_MiddleGrenade.Size = new System.Drawing.Size(252, 20);
             this.Rdo_HF_MiddleGrenade.TabIndex = 18;
             this.Rdo_HF_MiddleGrenade.TabStop = true;
             this.Rdo_HF_MiddleGrenade.Text = "Use Middle Click for Player 1 Grenade";
@@ -1184,7 +1173,7 @@
             this.Rdo_HF_MiddleCover.AutoSize = true;
             this.Rdo_HF_MiddleCover.Location = new System.Drawing.Point(30, 11);
             this.Rdo_HF_MiddleCover.Name = "Rdo_HF_MiddleCover";
-            this.Rdo_HF_MiddleCover.Size = new System.Drawing.Size(236, 20);
+            this.Rdo_HF_MiddleCover.Size = new System.Drawing.Size(235, 20);
             this.Rdo_HF_MiddleCover.TabIndex = 15;
             this.Rdo_HF_MiddleCover.TabStop = true;
             this.Rdo_HF_MiddleCover.Text = "Use Middle Click for Player 1 Cover";
@@ -1205,7 +1194,7 @@
             this.label27.AutoSize = true;
             this.label27.Location = new System.Drawing.Point(12, 38);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(465, 16);
+            this.label27.Size = new System.Drawing.Size(464, 16);
             this.label27.TabIndex = 17;
             this.label27.Text = "Cover and QTE will need original [A] / [S] / [D] / [W] / [SPACE] keyboard keys";
             // 
@@ -1226,7 +1215,7 @@
             this.label40.AutoSize = true;
             this.label40.Location = new System.Drawing.Point(12, 36);
             this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(276, 16);
+            this.label40.Size = new System.Drawing.Size(275, 16);
             this.label40.TabIndex = 18;
             this.label40.Text = "Player 1 Grenade will need [G] Keyboard key";
             // 
@@ -1235,7 +1224,7 @@
             this.label45.AutoSize = true;
             this.label45.Location = new System.Drawing.Point(12, 109);
             this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(162, 16);
+            this.label45.Size = new System.Drawing.Size(161, 16);
             this.label45.TabIndex = 10;
             this.label45.Text = "\"Cover Mode\" Sensibility :";
             // 
@@ -1244,7 +1233,7 @@
             this.Chk_HF_ReverseCover.AutoSize = true;
             this.Chk_HF_ReverseCover.Location = new System.Drawing.Point(15, 76);
             this.Chk_HF_ReverseCover.Name = "Chk_HF_ReverseCover";
-            this.Chk_HF_ReverseCover.Size = new System.Drawing.Size(145, 20);
+            this.Chk_HF_ReverseCover.Size = new System.Drawing.Size(144, 20);
             this.Chk_HF_ReverseCover.TabIndex = 14;
             this.Chk_HF_ReverseCover.Text = "Reverse cover side";
             this.Chk_HF_ReverseCover.UseVisualStyleBackColor = true;
@@ -1310,11 +1299,11 @@
             this.label58.AutoSize = true;
             this.label58.Location = new System.Drawing.Point(9, 200);
             this.label58.Name = "label58";
-            this.label58.Size = new System.Drawing.Size(318, 96);
+            this.label58.Size = new System.Drawing.Size(317, 96);
             this.label58.TabIndex = 59;
             this.label58.Text = "Default : \r\nHide in game by pointing the gun out of screen.\r\n\r\nPedal-Mode :\r\nUse " +
-                "a supplementary button to hide, like Time Crisis.\r\nPointing the gun out of scree" +
-                "n won\'t hide anymore.";
+    "a supplementary button to hide, like Time Crisis.\r\nPointing the gun out of scree" +
+    "n won\'t hide anymore.";
             // 
             // groupBox14
             // 
@@ -1333,7 +1322,7 @@
             this.label59.AutoSize = true;
             this.label59.Location = new System.Drawing.Point(228, 36);
             this.label59.Name = "label59";
-            this.label59.Size = new System.Drawing.Size(118, 16);
+            this.label59.Size = new System.Drawing.Size(117, 16);
             this.label59.TabIndex = 54;
             this.label59.Text = "Set the pedal key :";
             // 
@@ -1355,7 +1344,7 @@
             this.Chk_Le3_EnablePedal2.AutoSize = true;
             this.Chk_Le3_EnablePedal2.Location = new System.Drawing.Point(9, 36);
             this.Chk_Le3_EnablePedal2.Name = "Chk_Le3_EnablePedal2";
-            this.Chk_Le3_EnablePedal2.Size = new System.Drawing.Size(158, 20);
+            this.Chk_Le3_EnablePedal2.Size = new System.Drawing.Size(157, 20);
             this.Chk_Le3_EnablePedal2.TabIndex = 53;
             this.Chk_Le3_EnablePedal2.Text = "Enable \"Pedal-Mode\"";
             this.Chk_Le3_EnablePedal2.UseVisualStyleBackColor = true;
@@ -1378,7 +1367,7 @@
             this.label60.AutoSize = true;
             this.label60.Location = new System.Drawing.Point(228, 36);
             this.label60.Name = "label60";
-            this.label60.Size = new System.Drawing.Size(118, 16);
+            this.label60.Size = new System.Drawing.Size(117, 16);
             this.label60.TabIndex = 53;
             this.label60.Text = "Set the pedal key :";
             // 
@@ -1400,7 +1389,7 @@
             this.Chk_Le3_EnablePedal1.AutoSize = true;
             this.Chk_Le3_EnablePedal1.Location = new System.Drawing.Point(9, 36);
             this.Chk_Le3_EnablePedal1.Name = "Chk_Le3_EnablePedal1";
-            this.Chk_Le3_EnablePedal1.Size = new System.Drawing.Size(158, 20);
+            this.Chk_Le3_EnablePedal1.Size = new System.Drawing.Size(157, 20);
             this.Chk_Le3_EnablePedal1.TabIndex = 0;
             this.Chk_Le3_EnablePedal1.Text = "Enable \"Pedal-Mode\"";
             this.Chk_Le3_EnablePedal1.UseVisualStyleBackColor = true;
@@ -1451,7 +1440,7 @@
             this.Cbox_M2_Flash.CheckState = System.Windows.Forms.CheckState.Checked;
             this.Cbox_M2_Flash.Location = new System.Drawing.Point(333, 59);
             this.Cbox_M2_Flash.Name = "Cbox_M2_Flash";
-            this.Cbox_M2_Flash.Size = new System.Drawing.Size(192, 20);
+            this.Cbox_M2_Flash.Size = new System.Drawing.Size(191, 20);
             this.Cbox_M2_Flash.TabIndex = 59;
             this.Cbox_M2_Flash.Text = "Disable white flash on shoot";
             this.Cbox_M2_Flash.UseVisualStyleBackColor = true;
@@ -1543,8 +1532,79 @@
             this.label1.Size = new System.Drawing.Size(309, 75);
             this.label1.TabIndex = 51;
             this.label1.Text = "Click the button to install lua scripts for custom crosshair\r\nin nebula Model2 Em" +
-                "ulator.\r\nYou will be asked for the emulator .exe location\r\n\r\nExisting files will" +
-                " be overwritten !";
+    "ulator.\r\nYou will be asked for the emulator .exe location\r\n\r\nExisting files will" +
+    " be overwritten !";
+            // 
+            // Tab_MissionImpossible
+            // 
+            this.Tab_MissionImpossible.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Tab_MissionImpossible.Controls.Add(this.groupBox4);
+            this.Tab_MissionImpossible.Controls.Add(this.label42);
+            this.Tab_MissionImpossible.Controls.Add(this.Btn_MisImp_Save);
+            this.Tab_MissionImpossible.Location = new System.Drawing.Point(4, 5);
+            this.Tab_MissionImpossible.Name = "Tab_MissionImpossible";
+            this.Tab_MissionImpossible.Size = new System.Drawing.Size(581, 334);
+            this.Tab_MissionImpossible.TabIndex = 22;
+            this.Tab_MissionImpossible.Text = "Mission Impossible";
+            this.Tab_MissionImpossible.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.Rdo_MIA_Merge);
+            this.groupBox4.Controls.Add(this.Rdo_MIA_Separate);
+            this.groupBox4.Location = new System.Drawing.Point(10, 3);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(552, 100);
+            this.groupBox4.TabIndex = 37;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Triggers configuration :";
+            // 
+            // Rdo_MIA_Merge
+            // 
+            this.Rdo_MIA_Merge.AutoSize = true;
+            this.Rdo_MIA_Merge.Checked = true;
+            this.Rdo_MIA_Merge.Location = new System.Drawing.Point(35, 34);
+            this.Rdo_MIA_Merge.Name = "Rdo_MIA_Merge";
+            this.Rdo_MIA_Merge.Size = new System.Drawing.Size(118, 20);
+            this.Rdo_MIA_Merge.TabIndex = 34;
+            this.Rdo_MIA_Merge.TabStop = true;
+            this.Rdo_MIA_Merge.Text = "Merge Triggers";
+            this.Rdo_MIA_Merge.UseVisualStyleBackColor = true;
+            this.Rdo_MIA_Merge.CheckedChanged += new System.EventHandler(this.Rdo_MIA_Merge_CheckedChanged);
+            // 
+            // Rdo_MIA_Separate
+            // 
+            this.Rdo_MIA_Separate.AutoSize = true;
+            this.Rdo_MIA_Separate.Location = new System.Drawing.Point(35, 60);
+            this.Rdo_MIA_Separate.Name = "Rdo_MIA_Separate";
+            this.Rdo_MIA_Separate.Size = new System.Drawing.Size(135, 20);
+            this.Rdo_MIA_Separate.TabIndex = 35;
+            this.Rdo_MIA_Separate.TabStop = true;
+            this.Rdo_MIA_Separate.Text = "Separate Triggers";
+            this.Rdo_MIA_Separate.UseVisualStyleBackColor = true;
+            this.Rdo_MIA_Separate.CheckedChanged += new System.EventHandler(this.Rdo_MIA_Separate_CheckedChanged);
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label42.Location = new System.Drawing.Point(28, 126);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(522, 120);
+            this.label42.TabIndex = 36;
+            this.label42.Text = resources.GetString("label42.Text");
+            // 
+            // Btn_MisImp_Save
+            // 
+            this.Btn_MisImp_Save.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_MisImp_Save.Location = new System.Drawing.Point(217, 284);
+            this.Btn_MisImp_Save.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_MisImp_Save.Name = "Btn_MisImp_Save";
+            this.Btn_MisImp_Save.Size = new System.Drawing.Size(145, 37);
+            this.Btn_MisImp_Save.TabIndex = 33;
+            this.Btn_MisImp_Save.Text = "Save Config";
+            this.Btn_MisImp_Save.UseVisualStyleBackColor = true;
+            this.Btn_MisImp_Save.Click += new System.EventHandler(this.Btn_MisImp_Save_Click);
             // 
             // Tab_OpGhost
             // 
@@ -1565,7 +1625,7 @@
             this.label67.AutoSize = true;
             this.label67.Location = new System.Drawing.Point(7, 239);
             this.label67.Name = "label67";
-            this.label67.Size = new System.Drawing.Size(529, 80);
+            this.label67.Size = new System.Drawing.Size(528, 80);
             this.label67.TabIndex = 66;
             this.label67.Text = resources.GetString("label67.Text");
             // 
@@ -1611,7 +1671,7 @@
             this.label66.AutoSize = true;
             this.label66.Location = new System.Drawing.Point(9, 134);
             this.label66.Name = "label66";
-            this.label66.Size = new System.Drawing.Size(168, 16);
+            this.label66.Size = new System.Drawing.Size(167, 16);
             this.label66.TabIndex = 7;
             this.label66.Text = "CREDITS TO CONTINUE :";
             // 
@@ -1640,7 +1700,7 @@
             this.label65.AutoSize = true;
             this.label65.Location = new System.Drawing.Point(9, 104);
             this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(144, 16);
+            this.label65.Size = new System.Drawing.Size(143, 16);
             this.label65.TabIndex = 5;
             this.label65.Text = "CREDITS TO START :";
             // 
@@ -1669,7 +1729,7 @@
             this.label64.AutoSize = true;
             this.label64.Location = new System.Drawing.Point(7, 74);
             this.label64.Name = "label64";
-            this.label64.Size = new System.Drawing.Size(147, 16);
+            this.label64.Size = new System.Drawing.Size(146, 16);
             this.label64.TabIndex = 3;
             this.label64.Text = "COIN(S) PER CREDIT :";
             // 
@@ -1691,7 +1751,7 @@
             this.label62.AutoSize = true;
             this.label62.Location = new System.Drawing.Point(7, 44);
             this.label62.Name = "label62";
-            this.label62.Size = new System.Drawing.Size(84, 16);
+            this.label62.Size = new System.Drawing.Size(83, 16);
             this.label62.TabIndex = 1;
             this.label62.Text = "FREEPLAY :";
             // 
@@ -1723,7 +1783,7 @@
             this.label61.AutoSize = true;
             this.label61.Location = new System.Drawing.Point(27, 69);
             this.label61.Name = "label61";
-            this.label61.Size = new System.Drawing.Size(78, 16);
+            this.label61.Size = new System.Drawing.Size(77, 16);
             this.label61.TabIndex = 56;
             this.label61.Text = "Set P2 key :";
             // 
@@ -1745,7 +1805,7 @@
             this.label63.AutoSize = true;
             this.label63.Location = new System.Drawing.Point(27, 40);
             this.label63.Name = "label63";
-            this.label63.Size = new System.Drawing.Size(78, 16);
+            this.label63.Size = new System.Drawing.Size(77, 16);
             this.label63.TabIndex = 53;
             this.label63.Text = "Set P1 key :";
             // 
@@ -1767,73 +1827,44 @@
             this.Chk_OpGhost_SeparateButton.AutoSize = true;
             this.Chk_OpGhost_SeparateButton.Location = new System.Drawing.Point(9, 0);
             this.Chk_OpGhost_SeparateButton.Name = "Chk_OpGhost_SeparateButton";
-            this.Chk_OpGhost_SeparateButton.Size = new System.Drawing.Size(175, 20);
+            this.Chk_OpGhost_SeparateButton.Size = new System.Drawing.Size(174, 20);
             this.Chk_OpGhost_SeparateButton.TabIndex = 0;
             this.Chk_OpGhost_SeparateButton.Text = "Separate ACTION button";
             this.Chk_OpGhost_SeparateButton.UseVisualStyleBackColor = true;
             this.Chk_OpGhost_SeparateButton.CheckedChanged += new System.EventHandler(this.Chk_OpGhost_SeparateButton_CheckedChanged);
             // 
-            // Tab_RabbidsHollywod
+            // Tab_UnityPlugins
             // 
-            this.Tab_RabbidsHollywod.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_RabbidsHollywod.Controls.Add(this.groupBox11);
-            this.Tab_RabbidsHollywod.Location = new System.Drawing.Point(4, 5);
-            this.Tab_RabbidsHollywod.Name = "Tab_RabbidsHollywod";
-            this.Tab_RabbidsHollywod.Size = new System.Drawing.Size(581, 334);
-            this.Tab_RabbidsHollywod.TabIndex = 16;
-            this.Tab_RabbidsHollywod.Text = "tabPage1";
-            this.Tab_RabbidsHollywod.UseVisualStyleBackColor = true;
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Controls.Add(this.label36);
-            this.groupBox11.Controls.Add(this.Btn_Rha_GamePath);
-            this.groupBox11.Controls.Add(this.Btn_Rha_InstallUnity);
-            this.groupBox11.Controls.Add(this.Txt_Rha_GamePath);
-            this.groupBox11.Location = new System.Drawing.Point(5, 12);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(567, 111);
-            this.groupBox11.TabIndex = 73;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Unity Plugin Install";
+            this.Tab_UnityPlugins.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Tab_UnityPlugins.Controls.Add(this.label36);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Wws);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Pbx);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Tra);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Rha);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_PvZ);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Owr);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Nha);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Nerfa);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Mia);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Mib);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_MarsS);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Drk);
+            this.Tab_UnityPlugins.Controls.Add(this.Btn_Dcop);
+            this.Tab_UnityPlugins.Location = new System.Drawing.Point(4, 5);
+            this.Tab_UnityPlugins.Name = "Tab_UnityPlugins";
+            this.Tab_UnityPlugins.Size = new System.Drawing.Size(581, 334);
+            this.Tab_UnityPlugins.TabIndex = 16;
+            this.Tab_UnityPlugins.Text = "tabPage1";
+            this.Tab_UnityPlugins.UseVisualStyleBackColor = true;
             // 
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(6, 37);
+            this.label36.Location = new System.Drawing.Point(5, 19);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(101, 16);
+            this.label36.Size = new System.Drawing.Size(196, 16);
             this.label36.TabIndex = 70;
-            this.label36.Text = "Game location :";
-            // 
-            // Btn_Rha_GamePath
-            // 
-            this.Btn_Rha_GamePath.Location = new System.Drawing.Point(525, 32);
-            this.Btn_Rha_GamePath.Name = "Btn_Rha_GamePath";
-            this.Btn_Rha_GamePath.Size = new System.Drawing.Size(27, 27);
-            this.Btn_Rha_GamePath.TabIndex = 71;
-            this.Btn_Rha_GamePath.Text = "...";
-            this.Btn_Rha_GamePath.UseVisualStyleBackColor = true;
-            this.Btn_Rha_GamePath.Click += new System.EventHandler(this.Btn_Rha_GamePath_Click);
-            // 
-            // Btn_Rha_InstallUnity
-            // 
-            this.Btn_Rha_InstallUnity.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Btn_Rha_InstallUnity.Location = new System.Drawing.Point(209, 66);
-            this.Btn_Rha_InstallUnity.Margin = new System.Windows.Forms.Padding(4);
-            this.Btn_Rha_InstallUnity.Name = "Btn_Rha_InstallUnity";
-            this.Btn_Rha_InstallUnity.Size = new System.Drawing.Size(139, 38);
-            this.Btn_Rha_InstallUnity.TabIndex = 67;
-            this.Btn_Rha_InstallUnity.Text = "Install Plugin";
-            this.Btn_Rha_InstallUnity.UseVisualStyleBackColor = true;
-            this.Btn_Rha_InstallUnity.Click += new System.EventHandler(this.Btn_Rha_InstallUnity_Click);
-            // 
-            // Txt_Rha_GamePath
-            // 
-            this.Txt_Rha_GamePath.Location = new System.Drawing.Point(113, 34);
-            this.Txt_Rha_GamePath.Name = "Txt_Rha_GamePath";
-            this.Txt_Rha_GamePath.Size = new System.Drawing.Size(406, 22);
-            this.Txt_Rha_GamePath.TabIndex = 69;
+            this.label36.Text = "Select the Unity Plugin to install :";
             // 
             // Tab_Raccoon
             // 
@@ -1989,14 +2020,14 @@
             this.groupBox12.TabIndex = 69;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "Key configuration : to set a key, click a box then push the key on your keyboard " +
-                ":";
+    ":";
             // 
             // label57
             // 
             this.label57.AutoSize = true;
             this.label57.Location = new System.Drawing.Point(66, 36);
             this.label57.Name = "label57";
-            this.label57.Size = new System.Drawing.Size(136, 16);
+            this.label57.Size = new System.Drawing.Size(135, 16);
             this.label57.TabIndex = 69;
             this.label57.Text = "PLAYER BUTTONS :";
             // 
@@ -2013,7 +2044,7 @@
             this.label37.AutoSize = true;
             this.label37.Location = new System.Drawing.Point(341, 36);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(162, 16);
+            this.label37.Size = new System.Drawing.Size(161, 16);
             this.label37.TabIndex = 67;
             this.label37.Text = "TEST MENU BUTTONS :";
             // 
@@ -2204,7 +2235,7 @@
             this.label35.AutoSize = true;
             this.label35.Location = new System.Drawing.Point(16, 14);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(371, 16);
+            this.label35.Size = new System.Drawing.Size(370, 16);
             this.label35.TabIndex = 52;
             this.label35.Text = "To set a key, click a box then push the key on your keyboard :";
             // 
@@ -2374,173 +2405,6 @@
             this.TXT_P2_T.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.TXT_P2_T.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TXT_DirectInput_MouseClick);
             // 
-            // Tab_WildWest
-            // 
-            this.Tab_WildWest.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_WildWest.Controls.Add(this.groupBox10);
-            this.Tab_WildWest.Controls.Add(this.groupBox1);
-            this.Tab_WildWest.Location = new System.Drawing.Point(4, 5);
-            this.Tab_WildWest.Name = "Tab_WildWest";
-            this.Tab_WildWest.Size = new System.Drawing.Size(581, 334);
-            this.Tab_WildWest.TabIndex = 15;
-            this.Tab_WildWest.Text = "Wild West Shoutout";
-            this.Tab_WildWest.UseVisualStyleBackColor = true;
-            // 
-            // groupBox10
-            // 
-            this.groupBox10.Controls.Add(this.Btn_Wws_SaveKeys);
-            this.groupBox10.Controls.Add(this.label28);
-            this.groupBox10.Controls.Add(this.label32);
-            this.groupBox10.Controls.Add(this.Txt_Wws_P2Coin);
-            this.groupBox10.Controls.Add(this.label29);
-            this.groupBox10.Controls.Add(this.Txt_Wws_P1Coin);
-            this.groupBox10.Controls.Add(this.Txt_Wws_Test);
-            this.groupBox10.Controls.Add(this.label30);
-            this.groupBox10.Location = new System.Drawing.Point(3, 139);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(568, 189);
-            this.groupBox10.TabIndex = 73;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "System Key Configuration";
-            // 
-            // Btn_Wws_SaveKeys
-            // 
-            this.Btn_Wws_SaveKeys.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Btn_Wws_SaveKeys.Location = new System.Drawing.Point(211, 144);
-            this.Btn_Wws_SaveKeys.Margin = new System.Windows.Forms.Padding(4);
-            this.Btn_Wws_SaveKeys.Name = "Btn_Wws_SaveKeys";
-            this.Btn_Wws_SaveKeys.Size = new System.Drawing.Size(139, 38);
-            this.Btn_Wws_SaveKeys.TabIndex = 72;
-            this.Btn_Wws_SaveKeys.Text = "Save Keys";
-            this.Btn_Wws_SaveKeys.UseVisualStyleBackColor = true;
-            this.Btn_Wws_SaveKeys.Click += new System.EventHandler(this.Btn_Wws_SaveKeys_Click);
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(7, 32);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(371, 16);
-            this.label28.TabIndex = 68;
-            this.label28.Text = "To set a key, click a box then push the key on your keyboard :";
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label32.Location = new System.Drawing.Point(8, 104);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(60, 15);
-            this.label32.TabIndex = 64;
-            this.label32.Text = "P2 COIN :";
-            // 
-            // Txt_Wws_P2Coin
-            // 
-            this.Txt_Wws_P2Coin.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.Txt_Wws_P2Coin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Txt_Wws_P2Coin.Location = new System.Drawing.Point(74, 102);
-            this.Txt_Wws_P2Coin.Name = "Txt_Wws_P2Coin";
-            this.Txt_Wws_P2Coin.ReadOnly = true;
-            this.Txt_Wws_P2Coin.Size = new System.Drawing.Size(128, 21);
-            this.Txt_Wws_P2Coin.TabIndex = 56;
-            this.Txt_Wws_P2Coin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.Txt_Wws_P2Coin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TXT_DirectInput_MouseClick);
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label29.Location = new System.Drawing.Point(8, 78);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(60, 15);
-            this.label29.TabIndex = 66;
-            this.label29.Text = "P1 COIN :";
-            // 
-            // Txt_Wws_P1Coin
-            // 
-            this.Txt_Wws_P1Coin.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.Txt_Wws_P1Coin.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Txt_Wws_P1Coin.Location = new System.Drawing.Point(74, 75);
-            this.Txt_Wws_P1Coin.Name = "Txt_Wws_P1Coin";
-            this.Txt_Wws_P1Coin.ReadOnly = true;
-            this.Txt_Wws_P1Coin.Size = new System.Drawing.Size(127, 21);
-            this.Txt_Wws_P1Coin.TabIndex = 60;
-            this.Txt_Wws_P1Coin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.Txt_Wws_P1Coin.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TXT_DirectInput_MouseClick);
-            // 
-            // Txt_Wws_Test
-            // 
-            this.Txt_Wws_Test.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.Txt_Wws_Test.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Txt_Wws_Test.Location = new System.Drawing.Point(340, 75);
-            this.Txt_Wws_Test.Name = "Txt_Wws_Test";
-            this.Txt_Wws_Test.ReadOnly = true;
-            this.Txt_Wws_Test.Size = new System.Drawing.Size(128, 21);
-            this.Txt_Wws_Test.TabIndex = 55;
-            this.Txt_Wws_Test.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.Txt_Wws_Test.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TXT_DirectInput_MouseClick);
-            // 
-            // label30
-            // 
-            this.label30.AutoSize = true;
-            this.label30.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label30.Location = new System.Drawing.Point(254, 78);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(80, 15);
-            this.label30.TabIndex = 65;
-            this.label30.Text = "TEST MENU:";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.label31);
-            this.groupBox1.Controls.Add(this.Btn_Wws_GamePath);
-            this.groupBox1.Controls.Add(this.Btn_Wws_InstallUnity);
-            this.groupBox1.Controls.Add(this.Txt_Wws_GamePath);
-            this.groupBox1.Location = new System.Drawing.Point(5, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(567, 111);
-            this.groupBox1.TabIndex = 72;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Unity Plugin Install";
-            // 
-            // label31
-            // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(6, 37);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(101, 16);
-            this.label31.TabIndex = 70;
-            this.label31.Text = "Game location :";
-            // 
-            // Btn_Wws_GamePath
-            // 
-            this.Btn_Wws_GamePath.Location = new System.Drawing.Point(525, 32);
-            this.Btn_Wws_GamePath.Name = "Btn_Wws_GamePath";
-            this.Btn_Wws_GamePath.Size = new System.Drawing.Size(27, 27);
-            this.Btn_Wws_GamePath.TabIndex = 71;
-            this.Btn_Wws_GamePath.Text = "...";
-            this.Btn_Wws_GamePath.UseVisualStyleBackColor = true;
-            this.Btn_Wws_GamePath.Click += new System.EventHandler(this.Btn_Wws_GamePath_Click);
-            // 
-            // Btn_Wws_InstallUnity
-            // 
-            this.Btn_Wws_InstallUnity.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Btn_Wws_InstallUnity.Location = new System.Drawing.Point(209, 66);
-            this.Btn_Wws_InstallUnity.Margin = new System.Windows.Forms.Padding(4);
-            this.Btn_Wws_InstallUnity.Name = "Btn_Wws_InstallUnity";
-            this.Btn_Wws_InstallUnity.Size = new System.Drawing.Size(139, 38);
-            this.Btn_Wws_InstallUnity.TabIndex = 67;
-            this.Btn_Wws_InstallUnity.Text = "Install Plugin";
-            this.Btn_Wws_InstallUnity.UseVisualStyleBackColor = true;
-            this.Btn_Wws_InstallUnity.Click += new System.EventHandler(this.Btn_Wws_InstallUnity_Click);
-            // 
-            // Txt_Wws_GamePath
-            // 
-            this.Txt_Wws_GamePath.Location = new System.Drawing.Point(113, 34);
-            this.Txt_Wws_GamePath.Name = "Txt_Wws_GamePath";
-            this.Txt_Wws_GamePath.Size = new System.Drawing.Size(406, 22);
-            this.Txt_Wws_GamePath.TabIndex = 69;
-            // 
             // Tab_Outputs
             // 
             this.Tab_Outputs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -2571,7 +2435,7 @@
             this.Cbox_NetOutputs.Enabled = false;
             this.Cbox_NetOutputs.Location = new System.Drawing.Point(38, 67);
             this.Cbox_NetOutputs.Name = "Cbox_NetOutputs";
-            this.Cbox_NetOutputs.Size = new System.Drawing.Size(124, 20);
+            this.Cbox_NetOutputs.Size = new System.Drawing.Size(123, 20);
             this.Cbox_NetOutputs.TabIndex = 57;
             this.Cbox_NetOutputs.Text = "Network Outputs";
             this.Cbox_NetOutputs.UseVisualStyleBackColor = true;
@@ -2583,7 +2447,7 @@
             this.Cbox_WmOutputs.Enabled = false;
             this.Cbox_WmOutputs.Location = new System.Drawing.Point(38, 41);
             this.Cbox_WmOutputs.Name = "Cbox_WmOutputs";
-            this.Cbox_WmOutputs.Size = new System.Drawing.Size(315, 20);
+            this.Cbox_WmOutputs.Size = new System.Drawing.Size(314, 20);
             this.Cbox_WmOutputs.TabIndex = 56;
             this.Cbox_WmOutputs.Text = "Window Messages outputs (MameHooker, etc...)";
             this.Cbox_WmOutputs.UseVisualStyleBackColor = true;
@@ -2594,7 +2458,7 @@
             this.Cbox_Outputs.AutoSize = true;
             this.Cbox_Outputs.Location = new System.Drawing.Point(13, -1);
             this.Cbox_Outputs.Name = "Cbox_Outputs";
-            this.Cbox_Outputs.Size = new System.Drawing.Size(118, 20);
+            this.Cbox_Outputs.Size = new System.Drawing.Size(117, 20);
             this.Cbox_Outputs.TabIndex = 1;
             this.Cbox_Outputs.Text = "Enable Outputs";
             this.Cbox_Outputs.UseVisualStyleBackColor = true;
@@ -2637,7 +2501,7 @@
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(396, 130);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(83, 16);
+            this.label21.Size = new System.Drawing.Size(82, 16);
             this.label21.TabIndex = 69;
             this.label21.Text = "Milliseconds";
             // 
@@ -2646,7 +2510,7 @@
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(10, 130);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(323, 16);
+            this.label24.Size = new System.Drawing.Size(322, 16);
             this.label24.TabIndex = 68;
             this.label24.Text = "Length of custom [recoil] generated output OFF state :\r\n";
             // 
@@ -2666,7 +2530,7 @@
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(372, 62);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(83, 16);
+            this.label23.Size = new System.Drawing.Size(82, 16);
             this.label23.TabIndex = 66;
             this.label23.Text = "Milliseconds";
             // 
@@ -2675,7 +2539,7 @@
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(10, 62);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(288, 16);
+            this.label20.Size = new System.Drawing.Size(287, 16);
             this.label20.TabIndex = 65;
             this.label20.Text = "Length of custom [damaged] generated output :";
             // 
@@ -2684,7 +2548,7 @@
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(396, 102);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(83, 16);
+            this.label10.Size = new System.Drawing.Size(82, 16);
             this.label10.TabIndex = 64;
             this.label10.Text = "Milliseconds";
             // 
@@ -2693,7 +2557,7 @@
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(11, 102);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(317, 16);
+            this.label22.Size = new System.Drawing.Size(316, 16);
             this.label22.TabIndex = 61;
             this.label22.Text = "Length of custom [recoil] generated output ON state :";
             // 
@@ -2713,7 +2577,7 @@
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(372, 34);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(83, 16);
+            this.label25.Size = new System.Drawing.Size(82, 16);
             this.label25.TabIndex = 4;
             this.label25.Text = "Milliseconds";
             // 
@@ -2733,7 +2597,7 @@
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(11, 34);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(187, 16);
+            this.label26.Size = new System.Drawing.Size(186, 16);
             this.label26.TabIndex = 2;
             this.label26.Text = "Delay between output refresh :\r\n";
             // 
@@ -2767,11 +2631,10 @@
             "m2Emulator",
             "Mission Impossible",
             "Operation G.H.O.S.T",
-            "Rabbids Hollywood Arcade",
             "Raccoon Rampage",
             "RPCS3 (System 357)",
             "Silent Hill : The Arcade",
-            "Wild West Shoutout",
+            "Unity Plugins Installation",
             "Outputs"});
             this.Cbo_PageSettings.Location = new System.Drawing.Point(118, 12);
             this.Cbo_PageSettings.Name = "Cbo_PageSettings";
@@ -2784,80 +2647,165 @@
             this.label39.AutoSize = true;
             this.label39.Location = new System.Drawing.Point(8, 15);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(104, 16);
+            this.label39.Size = new System.Drawing.Size(103, 16);
             this.label39.TabIndex = 40;
             this.label39.Text = "Page selection :";
             // 
-            // Tab_MissionImpossible
+            // Btn_Dcop
             // 
-            this.Tab_MissionImpossible.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Tab_MissionImpossible.Controls.Add(this.groupBox4);
-            this.Tab_MissionImpossible.Controls.Add(this.label42);
-            this.Tab_MissionImpossible.Controls.Add(this.Btn_MisImp_Save);
-            this.Tab_MissionImpossible.Location = new System.Drawing.Point(4, 5);
-            this.Tab_MissionImpossible.Name = "Tab_MissionImpossible";
-            this.Tab_MissionImpossible.Size = new System.Drawing.Size(581, 334);
-            this.Tab_MissionImpossible.TabIndex = 22;
-            this.Tab_MissionImpossible.Text = "Mission Impossible";
-            this.Tab_MissionImpossible.UseVisualStyleBackColor = true;
+            this.Btn_Dcop.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Dcop.Location = new System.Drawing.Point(41, 54);
+            this.Btn_Dcop.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Dcop.Name = "Btn_Dcop";
+            this.Btn_Dcop.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Dcop.TabIndex = 74;
+            this.Btn_Dcop.Text = "DCOP";
+            this.Btn_Dcop.UseVisualStyleBackColor = true;
+            this.Btn_Dcop.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
-            // Btn_MisImp_Save
+            // Btn_Drk
             // 
-            this.Btn_MisImp_Save.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Btn_MisImp_Save.Location = new System.Drawing.Point(217, 284);
-            this.Btn_MisImp_Save.Margin = new System.Windows.Forms.Padding(4);
-            this.Btn_MisImp_Save.Name = "Btn_MisImp_Save";
-            this.Btn_MisImp_Save.Size = new System.Drawing.Size(145, 37);
-            this.Btn_MisImp_Save.TabIndex = 33;
-            this.Btn_MisImp_Save.Text = "Save Config";
-            this.Btn_MisImp_Save.UseVisualStyleBackColor = true;
-            this.Btn_MisImp_Save.Click += new System.EventHandler(this.Btn_MisImp_Save_Click);
+            this.Btn_Drk.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Drk.Location = new System.Drawing.Point(167, 54);
+            this.Btn_Drk.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Drk.Name = "Btn_Drk";
+            this.Btn_Drk.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Drk.TabIndex = 75;
+            this.Btn_Drk.Text = "Drakon\r\nRealm Keeper";
+            this.Btn_Drk.UseVisualStyleBackColor = true;
+            this.Btn_Drk.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
-            // Rdo_MIA_Merge
+            // Btn_MarsS
             // 
-            this.Rdo_MIA_Merge.AutoSize = true;
-            this.Rdo_MIA_Merge.Checked = true;
-            this.Rdo_MIA_Merge.Location = new System.Drawing.Point(35, 34);
-            this.Rdo_MIA_Merge.Name = "Rdo_MIA_Merge";
-            this.Rdo_MIA_Merge.Size = new System.Drawing.Size(119, 20);
-            this.Rdo_MIA_Merge.TabIndex = 34;
-            this.Rdo_MIA_Merge.TabStop = true;
-            this.Rdo_MIA_Merge.Text = "Merge Triggers";
-            this.Rdo_MIA_Merge.UseVisualStyleBackColor = true;
-            this.Rdo_MIA_Merge.CheckedChanged += new System.EventHandler(this.Rdo_MIA_Merge_CheckedChanged);
+            this.Btn_MarsS.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_MarsS.Location = new System.Drawing.Point(293, 54);
+            this.Btn_MarsS.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_MarsS.Name = "Btn_MarsS";
+            this.Btn_MarsS.Size = new System.Drawing.Size(118, 48);
+            this.Btn_MarsS.TabIndex = 76;
+            this.Btn_MarsS.Text = "Mars Sortie";
+            this.Btn_MarsS.UseVisualStyleBackColor = true;
+            this.Btn_MarsS.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
-            // Rdo_MIA_Separate
+            // Btn_Mib
             // 
-            this.Rdo_MIA_Separate.AutoSize = true;
-            this.Rdo_MIA_Separate.Location = new System.Drawing.Point(35, 60);
-            this.Rdo_MIA_Separate.Name = "Rdo_MIA_Separate";
-            this.Rdo_MIA_Separate.Size = new System.Drawing.Size(136, 20);
-            this.Rdo_MIA_Separate.TabIndex = 35;
-            this.Rdo_MIA_Separate.TabStop = true;
-            this.Rdo_MIA_Separate.Text = "Separate Triggers";
-            this.Rdo_MIA_Separate.UseVisualStyleBackColor = true;
-            this.Rdo_MIA_Separate.CheckedChanged += new System.EventHandler(this.Rdo_MIA_Separate_CheckedChanged);
+            this.Btn_Mib.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Mib.Location = new System.Drawing.Point(42, 110);
+            this.Btn_Mib.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Mib.Name = "Btn_Mib";
+            this.Btn_Mib.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Mib.TabIndex = 77;
+            this.Btn_Mib.Text = "M.I.B";
+            this.Btn_Mib.UseVisualStyleBackColor = true;
+            this.Btn_Mib.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
-            // label42
+            // Btn_Mia
             // 
-            this.label42.AutoSize = true;
-            this.label42.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label42.Location = new System.Drawing.Point(28, 126);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(522, 120);
-            this.label42.TabIndex = 36;
-            this.label42.Text = resources.GetString("label42.Text");
+            this.Btn_Mia.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Mia.Location = new System.Drawing.Point(419, 54);
+            this.Btn_Mia.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Mia.Name = "Btn_Mia";
+            this.Btn_Mia.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Mia.TabIndex = 78;
+            this.Btn_Mia.Text = "Mission Impossible";
+            this.Btn_Mia.UseVisualStyleBackColor = true;
+            this.Btn_Mia.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
-            // groupBox4
+            // Btn_Nerfa
             // 
-            this.groupBox4.Controls.Add(this.Rdo_MIA_Merge);
-            this.groupBox4.Controls.Add(this.Rdo_MIA_Separate);
-            this.groupBox4.Location = new System.Drawing.Point(10, 3);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(552, 100);
-            this.groupBox4.TabIndex = 37;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Triggers configuration :";
+            this.Btn_Nerfa.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Nerfa.Location = new System.Drawing.Point(167, 110);
+            this.Btn_Nerfa.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Nerfa.Name = "Btn_Nerfa";
+            this.Btn_Nerfa.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Nerfa.TabIndex = 79;
+            this.Btn_Nerfa.Text = "Nerf Arcade";
+            this.Btn_Nerfa.UseVisualStyleBackColor = true;
+            this.Btn_Nerfa.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Nha
+            // 
+            this.Btn_Nha.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Nha.Location = new System.Drawing.Point(293, 110);
+            this.Btn_Nha.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Nha.Name = "Btn_Nha";
+            this.Btn_Nha.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Nha.TabIndex = 80;
+            this.Btn_Nha.Text = "Night Hunter";
+            this.Btn_Nha.UseVisualStyleBackColor = true;
+            this.Btn_Nha.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Owr
+            // 
+            this.Btn_Owr.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Owr.Location = new System.Drawing.Point(419, 110);
+            this.Btn_Owr.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Owr.Name = "Btn_Owr";
+            this.Btn_Owr.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Owr.TabIndex = 81;
+            this.Btn_Owr.Text = "Operation Wolf\r\nReturn";
+            this.Btn_Owr.UseVisualStyleBackColor = true;
+            this.Btn_Owr.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_PvZ
+            // 
+            this.Btn_PvZ.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_PvZ.Location = new System.Drawing.Point(41, 166);
+            this.Btn_PvZ.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_PvZ.Name = "Btn_PvZ";
+            this.Btn_PvZ.Size = new System.Drawing.Size(118, 48);
+            this.Btn_PvZ.TabIndex = 82;
+            this.Btn_PvZ.Text = "Plant VS Zombies";
+            this.Btn_PvZ.UseVisualStyleBackColor = true;
+            this.Btn_PvZ.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Rha
+            // 
+            this.Btn_Rha.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Rha.Location = new System.Drawing.Point(293, 166);
+            this.Btn_Rha.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Rha.Name = "Btn_Rha";
+            this.Btn_Rha.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Rha.TabIndex = 83;
+            this.Btn_Rha.Text = "Rabbids Hollywood";
+            this.Btn_Rha.UseVisualStyleBackColor = true;
+            this.Btn_Rha.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Tra
+            // 
+            this.Btn_Tra.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Tra.Location = new System.Drawing.Point(419, 166);
+            this.Btn_Tra.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Tra.Name = "Btn_Tra";
+            this.Btn_Tra.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Tra.TabIndex = 84;
+            this.Btn_Tra.Text = "Tomb Raider Arcade";
+            this.Btn_Tra.UseVisualStyleBackColor = true;
+            this.Btn_Tra.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Pbx
+            // 
+            this.Btn_Pbx.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Pbx.Location = new System.Drawing.Point(167, 166);
+            this.Btn_Pbx.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Pbx.Name = "Btn_Pbx";
+            this.Btn_Pbx.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Pbx.TabIndex = 85;
+            this.Btn_Pbx.Text = "Point Blank X";
+            this.Btn_Pbx.UseVisualStyleBackColor = true;
+            this.Btn_Pbx.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
+            // 
+            // Btn_Wws
+            // 
+            this.Btn_Wws.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Btn_Wws.Location = new System.Drawing.Point(42, 222);
+            this.Btn_Wws.Margin = new System.Windows.Forms.Padding(4);
+            this.Btn_Wws.Name = "Btn_Wws";
+            this.Btn_Wws.Size = new System.Drawing.Size(118, 48);
+            this.Btn_Wws.TabIndex = 86;
+            this.Btn_Wws.Text = "Wild West Shootout";
+            this.Btn_Wws.UseVisualStyleBackColor = true;
+            this.Btn_Wws.Click += new System.EventHandler(this.Btn_InstallUnityPlugin_Click);
             // 
             // Wnd_DemulShooterGui
             // 
@@ -2917,15 +2865,18 @@
             this.Tab_M2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.Tab_MissionImpossible.ResumeLayout(false);
+            this.Tab_MissionImpossible.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.Tab_OpGhost.ResumeLayout(false);
             this.Tab_OpGhost.PerformLayout();
             this.groupBox18.ResumeLayout(false);
             this.groupBox18.PerformLayout();
             this.Gbox_OpGhost_Buttons.ResumeLayout(false);
             this.Gbox_OpGhost_Buttons.PerformLayout();
-            this.Tab_RabbidsHollywod.ResumeLayout(false);
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
+            this.Tab_UnityPlugins.ResumeLayout(false);
+            this.Tab_UnityPlugins.PerformLayout();
             this.Tab_Raccoon.ResumeLayout(false);
             this.groupBox21.ResumeLayout(false);
             this.groupBox21.PerformLayout();
@@ -2935,20 +2886,11 @@
             this.groupBox12.PerformLayout();
             this.Tab_SHA.ResumeLayout(false);
             this.Tab_SHA.PerformLayout();
-            this.Tab_WildWest.ResumeLayout(false);
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.Tab_Outputs.ResumeLayout(false);
             this.groupBox19.ResumeLayout(false);
             this.groupBox19.PerformLayout();
             this.Grp_Outputs.ResumeLayout(false);
             this.Grp_Outputs.PerformLayout();
-            this.Tab_MissionImpossible.ResumeLayout(false);
-            this.Tab_MissionImpossible.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3058,27 +3000,8 @@
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TextBox Txt_OutputRecoilOff;
-        private System.Windows.Forms.TabPage Tab_WildWest;
-        private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.Button Btn_Wws_SaveKeys;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.Label label32;
-        private System.Windows.Forms.TextBox Txt_Wws_P2Coin;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.TextBox Txt_Wws_P1Coin;
-        private System.Windows.Forms.TextBox Txt_Wws_Test;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Button Btn_Wws_GamePath;
-        private System.Windows.Forms.Button Btn_Wws_InstallUnity;
-        private System.Windows.Forms.TextBox Txt_Wws_GamePath;
-        private System.Windows.Forms.TabPage Tab_RabbidsHollywod;
-        private System.Windows.Forms.GroupBox groupBox11;
+        private System.Windows.Forms.TabPage Tab_UnityPlugins;
         private System.Windows.Forms.Label label36;
-        private System.Windows.Forms.Button Btn_Rha_GamePath;
-        private System.Windows.Forms.Button Btn_Rha_InstallUnity;
-        private System.Windows.Forms.TextBox Txt_Rha_GamePath;
         private System.Windows.Forms.TabPage Tab_RPCS3;
         private System.Windows.Forms.GroupBox groupBox13;
         private System.Windows.Forms.Button Btn_Rpcs3_RazingStorm;
@@ -3178,6 +3101,19 @@
         private System.Windows.Forms.RadioButton Rdo_MIA_Separate;
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Button Btn_MisImp_Save;
+        private System.Windows.Forms.Button Btn_Dcop;
+        private System.Windows.Forms.Button Btn_Wws;
+        private System.Windows.Forms.Button Btn_Pbx;
+        private System.Windows.Forms.Button Btn_Tra;
+        private System.Windows.Forms.Button Btn_Rha;
+        private System.Windows.Forms.Button Btn_PvZ;
+        private System.Windows.Forms.Button Btn_Owr;
+        private System.Windows.Forms.Button Btn_Nha;
+        private System.Windows.Forms.Button Btn_Nerfa;
+        private System.Windows.Forms.Button Btn_Mia;
+        private System.Windows.Forms.Button Btn_Mib;
+        private System.Windows.Forms.Button Btn_MarsS;
+        private System.Windows.Forms.Button Btn_Drk;
     }
 }
 

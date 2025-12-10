@@ -192,10 +192,10 @@ namespace DsCore.MameOutput
                 Logger.WriteLog("Wm_OutputHelper.SendValues() => Sending Initial values");
 
                 //For MameHooker compatibility : Sending orientation once
-                Outputs.Insert(0, new GameOutput(OutputDesciption.MameOrientation, OutputId.MameOrientation));
+                Outputs.Insert(0, new GameOutput(OutputId.MameOrientation));
                 Outputs[0].OutputValue = 0;
 
-                Outputs.Insert(0, new GameOutput(OutputDesciption.MamePause, OutputId.MamePause));
+                Outputs.Insert(0, new GameOutput(OutputId.MamePause));
                 Outputs[0].OutputValue = 0;
 
                 //Cloning the output list without references to the GameOutput object

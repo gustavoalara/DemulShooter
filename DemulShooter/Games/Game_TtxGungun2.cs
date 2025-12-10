@@ -230,14 +230,14 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun, OutputId.P1_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGun, OutputId.P2_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpLBtn, OutputId.LmpLBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpMBtn, OutputId.LmpMBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpRBtn, OutputId.LmpRBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.LmpLBtn));
+            _Outputs.Add(new GameOutput(OutputId.LmpMBtn));
+            _Outputs.Add(new GameOutput(OutputId.LmpRBtn));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

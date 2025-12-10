@@ -1,13 +1,14 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mShowGamePointController
     {
         /// <summary>
         /// Displaying cursors on Level Select screen
+        /// Looks like X must be in range [0-1920] whatever the resolution is
+        /// And Y in range [0-Ymax], Ymax depending on the original screen ratio (based on 1920x1080)
         /// </summary>
         [HarmonyPatch(typeof(ShowGamePointController), "Update")]
         class Update
@@ -15,22 +16,15 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
             static bool Prefix(ShowGamePointController __instance)
             {
                 for (int index = 0; index < __instance.gunPoint.Length; ++index)
-                { 
-                    if (GameData.GetPlayerData(index).CanShoot())
+                {                   
+                    if (GameData.GetPlayerData(index).CanShoot() && DemulShooter_Plugin.CrossHairVisibility)
                     {
-                        int r = Demulshooter_Plugin.WWS_Mmf.ReadAll();
-                        if (r == 0)
-                        {
-                            Vector3 vAxis = new Vector3();
-                            vAxis.x = BitConverter.ToSingle(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_X + (16 * index));
-                            vAxis.y = BitConverter.ToSingle(Demulshooter_Plugin.WWS_Mmf.Payload, WWS_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_Y + (16 * index));
-                            __instance.gunPoint[index].mRectTF.anchoredPosition = vAxis;
-                        }
-                        else
-                        {
-                            UnityEngine.Debug.LogError("mShowGamePointController.Update() => DemulShooter MMF read error : " + r.ToString());
-                            __instance.gunPoint[index].transform.localPosition = new Vector3(-1000f, -1000f);
-                        }
+                        Vector2 v = DemulShooter_Plugin.PluginControllers[index].GetAimingPosition();
+                        
+                        float fRatio = (float)Screen.width / Screen.height;
+                        v.x = v.x / (float)Screen.width * 1920.0f;
+                        v.y = v.y / (float)Screen.height * 1920.0f / fRatio;
+                        __instance.gunPoint[index].mRectTF.anchoredPosition = v;
                     }
                     else
                         __instance.gunPoint[index].transform.localPosition = new Vector3(-1000f, -1000f);

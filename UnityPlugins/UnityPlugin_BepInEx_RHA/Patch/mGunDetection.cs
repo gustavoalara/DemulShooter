@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mGunDetection
     {
@@ -13,11 +13,23 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         [HarmonyPatch(typeof(GunDetection), "ExternCall")]
         class ExternCall
         {
-            static bool Prefix(string ao_Command, string ao_Arguments, string[] ao_Outputs = null)
+            static bool Prefix(ref bool __result, string ao_Command, string ao_Arguments, string[] ao_Outputs = null)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mGunDetection.ExternCall() : ao_Command=" + ao_Command + ", ao_Arguments=" + ao_Arguments + ", ao_Outputs=" + ao_Outputs);
+                //DemulShooter_Plugin.MyLogger.LogMessage("mGunDetection.ExternCall() : ao_Command=" + ao_Command + ", ao_Arguments=" + ao_Arguments + ", ao_Outputs=" + ao_Outputs);
+                __result = true;
                 return false;
             }
         }
+
+        [HarmonyPatch(typeof(GunDetection), "IsBaseFound")]
+        class IsBaseFound
+        {
+            static bool Prefix(ref bool __result)
+            {
+                __result = true;
+                return false;
+            }
+        }
+                
     }
 }

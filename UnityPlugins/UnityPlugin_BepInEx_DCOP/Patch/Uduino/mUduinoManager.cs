@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Uduino;
 
-namespace DCop_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mUduinoManager
     {
@@ -13,12 +13,13 @@ namespace DCop_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(UduinoDevice target, int pin, int value, string typeOfPin, string bundle=null)
             {
+                //DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => pin=" + pin + ", value=" + value);
                 /*if (bundle != null)                    
-                    Dcop_Plugin.MyLogger.LogMessage("mUduinoManager.arduinoWrite() => target=" + target.ToString() + ", pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString() + ", bundle=" + bundle.ToString());
+                    DemulShooter_Plugin.MyLogger.LogMessage("UduinoManager.arduinoWrite() => target=" + target.ToString() + ", pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString() + ", bundle=" + bundle.ToString());
                 else      
-                    Dcop_Plugin.MyLogger.LogMessage("mUduinoManager.arduinoWrite() => target=" + target.ToString() + ", pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString() + ", bundle=null");
+                    DemulShooter_Plugin.MyLogger.LogMessage("UduinoManager.arduinoWrite() => target=" + target.ToString() + ", pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString() + ", bundle=null");
                 */
-                //Dcop_Plugin.MyLogger.LogMessage("mUduinoManager.arduinoWrite() => pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString());
+                //DemulShooter_Plugin.MyLogger.LogMessage("UduinoManager.arduinoWrite() => pin=" + pin.ToString() + ", value=" + value.ToString() + ", typeOfPin=" + typeOfPin.ToString());
 
                 if (value != 0)
                 {
@@ -44,13 +45,13 @@ namespace DCop_BepInEx_DemulShooter_Plugin
                         DemulShooter_Plugin.OutputData.GunLight = 1;
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.DirectHit_Light2)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => DirectHit_Light2 ON");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => DirectHit_Light2 ON");
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.EnemyGun_Solenoid)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => Enemy Gun Solenoid ON");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => Enemy Gun Solenoid ON");
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.EnemyGun2_Solenoid)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => Enemy Gun Solenoid 2 ON");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => Enemy Gun Solenoid 2 ON");
                 }
                 else
                 {
@@ -76,13 +77,13 @@ namespace DCop_BepInEx_DemulShooter_Plugin
                         DemulShooter_Plugin.OutputData.GunLight = 0;
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.DirectHit_Light2)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => DirectHit_Light2 OFF");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => DirectHit_Light2 OFF");
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.EnemyGun_Solenoid)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => Enemy Gun Solenoid OFF");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => Enemy Gun Solenoid OFF");
 
                     else if (pin == (int)DemulShooter_Plugin.ArduinoPin.EnemyGun2_Solenoid)
-                        DemulShooter_Plugin.MyLogger.LogWarning("mUduinoManager.arduinoWrite() => Enemy Gun Solenoid 2 OFF");
+                        DemulShooter_Plugin.MyLogger.LogWarning("UduinoManager.arduinoWrite() => Enemy Gun Solenoid 2 OFF");
                 }
 
                 return true;

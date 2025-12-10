@@ -1,6 +1,9 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using HarmonyLib;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mPlayerManager
     {
@@ -19,6 +22,30 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                 }
 
                 return true;
+            }
+        }
+
+        /// <summary>
+        /// This one uses 2 keys [G] and [K] for god mode and bots
+        /// </summary>
+        [HarmonyPatch(typeof(PlayerManager), "Update")]
+        class Update
+        {
+            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Call && codes[i].operand.ToString().Contains("GetKeyDown"))
+                    {
+                        if (codes[i - 1].opcode == OpCodes.Ldc_I4_S && codes[i - 1].operand.ToString().Equals("103"))
+                            codes[i - 1].operand = 0;
+                        if (codes[i - 1].opcode == OpCodes.Ldc_I4_S && codes[i - 1].operand.ToString().Equals("107"))
+                            codes[i - 1].operand = 0;
+                    }
+                }
+
+                return codes;
             }
         }
     }

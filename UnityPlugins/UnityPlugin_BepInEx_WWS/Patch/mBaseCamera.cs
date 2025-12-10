@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     /// <summary>
     /// This class is using calls from a DLL not present in the game release, causing multiple ERROR
@@ -13,7 +13,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.CaptureThreadProc()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.CaptureThreadProc()");
                 return false;
             }
         }
@@ -23,7 +23,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.Close()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.Close()");
                 return false;
             }
         }
@@ -33,7 +33,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref bool __result)
             {
-                UnityEngine.Debug.Log("mBaseCamera.GetFrameData()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.GetFrameData()");
                 __result = true;
                 return false;
             }
@@ -44,7 +44,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.GetImageResolution()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.GetImageResolution()");
                 return false;
             }
         }
@@ -54,7 +54,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref bool __result)
             {
-                UnityEngine.Debug.Log("mBaseCamera.InitCamera()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.InitCamera()");
                 __result = true;
                 return false;
             }
@@ -65,7 +65,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.LoadDefaultConfig()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.LoadDefaultConfig()");
                 return false;
             }
         }
@@ -75,7 +75,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.Pause()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.Pause()");
                 return false;
             }
 
@@ -85,7 +85,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref bool __result)
             {
-                UnityEngine.Debug.Log("mBaseCamera.Play()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.Play()");
                 __result = true;
                 return false;
             }
@@ -96,7 +96,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.SetExposureState()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.SetExposureState()");
                 return false;
             }
         }
@@ -106,7 +106,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref MVSDK.CameraSdkStatus __result)
             {
-                UnityEngine.Debug.Log("mBaseCamera.SetImageResolution()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.SetImageResolution()");
                 __result = MVSDK.CameraSdkStatus.CAMERA_STATUS_SUCCESS;
                 return false;
             }
@@ -117,7 +117,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.SetMonochrome()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.SetMonochrome()");
                 return false;
             }
         }
@@ -127,7 +127,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mBaseCamera.UpdateExposure()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.UpdateExposure()");
                 return false;
             }
         }
@@ -138,7 +138,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(float value, float ___m_fAnalogGain)
             {
-                UnityEngine.Debug.Log("mBaseCamera.set_AnalogGain()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mBaseCamera.set_AnalogGain()");
                 ___m_fAnalogGain = value;
                 return false;
             }

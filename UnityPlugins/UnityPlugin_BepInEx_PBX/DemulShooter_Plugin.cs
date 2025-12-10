@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -8,35 +9,39 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
-using System.IO;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace PointBlankX_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
-        public const String pluginGuid = "argonlefou.demulshooter.pbx";
+        public const String pluginGuid = "argonlefou.demulshooter.pointblankx";
         public const String pluginName = "PointBlankX_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "5.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
         public const String pluginConfigFile = "PointBlankX_BepInEx_DemulShooter_Plugin.ini";
+
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 2;
+
         public static readonly string PLAYER_1_NAME = "P1";
         public static readonly string PLAYER_2_NAME = "P2";
 
-        //Custom Outputs data
-        public static byte P1_LastLife = 0;
-        public static ushort P1_LastAmmo = 0;
-        public static ushort P2_LastAmmo = 0;
-
         //custom Input Data
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
         public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        public static Vector2 P1_Axis = new Vector2(0,0);
-        public static Vector2 P2_Axis = new Vector2(0,0);
-        public static byte P1_Trigger_ButtonState = 0;
-        public static byte P2_Trigger_ButtonState = 0;
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+        public static PluginControllerButton Service_Key = new PluginControllerButton((int) KeyCode.Alpha9);
+        public static PluginControllerButton Test_Key = new PluginControllerButton((int) KeyCode.Alpha0);
+        public static PluginControllerButton Coin_Key = new PluginControllerButton((int) KeyCode.Alpha5);
+        public static PluginControllerButton MenuUp_Key = new PluginControllerButton((int) KeyCode.UpArrow);
+        public static PluginControllerButton MenuDown_Key = new PluginControllerButton((int) KeyCode.DownArrow);
+        public static PluginControllerButton MenuSelect_Key = new PluginControllerButton((int) KeyCode.Return);
 
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
@@ -50,17 +55,16 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
         private TcpOutputData _OutputDataBefore;
         private TcpInputData _InputData;
 
-        public static readonly KeyCode P1_Start_KeyCode = KeyCode.Alpha1;
-        public static readonly KeyCode P2_Start_KeyCode = KeyCode.Alpha2;
-        public static readonly KeyCode Credits_KeyCode = KeyCode.Alpha5;
-
         public static bool CrossHairVisibility = true;
 
         //Custom resolution
         private bool _ScreenChanged = false;
-        private int _ScreenWidth = 1920;
-        private int _ScreenHeight = 1080;
-        private bool _Fullscreen = true;
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+        public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
+
+        FieldInfo BNUsioController_isTestOn = null;
 
         public void Awake()
         {
@@ -70,58 +74,118 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _OutputDataBefore = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
+
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i] = new PluginController(i);
+            }
 
             // Start TcpServer	
             _TcpListenerThread = new Thread(new ThreadStart(TcpClientThreadLoop));
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
-            harmony.PatchAll();
-        }
-
-        public void Start()
-        {
-            MyLogger.LogMessage("PointBlankX_Plugin.Start() => Removing mouse cursor");
-            Cursor.visible = false;
-            
-            MyLogger.LogMessage("PointBlankX_Plugin.Start() => Loading custom config : " + @"./BepInEx/plugins/" + pluginConfigFile);
-            INIFile Plugin_IniFile = new INIFile(@"./BepInEx/plugins/" + pluginConfigFile);
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
 
             if (File.Exists(Plugin_IniFile.FInfo.FullName))
             {
                 try
                 {
-                    _ScreenWidth = Int32.Parse(Plugin_IniFile.IniReadValue("Video", "WIDTH"));
-                    _ScreenHeight = Int32.Parse(Plugin_IniFile.IniReadValue("Video", "HEIGHT"));
-                    if (Plugin_IniFile.IniReadValue("Video", "FULLSCREEN").Equals("0"))
-                        _Fullscreen = false;
-                    else
-                        _Fullscreen = true;
+                    Plugin_IniFile.IniReadIntValue("Video", "WIDTH", ref ScreenWidth);
+                    Plugin_IniFile.IniReadIntValue("Video", "HEIGHT", ref ScreenHeight);
 
-                    MyLogger.LogMessage("PointBlankX_Plugin.Start() => changing resolution to " + _ScreenWidth + "x" + _ScreenHeight + ", fullscren=" + _Fullscreen );                    
+                    Plugin_IniFile.IniReadBoolValue("Video", "FULLSCREEN", ref Fullscreen);
+                    Plugin_IniFile.IniReadBoolValue("Video", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Service_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "SERVICE"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
+                    Coin_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "COIN"));
+                    MenuUp_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "MENU_UP"));
+                    MenuDown_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "MENU_DOWN"));
+                    MenuSelect_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "MENU_SELECT"));
                 }
                 catch (Exception Ex)
                 {
-                    MyLogger.LogError("PointBlankX_Plugin.Start() => Error reading config file : " + Plugin_IniFile.FInfo.FullName);
+                    MyLogger.LogError(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Error reading config file : " + Plugin_IniFile.FInfo.FullName);
                     MyLogger.LogError(Ex.Message.ToString());
                 }
             }
             else
             {
-                MyLogger.LogWarning("PointBlankX_Plugin.Start() => " + Plugin_IniFile.FInfo.FullName + " not found");
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
             }
 
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
+            //Getting a reference to the Test bool value to set it later
+            foreach(FieldInfo fi in typeof(BNUsioController).GetFields(BindingFlags.NonPublic | BindingFlags.Static))
+            {
+                if (fi.Name.Equals("isTestOn"))
+                {
+                    BNUsioController_isTestOn = fi;
+                    break;
+                }
+            }
+
+            harmony.PatchAll();
+        }
+
+        public void Start()
+        {
+            Cursor.visible = false;
         }
 
         public void Update()
         {
-            //Changing the resolution in the Start() event may be too soon, so checking in the update() loop and make it happen only once
-            if (!_ScreenChanged)
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            Coin_Key.SetButton(Input.GetKey((KeyCode)Coin_Key.KeyCode));
+            MenuUp_Key.SetButton(Input.GetKey((KeyCode)MenuUp_Key.KeyCode));
+            MenuDown_Key.SetButton(Input.GetKey((KeyCode)MenuDown_Key.KeyCode));
+            MenuSelect_Key.SetButton(Input.GetKey((KeyCode)MenuSelect_Key.KeyCode));
+
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
-                Screen.SetResolution(_ScreenWidth, _ScreenHeight, _Fullscreen);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, Input.GetMouseButton(1) ? (byte)1 : (byte)0);
+                }
+            }
+
+            //Quit
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
+
+            //Entering TEST MODE
+            //Bool can not beaccessed in Class because it's private
+            if (Test_Key.GetButtonDown())
+            {
+                bool b = (bool)BNUsioController_isTestOn.GetValue(null);
+                BNUsioController_isTestOn.SetValue(null, !b);
+            }
+
+            //Changing the resolution in the Start() event may be too soon, so checking in the update() loop and make it happen only once
+            if ( ForceResolution && !_ScreenChanged)
+            {
+                Screen.SetResolution(ScreenWidth, ScreenHeight, Fullscreen);
                 MyLogger.LogWarning("PointBlankX_Plugin.Update() => Changed Res");
 
                 _ScreenChanged = true;
@@ -134,25 +198,19 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
             OutputData.Credits = (byte)iCredits;
 
             //Updating Life and Bullets            
-            OutputData.P1_Life = 0;
-            OutputData.P2_Life = 0;
-            OutputData.P1_Ammo = 0;
-            OutputData.P1_Ammo = 0;
-            Player p = Player.getPlayer(PLAYER_1_NAME);
-            if (p != null && p.playerData.state == PlayerData.PlayerState.Active)
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
-                OutputData.P1_Life = (byte)p.getHealth();
-                int Ammo = p.getAmmo();
-                if (Ammo > 0)
-                    OutputData.P1_Ammo = (ushort)Ammo;
-            }
-            p = Player.getPlayer(PLAYER_2_NAME);
-            if (p != null && p.playerData.state == PlayerData.PlayerState.Active)
-            {
-                OutputData.P2_Life = (byte)p.getHealth();
-                int Ammo = p.getAmmo();
-                if (Ammo > 0)
-                    OutputData.P2_Ammo = (ushort)Ammo;
+                OutputData.Life[i] = 0;
+                OutputData.Ammo[i] = 0;
+
+                Player p = Player.getPlayer("P" + (i + 1).ToString());
+                if (p != null && p.playerData.state == PlayerData.PlayerState.Active)
+                {
+                    OutputData.Life[i] = (byte)p.getHealth();
+                    int Ammo = p.getAmmo();
+                    if (Ammo > 0)
+                        OutputData.Ammo[i] = Ammo;
+                }                
             }
 
             //Checking for a change in output to send or not
@@ -165,23 +223,15 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
                     SendOutputs();
                     break;
                 }
-            }              
+            }
 
             //Save current state
             _OutputDataBefore.Update(bOutputData);
-
-
-            //Debug Keys
-            /*if (Input.GetKeyDown(KeyCode.K))
-            {
-                MyLogger.LogWarning("PointBlankX_Plugin.Update() =>  isCrosshairVisible : " + Singleton<GlobalData>.shared().isCrosshairVisible);
-                Singleton<GlobalData>.shared().isCrosshairVisible = true;
-            }*/
         }
 
         public void OnDestroy()
         {
-            Logger.LogMessage("PointBlankX_Plugin.OnDestroy() => Closing TCP Server....");
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "()");
             _TcpListener.Server.Close();
         }
 
@@ -202,14 +252,14 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
                 // Create listener on localhost port 8052. 			
                 _TcpListener = new TcpListener(IPAddress.Parse("127.0.0.1"), _TcpPort);
                 _TcpListener.Start();
-                MyLogger.LogMessage("PointBlankX_Plugin.TcpClientThreadLoop() => TCP Server is listening on Port " + _TcpPort);
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): TCP Server is listening on Port " + _TcpPort);
 
                 Byte[] bytes = new Byte[1024];
                 while (true)
                 {
                     using (_TcpClient = _TcpListener.AcceptTcpClient())
                     {
-                        MyLogger.LogMessage("PointBlankX_Plugin.TcpClientThreadLoop() => TCP Client connected !");
+                        MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): TCP Client connected !");
                         using (_TcpStream = _TcpClient.GetStream())
                         {
                             //Send outputs at connection, if DemulShooter connects during game, between events
@@ -226,16 +276,19 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
                                     byte[] InputBuffer = new byte[Length];
                                     Array.Copy(bytes, 0, InputBuffer, 0, Length);
                                     _InputData.Update(InputBuffer);
-                                    MyLogger.LogMessage("PointBlankX_Plugin.TcpClientThreadLoop() => client message received as: " + _InputData.ToString());
+                                    //- Debug ONLY
+                                    //MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): client message received as: " + _InputData.ToString());
+                                    //- Debug ONLY
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-                                        P1_Axis = new Vector2(_InputData.P1_X, _InputData.P1_Y);
-                                        P1_Trigger_ButtonState = _InputData.P1_Trigger;
-                                        P2_Axis = new Vector2(_InputData.P2_X, _InputData.P2_Y);
-                                        P2_Trigger_ButtonState = _InputData.P2_Trigger;
-                                        CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
-                                        EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
+                                    {
+                                        PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
+                                    }
+                                    CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
+                                    EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
                                     //}
                                 }
                                 catch
@@ -250,7 +303,7 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
             }
             catch (SocketException socketException)
             {
-                MyLogger.LogError("PointBlankX_Plugin.TcpClientThreadLoop() => SocketException " + socketException.ToString());
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): SocketException " + socketException.ToString());
             }
         }
 
@@ -273,20 +326,32 @@ namespace PointBlankX_BepInEx_DemulShooter_Plugin
                 {
                     TcpPacket p = new TcpPacket(OutputData.ToByteArray(), TcpPacket.PacketHeader.Outputs);
                     byte[] Buffer = p.GetFullPacket();
-                    //Resetting event flags for next packets
-                    MyLogger.LogMessage("PointBlankX_Plugin.SendOutputs() => Sending data : " + p.ToString());
+                    //- Debug ONLY
+                    //MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():  Sending data : " + p.ToString());
+                    //- Debug ONLY
                     //lock (MutexLocker_Outputs)
                     //{
-                        OutputData.P1_Recoil = 0;
-                        OutputData.P2_Recoil = 0;
+                    //Resetting event flags for next packets                    
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+                        OutputData.Recoil[i] = 0;
+                    }
                     //}
                     _TcpStream.Write(Buffer, 0, Buffer.Length);
                 }
             }
             catch (Exception Ex)
             {
-                MyLogger.LogError("PointBlankX_Plugin.SendOutputs() => Socket exception: " + Ex);
+                MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

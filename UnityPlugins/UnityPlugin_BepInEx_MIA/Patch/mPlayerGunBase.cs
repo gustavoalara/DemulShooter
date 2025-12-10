@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mPlayerGunBase
     {
@@ -32,17 +32,17 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
                 if (__instance.Pid == PID.PID_ONE)
                 {
                     if (__instance.PGid == PlayerGunID.PGID_P1GL)
-                        DemulShooter_Plugin.OutputData.AmmoGunL[0] = (uint)__instance.Magazine.BulletNum;
+                        DemulShooter_Plugin.OutputData.AmmoGunL[0] = __instance.Magazine.BulletNum;
                     else if (__instance.PGid == PlayerGunID.PGID_P1GR)
-                        DemulShooter_Plugin.OutputData.AmmoGunR[0] = (uint)__instance.Magazine.BulletNum;
+                        DemulShooter_Plugin.OutputData.AmmoGunR[0] = __instance.Magazine.BulletNum;
 
                 }
                 else if (__instance.Pid == PID.PID_TWO)
                 {
                     if (__instance.PGid == PlayerGunID.PGID_P2GL)
-                        DemulShooter_Plugin.OutputData.AmmoGunL[1] = (uint)__instance.Magazine.BulletNum;
+                        DemulShooter_Plugin.OutputData.AmmoGunL[1] = __instance.Magazine.BulletNum;
                     else if (__instance.PGid == PlayerGunID.PGID_P2GR)
-                        DemulShooter_Plugin.OutputData.AmmoGunR[1] = (uint)__instance.Magazine.BulletNum;
+                        DemulShooter_Plugin.OutputData.AmmoGunR[1] = __instance.Magazine.BulletNum;
                 }
 
                 return true;
@@ -58,7 +58,7 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
         {
             static bool Prefix(PlayerGunBase __instance, ref UnityEngine.Vector2 pos)
             {
-                if (DemulShooter_Plugin.ChangeResolution)
+                if (DemulShooter_Plugin.ForceResolution)
                 {
                     pos.x = pos.x * (DemulShooter_Plugin.ORIGINAL_WIDTH / (float)DemulShooter_Plugin.ScreenWidth);
                     pos.y = pos.y * (DemulShooter_Plugin.ORIGINAL_WIDTH / (float)DemulShooter_Plugin.ScreenWidth);

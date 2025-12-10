@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mArcadeGamePlayManager
     {
@@ -9,7 +9,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(WorldManager.WorldIndex i_World)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mArcadeGameplayManager.LoadDemoMode()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mArcadeGameplayManager.LoadDemoMode()");
                 DemulShooter_Plugin.IsDemoMode = true;
                 return true;
             }
@@ -20,7 +20,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mArcadeGameplayManager.OnDemoStateExit()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("mArcadeGameplayManager.OnDemoStateExit()");
                 DemulShooter_Plugin.IsDemoMode = false;
                 return true;
             }

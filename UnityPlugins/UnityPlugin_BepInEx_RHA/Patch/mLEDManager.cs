@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mLEDManager
     {

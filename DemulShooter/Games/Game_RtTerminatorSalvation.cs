@@ -175,31 +175,31 @@ namespace DemulShooter
         {
             //Gun motor : Is activated permanently while trigger is pressed
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpHolder, OutputId.P1_LmpHolder));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun_B, OutputId.P1_LmpGun_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGunGrenadeBtn, OutputId.P1_LmpGunGrenadeBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun, OutputId.P1_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpHolder, OutputId.P2_LmpHolder));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGun_B, OutputId.P2_LmpGun_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGunGrenadeBtn, OutputId.P2_LmpGunGrenadeBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGun, OutputId.P2_LmpGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpBillboard, OutputId.LmpBillboard));  
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpHolder));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun_B));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGunGrenadeBtn));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpHolder));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGun_B));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGunGrenadeBtn));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGun));
+            _Outputs.Add(new GameOutput(OutputId.LmpBillboard));  
             //In Teknoparrot, Guns hardware is not emulated, so the game is not running original gun recoil procedures 
-            /*_Outputs.Add(new GameOutput(OutputDesciption.P1_GunMotor, OutputId.P1_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_GunMotor, OutputId.P2_GunMotor));*/
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Ammo, OutputId.P1_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Ammo, OutputId.P2_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Clip, OutputId.P1_Clip));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Clip, OutputId.P2_Clip));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Life, OutputId.P1_Life));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Life, OutputId.P2_Life));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            //_Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            /*_Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));*/
+            _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P2_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P1_Clip));
+            _Outputs.Add(new GameOutput(OutputId.P2_Clip));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Life));
+            _Outputs.Add(new GameOutput(OutputId.P2_Life));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            //_Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

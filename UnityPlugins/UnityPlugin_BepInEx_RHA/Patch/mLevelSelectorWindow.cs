@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mLevelSelectorWindow
     {
@@ -10,7 +10,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(Vector3 i_Pos, ID i_Player)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mLevelSelectorWindow.PlayerPressTrigger() : i_Player=" + i_Player.ToString() + ", v=" + i_Pos.ToString());  
+                //DemulShooter_Plugin.MyLogger.LogMessage("mLevelSelectorWindow.PlayerPressTrigger() : i_Player=" + i_Player.ToString() + ", v=" + i_Pos.ToString());  
                 return true;
             }
         }
@@ -20,7 +20,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mLevelSelectorWindow.InitPanels()");  
+                //DemulShooter_Plugin.MyLogger.LogMessage("mLevelSelectorWindow.InitPanels()");  
                 return true;
             }
         }

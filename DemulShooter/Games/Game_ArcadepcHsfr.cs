@@ -255,10 +255,9 @@ namespace DemulShooter
             SetHack_GunShakeOn();
             SetHack_GunShakeOff();
             SetHack_Damage();
-            SetHack_MistState();
-            
+            SetHack_MistState();            
 
-            Logger.WriteLog("Inputs Memory Hack complete !");
+            Logger.WriteLog("Outputs Memory Hack complete !");
             Logger.WriteLog("-");
         }
 
@@ -297,7 +296,6 @@ namespace DemulShooter
             CaveMemory.Write_StrBytes("8B 40 08");
             //push eax
             CaveMemory.Write_StrBytes("50");
-
             //mov esi,[ebp+0C]
             CaveMemory.Write_StrBytes("8B 75 0C");
             //shl esi,02
@@ -329,23 +327,23 @@ namespace DemulShooter
             CaveMemory.Write_StrBytes("8B 40 08");
             //push eax
             CaveMemory.Write_StrBytes("50");
-            //mov esi,[ebp+0C]
-            CaveMemory.Write_StrBytes("8B 75 0C");
-            //shl esi,02
-            CaveMemory.Write_StrBytes("C1 E6 02");
-            //add esi,[ebp+10]
-            CaveMemory.Write_StrBytes("03 75 10");
-            //add esi,_Light_Array_CaveAddress
-            CaveMemory.Write_StrBytes("81 C6");
+            //mov edi,[ebp+0C]
+            CaveMemory.Write_StrBytes("8B 7D 0C");
+            //shl edi,02
+            CaveMemory.Write_StrBytes("C1 E7 02");
+            //add edi,[ebp+10]
+            CaveMemory.Write_StrBytes("03 7D 10");
+            //add edi,_Light_Array_CaveAddress
+            CaveMemory.Write_StrBytes("81 C7");
             CaveMemory.Write_Bytes(BitConverter.GetBytes(_Light_Array_CaveAddress));
             //xor eax, eax
             CaveMemory.Write_StrBytes("31 C0");
-            //mov [esi],al
-            CaveMemory.Write_StrBytes("88 06");
+            //mov [edi],al
+            CaveMemory.Write_StrBytes("88 07");
             //pop eax
             CaveMemory.Write_StrBytes("58");
-            //mov esi,[ebp+10]
-            CaveMemory.Write_StrBytes("8B 75 10");
+            //mov edi,[ebp+10]
+            CaveMemory.Write_StrBytes("8B 7D 10");
 
             //Inject it
             CaveMemory.InjectToOffset(_UafControlManager_CloseLight_InjectionStruct, "UAF_ControlManager.CloseLight()");
@@ -540,39 +538,39 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();           
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_WaterFire, OutputId.P1_WaterFire));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_WaterFire, OutputId.P2_WaterFire));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_WaterFire, OutputId.P3_WaterFire));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_WaterFire, OutputId.P4_WaterFire));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_BigGun, OutputId.P1_BigGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_BigGun, OutputId.P2_BigGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_BigGun, OutputId.P3_BigGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_BigGun, OutputId.P4_BigGun));
-            _Outputs.Add(new GameOutput(OutputDesciption.SmokeSwitch, OutputId.SmokeSwitch));
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart, 100));
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart, 100));
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P3_LmpStart, OutputId.P3_LmpStart, 100));
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P4_LmpStart, OutputId.P4_LmpStart, 100));
-            _Outputs.Add(new BlinkGameOutput(OutputDesciption.P1_LmpGun, OutputId.P1_LmpGun, 100));
-            _Outputs.Add(new BlinkGameOutput(OutputDesciption.P2_LmpGun, OutputId.P2_LmpGun, 100));
-            _Outputs.Add(new BlinkGameOutput(OutputDesciption.P3_LmpGun, OutputId.P3_LmpGun, 100));
-            _Outputs.Add(new BlinkGameOutput(OutputDesciption.P4_LmpGun, OutputId.P4_LmpGun, 100));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_ChairShake, OutputId.P1_ChairShake));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_ChairShake, OutputId.P2_ChairShake));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_ChairShake, OutputId.P3_ChairShake));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_ChairShake, OutputId.P4_ChairShake));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_GunMotor, OutputId.P1_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_GunMotor, OutputId.P2_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_GunMotor, OutputId.P3_GunMotor));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_GunMotor, OutputId.P4_GunMotor));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P3_Damaged, OutputId.P3_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P4_Damaged, OutputId.P4_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Credits, OutputId.P1_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Credits, OutputId.P2_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_Credits, OutputId.P3_Credits));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_Credits, OutputId.P4_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_WaterFire));
+            _Outputs.Add(new GameOutput(OutputId.P2_WaterFire));
+            _Outputs.Add(new GameOutput(OutputId.P3_WaterFire));
+            _Outputs.Add(new GameOutput(OutputId.P4_WaterFire));
+            _Outputs.Add(new GameOutput(OutputId.P1_BigGun));
+            _Outputs.Add(new GameOutput(OutputId.P2_BigGun));
+            _Outputs.Add(new GameOutput(OutputId.P3_BigGun));
+            _Outputs.Add(new GameOutput(OutputId.P4_BigGun));
+            _Outputs.Add(new GameOutput(OutputId.SmokeSwitch));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P1_LmpStart, 100));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P2_LmpStart, 100));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P3_LmpStart, 100));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P4_LmpStart, 100));
+            _Outputs.Add(new BlinkGameOutput(OutputId.P1_LmpGun, 100));
+            _Outputs.Add(new BlinkGameOutput(OutputId.P2_LmpGun, 100));
+            _Outputs.Add(new BlinkGameOutput(OutputId.P3_LmpGun, 100));
+            _Outputs.Add(new BlinkGameOutput(OutputId.P4_LmpGun, 100));
+            _Outputs.Add(new GameOutput(OutputId.P1_ChairShake));
+            _Outputs.Add(new GameOutput(OutputId.P2_ChairShake));
+            _Outputs.Add(new GameOutput(OutputId.P3_ChairShake));
+            _Outputs.Add(new GameOutput(OutputId.P4_ChairShake));
+            _Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P3_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P4_GunMotor));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P3_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P4_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P2_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P3_Credits));
+            _Outputs.Add(new GameOutput(OutputId.P4_Credits));
         }
 
         /// <summary>

@@ -1,8 +1,7 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 
-namespace TombRaider_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mCrosshairWindow
     {
@@ -16,19 +15,23 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
             /// <returns></returns>
             static bool Prefix(Vector3 i_Viewport, ID i_PlayerID, CrosshairWindow __instance)
             {
-                //UnityEngine.Debug.Log("mCrosshairWindow.CrosshairMove(), i_PlayerID=" + i_PlayerID.ToString() + ", i_Viewport=" + i_Viewport.ToString());
+                //DemulShooter_Plugin.MyLogger.LogMessage("---- CrosshairWindow.CrosshairMove(), i_PlayerID=" + i_PlayerID.ToString() + ", i_Viewport=" + i_Viewport.ToString());
                 if (SBK.SceneSingleton<GameplayCamera>.Exists())
                 {
                     for (int i = 0; i < __instance.m_Crosshairs.Length; i++)
                     {
-                        if (__instance.m_Crosshairs[i].m_ID == i_PlayerID && SBK.Singleton<PlayerManager>.Instance.GetPlayerByID(i_PlayerID).Alive)
+                        if (__instance.m_Crosshairs[i].m_ID == i_PlayerID)                            
                         {
-                            Vector3 v = new Vector3();
-                            v.x = BitConverter.ToInt32(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_X + 16 * (int)i_PlayerID);
-                            v.y = BitConverter.ToInt32(Demulshooter_Plugin.TRA_Mmf.Payload, TRA_MemoryMappedFile_Controller.INDEX_P1_UISCREEN_Y + 16 * (int)i_PlayerID);
-                            //UnityEngine.Debug.LogError("mCrosshairWindow.CrosshairMove() => v = " + v.ToString());                        
-                            __instance.m_Crosshairs[i].m_CrosshairTr.anchoredPosition = v;
+                            Vector3 v = DemulShooter_Plugin.PluginControllers[i].GetAimingPosition();
+                            v.x = v.x / (float)Screen.width * 1920.0f;
+                            v.y = v.y / (float)Screen.height * 1080.0f;
 
+                           __instance.m_Crosshairs[i].m_CrosshairTr.anchoredPosition = v;
+
+                            if (!DemulShooter_Plugin.CrossHairVisibility)
+                                __instance.m_Crosshairs[i].m_CrosshairTr.localScale = new Vector3();
+                            else
+                                __instance.m_Crosshairs[i].m_CrosshairTr.localScale = new Vector3(1.0f, 1.0f, 0);
                             break;
                         }
                     }

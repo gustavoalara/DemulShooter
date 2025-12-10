@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 
-namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mGameLogManager
     {

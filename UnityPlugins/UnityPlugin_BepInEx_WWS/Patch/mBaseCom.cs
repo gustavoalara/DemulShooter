@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace WildWestShootout_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mBaseCom
     {
@@ -12,7 +12,7 @@ namespace WildWestShootout_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.LogError("mBaseCom.CheckDog()");
+                DemulShooter_Plugin.MyLogger.LogMessage("BaseCom.CheckDog()");
                 return false;
             }
         }

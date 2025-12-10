@@ -1,31 +1,44 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using BepInEx;
 using HarmonyLib;
+using SBK;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
-using SBK;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
         public const String pluginGuid = "argonlefou.demulshooter.rabbidshollywood";
         public const String pluginName = "RabbidsHollywood_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "2.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
+        public const String pluginConfigFile = "RabbidsHollywood_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 4;
+
         //custom Input Data
-        public static PluginController[] PluginControllers = new PluginController[4];
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
         public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+        public static PluginControllerButton Test_Key = new PluginControllerButton((int) KeyCode.Alpha0);
+        public static PluginControllerButton MenuUp_Key = new PluginControllerButton((int) KeyCode.UpArrow);
+        public static PluginControllerButton MenuDown_Key = new PluginControllerButton((int) KeyCode.DownArrow);
+        public static PluginControllerButton MenuSelect_Key = new PluginControllerButton((int) KeyCode.Return);
+
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
         private Thread _TcpListenerThread;
@@ -39,8 +52,20 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
 
         public static bool CrossHairVisibility = true;
 
+        //Custom resolution
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+        public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
+
+        public static string GameLanguage = "EN";
+
         public static bool IsDemoMode = false;
-        
+
+        public static Type EnumType = null;
+
+        public static bool SaveToGameFolder = false;
+
         public void Awake()
         {
             Instance = this;
@@ -49,34 +74,88 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _OutputDataBefore = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
                 PluginControllers[i] = new PluginController(i);
-            }
+            }            
 
             // Start TcpServer	
             _TcpListenerThread = new Thread(new ThreadStart(TcpClientThreadLoop));
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+
+            if (File.Exists(Plugin_IniFile.FInfo.FullName))
+            {
+                try
+                {
+                    Plugin_IniFile.IniReadBoolValue("SYSTEM", "SAVE_TO_GAME_FOLDER", ref SaveToGameFolder);
+
+                    Plugin_IniFile.IniReadIntValue("VIDEO", "WIDTH", ref ScreenWidth);
+                    Plugin_IniFile.IniReadIntValue("VIDEO", "HEIGHT", ref ScreenHeight);
+
+                    Plugin_IniFile.IniReadBoolValue("VIDEO", "FULLSCREEN", ref Fullscreen);
+                    Plugin_IniFile.IniReadBoolValue("VIDEO", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    //Language
+                    GameLanguage = Plugin_IniFile.IniReadValue("System", " LANGUAGE");
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
+                }
+                catch (Exception Ex)
+                {
+                    MyLogger.LogError(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Error reading config file : " + Plugin_IniFile.FInfo.FullName);
+                    MyLogger.LogError(Ex.Message.ToString());
+                }
+            }
+            else
+            {
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
+            }
+
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
             harmony.PatchAll();
         }
 
         public void Start()
-        {
-            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Removing mouse cursor");
-            Cursor.visible = false;
-        }
+        {}
 
         public void Update()
         {
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, Input.GetMouseButton(1) ? (byte)1 : (byte)0);
+                }
+            }
+
             //Quit
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Application.Quit();
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
 
             Player[] playerList = Singleton<PlayerManager>.Instance.m_PlayerList;
             //Logger.LogMessage("DemulSHooter_Plugin.Update() => PlayerList.Length =  : " + playerList.Length.ToString());
@@ -96,7 +175,6 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                 }
                 OutputData.Credits[i] = Singleton<KaboomManager>.Instance.GetCoinCount((ID)i);
             }
-
 
             //Checking for a change in output to send or not
             byte[] bOutputData = OutputData.ToByteArray();
@@ -148,7 +226,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                         using (_TcpStream = _TcpClient.GetStream())
                         {
                             //Send outputs at connection, if DemulShooter connects during game, between events
-                            //SendOutputs();
+                            SendOutputs();
                             while (true)
                             {
                                 int Length = 0;
@@ -167,7 +245,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-                                    for (int i = 0; i < TcpInputData.MAX_PLAYER; i++)
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
                                     {
                                         PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
                                         PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
@@ -202,7 +280,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
             {
                 if (Instance._TcpClient == null)
                     return;
-
+                
                 if (_TcpStream == null)
                     return;
 
@@ -217,7 +295,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
                     //lock (MutexLocker_Outputs)
                     //{
                     //Resetting event flags for next packets                    
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < MAX_PLAYERS; i++)
                     {
                         OutputData.Recoil[i] = 0;
                         OutputData.Damaged[i] = 0;
@@ -230,6 +308,14 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
             {
                 MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

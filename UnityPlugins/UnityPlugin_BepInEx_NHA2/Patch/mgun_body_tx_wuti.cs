@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mgun_body_tx_wuti
     {
@@ -13,7 +13,7 @@ namespace UnityPlugin_BepInEx_NHA2
             static bool Prefix(gun_body_tx_wuti __instance, int num, gun_body gun_body1)
             {
                 //NightHunterArcadePlugin.MyLogger.LogMessage("gun_fire_work.update_linerenderer()");
-                if (DemulShooter_Plugin.Configurator.RemoveLaser)
+                if (!DemulShooter_Plugin.GunVisibility)
                 {
                     if (__instance.mylinerenderer != null)
                     {

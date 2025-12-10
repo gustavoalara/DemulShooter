@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace NerfArcade_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mIOManager
     {
@@ -30,104 +30,50 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(DigitalInputData[] ___m_DigitalInputData, IOManager __instance)
             {
-                //NerfArcade_Plugin.MyLogger.LogMessage("IOManager.ButtonNewlyPressed() : inputIn=" + inputIn.ToString());
-                //Mouse + Keyboard controls   
-                if (!DemulShooter_Plugin.EnableInputHack)
+                //DemulShooter_Plugin.MyLogger.LogMessage("IOManager.ButtonNewlyPressed() : inputIn=" + inputIn.ToString());
+                for (int i = 0; i < ___m_DigitalInputData.Length; i++)
                 {
-                    for (int i = 0; i < ___m_DigitalInputData.Length; i++)
+                    ___m_DigitalInputData[i].switchCntLast = ___m_DigitalInputData[i].switchCnt;
+
+                    uint iKeyPressed = 0;
+                    switch (i)
                     {
-                        ___m_DigitalInputData[i].switchCntLast = ___m_DigitalInputData[i].switchCnt;
-
-                        uint iKeyPressed = 0;
-                        switch (i)
-                        {
-                            case (int)(int)DigitalGameInput.Coin1: iKeyPressed = Input.GetKey(KeyCode.Alpha5) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Coin2: iKeyPressed = Input.GetKey(KeyCode.Alpha6) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.DBV: iKeyPressed = Input.GetKey(KeyCode.Alpha7) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunShoulder1: iKeyPressed = Input.GetMouseButton(2) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunShoulder2: iKeyPressed = Input.GetMouseButton(2) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunTrigger1: iKeyPressed = Input.GetMouseButton(0) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunTrigger2: iKeyPressed = Input.GetMouseButton(1) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Service: iKeyPressed = Input.GetKey(KeyCode.Alpha0) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Start1: iKeyPressed = Input.GetKey(KeyCode.Alpha1) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Start2: iKeyPressed = Input.GetKey(KeyCode.Alpha2) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Test: iKeyPressed = Input.GetKey(KeyCode.Alpha9) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.VolumeDown: iKeyPressed = Input.GetKey(KeyCode.DownArrow) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.VolumeUp: iKeyPressed = Input.GetKey(KeyCode.UpArrow) ? (uint)1 : (uint)0; break;
-                            default: break;
-                        }
-                        ___m_DigitalInputData[i].switchCnt = iKeyPressed;
-
-                        if (___m_DigitalInputData[i].switchCntLast == ___m_DigitalInputData[i].switchCnt)
-                        {
-                            ___m_DigitalInputData[i].time += Time.deltaTime;
-                        }
-                        else
-                        {
-                            ___m_DigitalInputData[i].time = 0f;
-                        }
+                        case (int)DigitalGameInput.Coin1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Coin) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.Coin2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Coin) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.DBV: iKeyPressed = DemulShooter_Plugin.DBV_Key.GetButton() ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.GunShoulder1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Action) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.GunShoulder2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Action) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.GunTrigger1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.GunTrigger2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.Service: iKeyPressed = DemulShooter_Plugin.Service_Key.GetButton() ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.Start1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Start) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.Start2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Start) ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.Test: iKeyPressed = DemulShooter_Plugin.Test_Key.GetButton() ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.VolumeDown: iKeyPressed = DemulShooter_Plugin.VolumeDown_Key.GetButton() ? (uint)1 : (uint)0; break;
+                        case (int)DigitalGameInput.VolumeUp: iKeyPressed = DemulShooter_Plugin.VolumeUp_Key.GetButton() ? (uint)1 : (uint)0; break;
+                        default: break;
                     }
+                    ___m_DigitalInputData[i].switchCnt = iKeyPressed;
 
-                    Vector3 mouse = Input.mousePosition;
-                    float x = mouse.x / (float)Screen.width;
-                    float y = mouse.y / (float)Screen.height;
-
-                    MethodInfo mi = __instance.GetType().GetMethod("SetAnalogValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (mi != null)
+                    if (___m_DigitalInputData[i].switchCntLast == ___m_DigitalInputData[i].switchCnt)
                     {
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1X, x });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1Y, y });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2X, x });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2Y, y });
+                        ___m_DigitalInputData[i].time += Time.deltaTime;
                     }
-                }
-                //DemulShooter controls
-                else
-                {
-                    for (int i = 0; i < ___m_DigitalInputData.Length; i++)
+                    else
                     {
-                        ___m_DigitalInputData[i].switchCntLast = ___m_DigitalInputData[i].switchCnt;
-
-                        uint iKeyPressed = 0;
-                        switch (i)
-                        {
-                            case (int)(int)DigitalGameInput.Coin1: iKeyPressed = Input.GetKey(KeyCode.Alpha5) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Coin2: iKeyPressed = Input.GetKey(KeyCode.Alpha6) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.DBV: iKeyPressed = Input.GetKey(KeyCode.Alpha7) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunShoulder1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Action) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunShoulder2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Action) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunTrigger1: iKeyPressed = DemulShooter_Plugin.PluginControllers[0].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.GunTrigger2: iKeyPressed = DemulShooter_Plugin.PluginControllers[1].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Service: iKeyPressed = Input.GetKey(KeyCode.Alpha0) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Start1: iKeyPressed = Input.GetKey(KeyCode.Alpha1) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Start2: iKeyPressed = Input.GetKey(KeyCode.Alpha2) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.Test: iKeyPressed = Input.GetKey(KeyCode.Alpha9) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.VolumeDown: iKeyPressed = Input.GetKey(KeyCode.DownArrow) ? (uint)1 : (uint)0; break;
-                            case (int)DigitalGameInput.VolumeUp: iKeyPressed = Input.GetKey(KeyCode.UpArrow) ? (uint)1 : (uint)0; break;
-                            default: break;
-                        }
-                        ___m_DigitalInputData[i].switchCnt = iKeyPressed;
-
-                        if (___m_DigitalInputData[i].switchCntLast == ___m_DigitalInputData[i].switchCnt)
-                        {
-                            ___m_DigitalInputData[i].time += Time.deltaTime;
-                        }
-                        else
-                        {
-                            ___m_DigitalInputData[i].time = 0f;
-                        }
-                    }
-
-                    MethodInfo mi = __instance.GetType().GetMethod("SetAnalogValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                    if (mi != null)
-                    {
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1X, DemulShooter_Plugin.PluginControllers[0].Axis_X });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1Y, DemulShooter_Plugin.PluginControllers[0].Axis_Y });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2X, DemulShooter_Plugin.PluginControllers[1].Axis_X });
-                        mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2Y, DemulShooter_Plugin.PluginControllers[1].Axis_Y });
+                        ___m_DigitalInputData[i].time = 0f;
                     }
                 }
 
+                MethodInfo mi = __instance.GetType().GetMethod("SetAnalogValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (mi != null)
+                {
+                    mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1X, DemulShooter_Plugin.PluginControllers[0].GetAimingPosition().x / (float)Screen.width });
+                    mi.Invoke(__instance, new object[] { AnalogGameInput.Gun1Y, DemulShooter_Plugin.PluginControllers[0].GetAimingPosition().y / (float)Screen.height });
+                    mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2X, DemulShooter_Plugin.PluginControllers[1].GetAimingPosition().x / (float)Screen.width });
+                    mi.Invoke(__instance, new object[] { AnalogGameInput.Gun2Y, DemulShooter_Plugin.PluginControllers[1].GetAimingPosition().y / (float)Screen.height });
+                }
+               
                 return false;                
             }
         }

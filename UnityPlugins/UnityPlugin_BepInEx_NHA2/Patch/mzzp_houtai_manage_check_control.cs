@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mzzp_houtai_manage_check_control
     {
@@ -14,7 +14,7 @@ namespace UnityPlugin_BepInEx_NHA2
             static bool Prefix(zzp_houtai_manage_check_control __instance)
             {
                 //NightHunterArcade2_Plugin.MyLogger.LogMessage("mzzp_houtai_manage_check_control.check_for_zzp_houtai_control()");
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKeyDown((KeyCode)DemulShooter_Plugin.MenuDown_Key.KeyCode))
                 {
                     __instance.add_key_work();
                 }
@@ -22,7 +22,7 @@ namespace UnityPlugin_BepInEx_NHA2
                 {
                     __instance.del_key_work();
                 }
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown((KeyCode)DemulShooter_Plugin.MenuSelect_Key.KeyCode))
                 {
                     __instance.queding_work();
                 }

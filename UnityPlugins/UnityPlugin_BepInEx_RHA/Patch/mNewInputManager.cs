@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mNewInputManager
     {
@@ -15,53 +15,49 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix (bool ___m_AllInputEnable, bool ___m_AreCrosshairsEnabled, bool[] ___m_HoldTrigger, NewInputManager __instance)
             {
-                if (DemulShooter_Plugin.EnableInputHack)
+                //UnityEngine.Debug.Log("mNewInputManager.MouseControl()");     
+                if (___m_AllInputEnable)
                 {
-                    //UnityEngine.Debug.Log("mNewInputManager.MouseControl()");     
-                    if (___m_AllInputEnable)
+                    Vector3 i_Arg = new Vector3();
+
+                    for (int i = 0; i < 4; i++)
                     {
-                        Vector3 i_Arg = new Vector3();
-
-                        for (int i = 0; i < 4; i++)
+                        if (SBK.Singleton<ArcadeManager>.Instance.GunEnabled(i))
                         {
-                            if (SBK.Singleton<ArcadeManager>.Instance.GunEnabled(i))
-                            {
-                                i_Arg.x = DemulShooter_Plugin.PluginControllers[i].Axis_X;
-                                i_Arg.y = DemulShooter_Plugin.PluginControllers[i].Axis_Y;
-                                EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerCrosshairMove.ToString(), i_Arg, (ID)i);
-                            }
+                            i_Arg.x = DemulShooter_Plugin.PluginControllers[i].Axis_X / (float)Screen.width;
+                            i_Arg.y = DemulShooter_Plugin.PluginControllers[i].Axis_Y / (float)Screen.height;
+                            EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerCrosshairMove.ToString(), i_Arg, (ID)i);
+                        }
 
-                            if (DemulShooter_Plugin.PluginControllers[i].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
+                        if (DemulShooter_Plugin.PluginControllers[i].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
+                        {
+                            //Rha_Plugin.MyLogger.LogMessage("mNewInputManager.MouseControl(" + i + ") => Trigger Pushed");
+                            EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerPressTrigger.ToString(), i_Arg, (ID)i);
+                            if (___m_AreCrosshairsEnabled)
                             {
-                                //Rha_Plugin.MyLogger.LogMessage("mNewInputManager.MouseControl(" + i + ") => Trigger Pushed");
-                                EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerPressTrigger.ToString(), i_Arg, (ID)i);
-                                if (___m_AreCrosshairsEnabled)
-                                {
-                                    EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerShoot.ToString(), i_Arg, (ID)i);
-                                }
-                                else if (!___m_HoldTrigger[i])
-                                {
-                                    ___m_HoldTrigger[i] = true;
-                                    if (SBK.Singleton<ArcadeGameplayManager>.Instance.CurrentState == ArcadeGameplayManager.State.PlayState)
-                                    {
-                                        SBK.Singleton<SBK.Audio.AudioManager>.Instance.Play(SBK.Audio.AudioID_Global.ui_cantshoot, null);
-                                    }
-                                }
+                                EventManager<Vector3, ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerShoot.ToString(), i_Arg, (ID)i);
                             }
-                            else if (DemulShooter_Plugin.PluginControllers[i].GetButtonUp(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
+                            else if (!___m_HoldTrigger[i])
                             {
-                                //Rha_Plugin.MyLogger.LogMessage("mNewInputManager.MouseControl(" + i + ") => Trigger Released");
-                                if (___m_AreCrosshairsEnabled)
+                                ___m_HoldTrigger[i] = true;
+                                if (SBK.Singleton<ArcadeGameplayManager>.Instance.CurrentState == ArcadeGameplayManager.State.PlayState)
                                 {
-                                    EventManager<ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerTriggerRelease.ToString(), (ID)i);                                    
+                                    SBK.Singleton<SBK.Audio.AudioManager>.Instance.Play(SBK.Audio.AudioID_Global.ui_cantshoot, null);
                                 }
-                                ___m_HoldTrigger[i] = false;
                             }
                         }
+                        else if (DemulShooter_Plugin.PluginControllers[i].GetButtonUp(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
+                        {
+                            //Rha_Plugin.MyLogger.LogMessage("mNewInputManager.MouseControl(" + i + ") => Trigger Released");
+                            if (___m_AreCrosshairsEnabled)
+                            {
+                                EventManager<ID>.TriggerEvent(NewInputManager.BaseMessage.PlayerTriggerRelease.ToString(), (ID)i);
+                            }
+                            ___m_HoldTrigger[i] = false;
+                        }
                     }
-                    return false;
                 }
-                return true;
+                return false;
             }
         }        
     }

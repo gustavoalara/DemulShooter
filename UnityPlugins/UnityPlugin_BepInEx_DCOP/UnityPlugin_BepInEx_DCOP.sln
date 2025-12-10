@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityPlugin_BepInEx_DCOP", "UnityPlugin_BepInEx_DCOP.csproj", "{E449E30F-D61F-428B-BEC1-D716E716EB6D}"

@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Virtuallyz.VRShooter.IO;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mPlayerInOutModule
     {

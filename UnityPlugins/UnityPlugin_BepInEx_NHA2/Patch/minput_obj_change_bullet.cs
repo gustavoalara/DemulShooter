@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class minput_obj_change_bullet
     {
-        /// <summary>
-        /// Used to map Window coordinates to UI coordinates : UI is fixed on [-960, 960] for X and [-540, 540] for Y (1920p resolution)
-        /// We need to scale down the coordinates before putting it in the good range
-        /// </summary>
+
         [HarmonyPatch(typeof(input_obj_change_bullet), "change_weapon")]
         class mchange_weapon
         {

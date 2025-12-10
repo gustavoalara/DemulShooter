@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mgame_mark_3d_obj
     {
@@ -13,9 +13,9 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix(int num, game_mark_3d_obj __instance)
             {
-                if (DemulShooter_Plugin.Configurator.RemoveCrosshair)
+                if (!DemulShooter_Plugin.CrossHairVisibility)
                 {
-                    //NightHunterArcadePlugin.MyLogger.LogMessage("mgame_mark_3d_obj.set_mark_obj() => num: " + num);
+                    //DemulShooter_Plugin.MyLogger.LogMessage("mgame_mark_3d_obj.set_mark_obj() => num: " + num);
                     __instance.mymark_num = num;
                     for (int i = 0; i < __instance.mymark_obj_list.Count; i++)
                     {

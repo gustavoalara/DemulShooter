@@ -395,27 +395,27 @@ namespace DemulShooter
             //Gun motor : stays activated when trigger is pulled
             //Gun recoil : not used ??
             _Outputs = new List<GameOutput>();
-            /*_Outputs.Add(new GameOutput(OutputDesciption.Lmp_Horn_R, OutputId.Lmp_Horn_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_Horn_G, OutputId.Lmp_Horn_G));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_Horn_B, OutputId.Lmp_Horn_B));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_LeftBulletMark, OutputId.Lmp_LeftBulletMark));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_RightBulletMark, OutputId.Lmp_RightBulletMark));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_W, OutputId.Lmp_W));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_A, OutputId.Lmp_A));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_N, OutputId.Lmp_N));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_T, OutputId.Lmp_T));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_E, OutputId.Lmp_E));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_D, OutputId.Lmp_D));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_LeftReload, OutputId.Lmp_LeftReload));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_RightReload, OutputId.Lmp_RightReload));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_Payout, OutputId.Lmp_Payout));*/
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Ammo, OutputId.P1_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Ammo, OutputId.P2_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Clip, OutputId.P1_Clip));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Clip, OutputId.P2_Clip));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            /*_Outputs.Add(new GameOutput(OutputId.Lmp_Horn_R));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Horn_G));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Horn_B));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_LeftBulletMark));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_RightBulletMark));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_W));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_A));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_N));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_T));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_E));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_D));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_LeftReload));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_RightReload));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_Payout));*/
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P2_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P1_Clip));
+            _Outputs.Add(new GameOutput(OutputId.P2_Clip));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

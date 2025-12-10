@@ -8,25 +8,36 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace NerfArcade_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
         public const String pluginGuid = "argonlefou.demulshooter.nerfarcade";
         public const String pluginName = "NerfArcade_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "2.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
         public const String pluginConfigFile = "NerfArcade_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 2;
+
         //custom Input Data
-        public static PluginController[] PluginControllers = new PluginController[4];
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
         public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+        public static PluginControllerButton Test_Key = new PluginControllerButton((int) KeyCode.Alpha0);
+        public static PluginControllerButton Service_Key = new PluginControllerButton((int) KeyCode.Alpha9);
+        public static PluginControllerButton VolumeUp_Key = new PluginControllerButton((int) KeyCode.UpArrow);
+        public static PluginControllerButton VolumeDown_Key = new PluginControllerButton((int) KeyCode.DownArrow);
+        public static PluginControllerButton DBV_Key = new PluginControllerButton((int) KeyCode.Alpha7);
+
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
         private Thread _TcpListenerThread;
@@ -40,10 +51,16 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
 
         public static bool CrossHairVisibility = true;
 
-        public static byte CabTemplate = 0;
+        //Custom resolution
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+        public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
+
+        public static int CabTemplate = 0;
         private const float ORIGINAL_WIDTH = 1920.0f;
         private const float ORIGINAL_HEIGHT = 1080.0f;
-        
+
         public void Awake()
         {
             Instance = this;
@@ -52,11 +69,11 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _OutputDataBefore = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
                 PluginControllers[i] = new PluginController(i);
             }
@@ -66,14 +83,34 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
-            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + @"./BepInEx/plugins/" + pluginConfigFile);
-            INIFile Plugin_IniFile = new INIFile(@"./BepInEx/plugins/" + pluginConfigFile);
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+
             if (File.Exists(Plugin_IniFile.FInfo.FullName))
             {
                 try
                 {
-                    CabTemplate = byte.Parse(Plugin_IniFile.IniReadValue("System", "CAB_TEMPLATE"));
-                    MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): CabTemplate set to : " + CabTemplate + " -- " + ((FactorySetUpConsts.TEMPLATE_IDS)CabTemplate).ToString());
+                    Plugin_IniFile.IniReadIntValue("System", "CAB_TEMPLATE", ref CabTemplate);
+
+                    Plugin_IniFile.IniReadIntValue("Video", "WIDTH", ref ScreenWidth);
+                    Plugin_IniFile.IniReadIntValue("Video", "HEIGHT", ref ScreenHeight);
+
+                    Plugin_IniFile.IniReadBoolValue("Video", "FULLSCREEN", ref Fullscreen);
+                    Plugin_IniFile.IniReadBoolValue("Video", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
+                    Service_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "SERVICE"));
+                    VolumeUp_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "VOLUME_UP"));
+                    VolumeDown_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "VOLUME_DOWN"));
+                    DBV_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "DBV"));
                 }
                 catch (Exception Ex)
                 {
@@ -83,26 +120,46 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             }
             else
             {
-                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): " + Plugin_IniFile.FInfo.FullName + " not found");
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
             }
+
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
 
             harmony.PatchAll();
         }
 
         public void Start()
         {
-            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Removing mouse cursor");
-            Cursor.visible = false;
         }
 
         public void Update()
         {
-            //ScaleDisplay();                
+            //if (ForceResolution)
+            //    ScaleDisplay();
+
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            Service_Key.SetButton(Input.GetKey((KeyCode)Service_Key.KeyCode));
+            VolumeUp_Key.SetButton(Input.GetKey((KeyCode)VolumeUp_Key.KeyCode));
+            VolumeDown_Key.SetButton(Input.GetKey((KeyCode)VolumeDown_Key.KeyCode));
+            DBV_Key.SetButton(Input.GetKey((KeyCode)DBV_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Reload, Input.GetMouseButton(1) ? (byte)1 : (byte)0);
+                }
+            }
 
             //Quit
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Application.Quit();
-
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
 
             //Get Lamp status as Int16 : 0-100%
             OutputData.P1_Lmp_Start = (UInt16)(SingletonMonoBehaviour<IOManager>.Instance.GetLastLightValue(CabinetLight.P1Start) * 100.0f);
@@ -167,7 +224,7 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             {
                 if (!c.name.Equals("CANVAS_Diagnostic"))
                 {
-                    MyLogger.LogWarning("Canvas Name: " + c.name + " , Changed scale to " + fScale);
+                    //MyLogger.LogMessage("Canvas Name: " + c.name + " , Changed scale to " + fScale);
                     c.scaleFactor = fScale;
                 }
             }
@@ -213,11 +270,10 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-                                    for (int i = 0; i < TcpInputData.MAX_PLAYER; i++)
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
                                     {
                                         PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
                                         PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
-                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Action, _InputData.Action[i]);
                                     }
                                     CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
                                     EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
@@ -264,7 +320,7 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
                     //lock (MutexLocker_Outputs)
                     //{
                     //Resetting event flags for next packets                    
-                    for (int i = 0; i < TcpOutputData.MAX_PLAYER; i++)
+                    for (int i = 0; i < MAX_PLAYERS; i++)
                     {
                         OutputData.Recoil[i] = 0;
                     }
@@ -276,6 +332,14 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
             {
                 MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

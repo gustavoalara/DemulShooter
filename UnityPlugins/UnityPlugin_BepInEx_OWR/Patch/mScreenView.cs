@@ -4,7 +4,7 @@ using Virtuallyz.VRShooter.IO;
 using System.Runtime.CompilerServices;
 using Virtuallyz.VRShooter.Characters.Players;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class _mScreenView
     {

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
@@ -7,24 +8,31 @@ using BepInEx;
 using HarmonyLib;
 using UnityEngine;
 using UnityPlugin_BepInEx_Core;
+using UnityPlugin_BepInEx_IniFile;
 
-namespace MarsSortie_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
         public const String pluginGuid = "argonlefou.demulshooter.marssortie";
         public const String pluginName = "MarsSortie_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "3.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
+        public const String pluginConfigFile = "MarsSortie_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 4;
+
         //custom Input Data
-        public static PluginController[] PluginControllers = new PluginController[4];
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
         public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
         private Thread _TcpListenerThread;
@@ -37,7 +45,13 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
         private TcpInputData _InputData;
 
         public static bool CrossHairVisibility = true;
-        
+
+        //Custom resolution
+        public static int ScreenWidth = 1920;
+        public static int ScreenHeight = 1080;
+        public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
+
         public void Awake()
         {
             Instance = this;
@@ -46,11 +60,11 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _OutputDataBefore = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
                 PluginControllers[i] = new PluginController(i);
             }
@@ -60,20 +74,68 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
             _TcpListenerThread.IsBackground = true;
             _TcpListenerThread.Start();
 
+            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Loading custom config : " + BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+            INIFile Plugin_IniFile = new INIFile(BepInEx.Paths.PluginPath + @"/" + pluginConfigFile);
+
+            if (File.Exists(Plugin_IniFile.FInfo.FullName))
+            {
+                try
+                {
+                    Plugin_IniFile.IniReadIntValue("Video", "WIDTH", ref ScreenWidth);
+                    Plugin_IniFile.IniReadIntValue("Video", "HEIGHT", ref ScreenHeight);
+
+                    Plugin_IniFile.IniReadBoolValue("Video", "FULLSCREEN", ref Fullscreen);
+                    Plugin_IniFile.IniReadBoolValue("Video", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                }
+                catch (Exception Ex)
+                {
+                    MyLogger.LogError(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Error reading config file : " + Plugin_IniFile.FInfo.FullName);
+                    MyLogger.LogError(Ex.Message.ToString());
+                }
+            }
+            else
+            {
+                MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
+            }
+
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
             harmony.PatchAll();
         }
 
         public void Start()
-        {
-            MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Removing mouse cursor");
-            Cursor.visible = false;
-        }
+        {}
 
         public void Update()
         {
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
+
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(new Vector3(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height, 0));
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, Input.GetMouseButton(0) ? (byte)1 : (byte)0);
+                    PluginControllers[i].SetButton(PluginController.MyInputButtons.Action, Input.GetMouseButton(2) ? (byte)1 : (byte)0);
+                }
+            }
+
             //Quit
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Application.Quit();
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
+
 
             //Checking for a change in output to send or not
             byte[] bOutputData = OutputData.ToByteArray();
@@ -144,18 +206,12 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-                                    PluginControllers[0].SetAimingValues(new Vector2(_InputData.P1_X, _InputData.P1_Y));
-                                    PluginControllers[0].SetButton(PluginController.MyInputButtons.Trigger, _InputData.P1_Trigger);
-                                    PluginControllers[0].SetButton(PluginController.MyInputButtons.Action, _InputData.P1_ChangeWeapon);
-                                    PluginControllers[1].SetAimingValues(new Vector2(_InputData.P2_X, _InputData.P2_Y));
-                                    PluginControllers[1].SetButton(PluginController.MyInputButtons.Trigger, _InputData.P2_Trigger);
-                                    PluginControllers[1].SetButton(PluginController.MyInputButtons.Action, _InputData.P2_ChangeWeapon);
-                                    PluginControllers[2].SetAimingValues(new Vector2(_InputData.P3_X, _InputData.P3_Y));
-                                    PluginControllers[2].SetButton(PluginController.MyInputButtons.Trigger, _InputData.P3_Trigger);
-                                    PluginControllers[2].SetButton(PluginController.MyInputButtons.Action, _InputData.P3_ChangeWeapon);
-                                    PluginControllers[3].SetAimingValues(new Vector2(_InputData.P4_X, _InputData.P4_Y));
-                                    PluginControllers[3].SetButton(PluginController.MyInputButtons.Trigger, _InputData.P4_Trigger);
-                                    PluginControllers[3].SetButton(PluginController.MyInputButtons.Action, _InputData.P4_ChangeWeapon);
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
+                                    {
+                                        PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i] / Screen.width, _InputData.Axis_Y[i] / Screen.height));
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Trigger, _InputData.Trigger[i]);
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.Action, _InputData.ChangeWeapon[i]);
+                                    }
                                     CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
                                     EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
                                     //}
@@ -201,10 +257,10 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
                     //lock (MutexLocker_Outputs)
                     //{
                     //Resetting event flags for next packets                    
-                    OutputData.P1_Recoil = 0;
-                    OutputData.P2_Recoil = 0;
-                    OutputData.P3_Recoil = 0;
-                    OutputData.P4_Recoil = 0;
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+                        OutputData.Recoil[i] = 0;
+                    }
                     //}
                     _TcpStream.Write(Buffer, 0, Buffer.Length);
                 }
@@ -213,6 +269,14 @@ namespace MarsSortie_BepInEx_DemulShooter_Plugin
             {
                 MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

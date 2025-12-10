@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Virtuallyz.VRShooter.Characters.Players;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mPlayer
     {
@@ -13,14 +13,9 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(Player __instance)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("Virtuallyz.VRShooter.Characters.Players.OnDamageTaken()");
-                lock (DemulShooter_Plugin.MutexLocker_Outputs)
-                {
-                    DemulShooter_Plugin.OutputData.P1_Damage = 1;
-                    DemulShooter_Plugin.OutputData.P2_Damage = 1;
-                    DemulShooter_Plugin.SendOutputs(); 
-                }
-                DemulShooter_Plugin.SendOutputs();
+                //DemulShooter_Plugin.MyLogger.LogMessage("Virtuallyz.VRShooter.Characters.Players.OnDamageTaken()");
+                DemulShooter_Plugin.OutputData.Damaged[0] = 1;
+                DemulShooter_Plugin.OutputData.Damaged[1] = 1;
                 return true;
             }
         }

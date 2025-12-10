@@ -348,17 +348,17 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpLeft, OutputId.LmpLeft));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpRight, OutputId.LmpRight));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpCard_R, OutputId.P1_LmpCard_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpCard_G, OutputId.P1_LmpCard_G));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpCard_R, OutputId.P2_LmpCard_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpCard_G, OutputId.P2_LmpCard_G));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.LmpLeft));
+            _Outputs.Add(new GameOutput(OutputId.LmpRight));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpCard_R));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpCard_G));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpCard_R));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpCard_G));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

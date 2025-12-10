@@ -23,9 +23,9 @@ namespace DsCore.MameOutput
             set {  _OutputValue = value;}
         }
 
-        public GameOutput(String Name, OutputId Id)
+        public GameOutput(OutputId Id)
         {
-            _Name = Name;
+            _Name = Id.ToString();
             _Id = (UInt32)Id;
             _OutputValue = 0;
         }

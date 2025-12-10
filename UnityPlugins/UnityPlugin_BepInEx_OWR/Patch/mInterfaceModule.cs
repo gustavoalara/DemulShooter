@@ -4,7 +4,7 @@ using Virtuallyz.VRShooter.Modules;
 using Virtuallyz.VRShooter.Weapons;
 
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mInterfaceModule
     {
@@ -21,16 +21,8 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
 
                 if (character.ToString().Equals("Player"))
                 {
-                    if ((byte)character.CurrentHP != DemulShooter_Plugin.P1_LastLife)
-                    {
-                        lock (DemulShooter_Plugin.MutexLocker_Outputs)
-                        {
-                            DemulShooter_Plugin.OutputData.P1_Life = (byte)character.CurrentHP;
-                            DemulShooter_Plugin.OutputData.P2_Life = (byte)character.CurrentHP;
-                        }
-                        DemulShooter_Plugin.P1_LastLife = (byte)character.CurrentHP;
-                        DemulShooter_Plugin.SendOutputs();
-                    }             
+                    DemulShooter_Plugin.OutputData.Life[0] = (byte)character.CurrentHP;
+                    DemulShooter_Plugin.OutputData.Life[1] = (byte)character.CurrentHP;
                 }
                 return true;
             }
@@ -57,29 +49,9 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                     }
 
                     if (weapon.ControllerId == 0)
-                    {
-                        if (DemulShooter_Plugin.P1_LastAmmo != Ammo)
-                        {
-                            lock (DemulShooter_Plugin.MutexLocker_Outputs)
-                            {
-                                DemulShooter_Plugin.OutputData.P1_Ammo = Ammo;
-                            }
-                            DemulShooter_Plugin.P1_LastAmmo = Ammo;
-                            DemulShooter_Plugin.SendOutputs();
-                        }
-                    }
+                        DemulShooter_Plugin.OutputData.Ammo[0] = Ammo;
                     else if (weapon.ControllerId == 1)
-                    {
-                        if (DemulShooter_Plugin.P2_LastAmmo != Ammo)
-                        {
-                            lock (DemulShooter_Plugin.MutexLocker_Outputs)
-                            {
-                                DemulShooter_Plugin.OutputData.P2_Ammo = Ammo;
-                            }
-                            DemulShooter_Plugin.P2_LastAmmo = Ammo;
-                            DemulShooter_Plugin.SendOutputs();
-                        }
-                    }
+                        DemulShooter_Plugin.OutputData.Ammo[1] = Ammo;
                 }
                 return true;
             }

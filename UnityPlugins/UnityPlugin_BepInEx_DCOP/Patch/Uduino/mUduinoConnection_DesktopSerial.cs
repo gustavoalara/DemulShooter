@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Uduino;
 
-namespace DCop_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mUduinoConnection_DesktopSerial
     {
@@ -13,7 +13,7 @@ namespace DCop_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref string[] portNames)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mUduinoConnection_DesktopSerial.Discover()");
+                DemulShooter_Plugin.MyLogger.LogMessage("UduinoConnection_DesktopSerial.Discover()");
                 portNames = new string[0];
                 return true;
             }

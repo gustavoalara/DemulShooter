@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using HarmonyLib;
 using UnityEngine;
 
-namespace TombRaider_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mArcadeManager
     {
@@ -11,7 +13,7 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mArcadeManager.CheckIOBoard()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.CheckIOBoard()");
                 return false;
             }
         }
@@ -21,7 +23,7 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mArcadeManager.GunMalfunctionCheck()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.GunMalfunctionCheck()");
                 return false;
             }
         }
@@ -32,8 +34,22 @@ namespace TombRaider_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix()
             {
-                UnityEngine.Debug.Log("mArcadeManager.PushErrorPopup()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("ArcadeManager.PushErrorPopup()");
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Changing resolution if needed
+        /// </summary>
+        [HarmonyPatch(typeof(ArcadeManager), "Start")]
+        class Start
+        {
+            static bool Prefix()
+            {
+                if (DemulShooter_Plugin.ForceResolution)
+                    Screen.SetResolution(DemulShooter_Plugin.ScreenWidth, DemulShooter_Plugin.ScreenHeight, DemulShooter_Plugin.Fullscreen);
+                return true;
             }
         }
     }

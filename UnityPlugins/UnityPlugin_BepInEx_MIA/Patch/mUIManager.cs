@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mUIManager
     {
@@ -13,7 +13,7 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin.Patch
         {
             static void Postfix(UIManager __instance)
             {
-                if (DemulShooter_Plugin.ChangeResolution)
+                if (DemulShooter_Plugin.ForceResolution)
                 {
                     foreach (UnityEngine.UI.CanvasScaler cs in __instance.MainCanvas2D.GetComponents<UnityEngine.UI.CanvasScaler>())
                     {

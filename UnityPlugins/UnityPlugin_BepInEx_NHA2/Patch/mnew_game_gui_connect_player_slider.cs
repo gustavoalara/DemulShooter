@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mnew_game_gui_connect_player_slider
     {
@@ -16,7 +16,7 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static void Postfix(new_game_gui_connect_player_slider __instance)
             {
-                if (DemulShooter_Plugin.Configurator.RemoveCrosshair && DemulShooter_Plugin.Configurator.RemoveLaser && DemulShooter_Plugin.Configurator.RemoveGuns)
+                if (!DemulShooter_Plugin.CrossHairVisibility && !DemulShooter_Plugin.GunVisibility)
                 {
                     game_player game_player = (game_player)__instance.myreal_obj;
                     int PlayerNum = game_player.get_user_num(); // 1 or 2
@@ -45,7 +45,7 @@ namespace UnityPlugin_BepInEx_NHA2
                             break;
                         }
                     }
-                    //NightHunterArcade2_Plugin.MyLogger.LogWarning("mnew_game_gui_connect_player_slider.update_work_data() => game_player.get_user_num: " + game_player.get_user_num() + " - color: " + game_player.get_fire_weapon().mybullet_color.ToString() + "config: " + zhichi_hanshu_gun_wheel_mark_manage.get_gun_wheel_mark_manage().get_gun_type(PlayerNum).ToString());
+                    //DemulShooter_Plugin.MyLogger.LogWarning("mnew_game_gui_connect_player_slider.update_work_data() => game_player.get_user_num: " + game_player.get_user_num() + " - color: " + game_player.get_fire_weapon().mybullet_color.ToString() + "config: " + zhichi_hanshu_gun_wheel_mark_manage.get_gun_wheel_mark_manage().get_gun_type(PlayerNum).ToString());
                 }
             }
         }

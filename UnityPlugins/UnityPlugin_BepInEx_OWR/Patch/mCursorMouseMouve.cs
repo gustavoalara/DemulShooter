@@ -2,7 +2,7 @@
 using UnityEngine;
 using Virtuallyz.VRShooter.IO;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mCursorMouseMouve
     {
@@ -34,7 +34,7 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                 if (DemulShooter_Plugin.IsMouseLockedRequired)
                 {
                     //Custom option to hide Crosshairs
-                    if (DemulShooter_Plugin.DisableCrosshair == 0)
+                    if (DemulShooter_Plugin.CrossHairVisibility)
                         __instance.Target.SetActive(true);
                     else
                         __instance.Target.SetActive(false);
@@ -42,24 +42,14 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
                     //Vector3 MouseAxis = Input.mousePosition;
                     Vector3 MouseAxis = Vector3.zero;
                     if (__instance.name.Equals("MainController"))
-                    {
-                        lock (DemulShooter_Plugin.MutexLocker_Inputs)
-                        {
-                            MouseAxis = new Vector3(DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetAxisX(), DemulShooter_Plugin.PluginControllers[0].GetAxisY(), 0);                            
-                        }
-                    }
+                        MouseAxis = DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetAimingPosition();
                     else if (__instance.name.Equals("PlayerTwoController"))
-                    {
-                        lock (DemulShooter_Plugin.MutexLocker_Inputs)
-                        {
-                            MouseAxis = new Vector3(DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetAxisX(), DemulShooter_Plugin.PluginControllers[1].GetAxisY(), 0);
-                        }
-                    }
+                        MouseAxis = DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetAimingPosition();
+
                     //OpWolf_Plugin.MyLogger.LogMessage("Virtuallyz.VRShooter.IO.Mouse2DUpdate() => " + __instance.name + " data : " + MouseAxis.ToString());
                     ___Cursor2DPos.x = MouseAxis.x - (Screen.width / 2.0f);
                     ___Cursor2DPos.y = MouseAxis.y - (Screen.height / 2.0f);
                     ___Cursor2DPos.z = 1.0f;
-
 
                     Vector3 vector = new Vector3((float)Screen.width * 0.5f, (float)Screen.height * 0.5f, 0f);
                     float num = 1f;

@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using UnityEngine;
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mgun_body
     {
@@ -12,11 +12,11 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix(int num, gun_body __instance)
             {
-                if (DemulShooter_Plugin.Configurator.RemoveGuns)
+                if (!DemulShooter_Plugin.GunVisibility)
                 {
                     foreach (Component c in __instance.gameObject.GetComponentsInChildren<Component>())
                     {
-                        //NightHunterArcadePlugin.MyLogger.LogMessage("  +Component: " + c.ToString() + " [GameObject=" + c.gameObject.ToString() + "]");
+                        //DemulShooter_Plugin.MyLogger.LogMessage("  +Component: " + c.ToString() + " [GameObject=" + c.gameObject.ToString() + "]");
                         if (/*c.name.StartsWith("Gun_A") /*|| */c.name.Equals("golden_eagle") /*|| c.name.StartsWith("FX_gun")*/)
                             c.gameObject.SetActive(false);
                     }

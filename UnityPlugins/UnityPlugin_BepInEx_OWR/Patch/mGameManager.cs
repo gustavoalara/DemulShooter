@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Virtuallyz.VRShooter;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mGameManager
     {
@@ -14,14 +14,12 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
             static bool Prefix()
             {
                 DemulShooter_Plugin.MyLogger.LogWarning("Virtuallyz.VRShooter.GameManager.OnLevelActStopped()");
-                lock (DemulShooter_Plugin.MutexLocker_Outputs)
+                for (int i = 0; i < DemulShooter_Plugin.MAX_PLAYERS; i++)
                 {
-                    DemulShooter_Plugin.OutputData.P1_Life = 0;
-                    DemulShooter_Plugin.OutputData.P1_Ammo = 0;
-                    DemulShooter_Plugin.OutputData.P2_Life = 0;
-                    DemulShooter_Plugin.OutputData.P2_Ammo = 0;
+                    DemulShooter_Plugin.OutputData.Life[i] = 0;
+                    DemulShooter_Plugin.OutputData.Ammo[i] = 0; 
                 }
-                DemulShooter_Plugin.SendOutputs();
+
                 return true;
             }
 

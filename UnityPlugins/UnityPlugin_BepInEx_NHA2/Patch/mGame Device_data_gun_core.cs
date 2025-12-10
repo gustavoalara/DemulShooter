@@ -2,7 +2,7 @@
 using UnityEngine;
 using System;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mGame_Device_data_gun_core
     {
@@ -15,7 +15,7 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix(Game_Device_data_gun_core __instance, int device_num, ref bool __result)
             {
-                //NightHunterArcade2_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.device_is_can_work() => player: " + __instance.mygame_player_num + ", myis_use_mouse:  " + __instance.myis_use_mouse + ", result: " + __result);
+                //DemulShooter_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.device_is_can_work() => player: " + __instance.mygame_player_num + ", myis_use_mouse:  " + __instance.myis_use_mouse + ", result: " + __result);
                 __result = true;
                 return false;
             }
@@ -24,30 +24,17 @@ namespace UnityPlugin_BepInEx_NHA2
 
         /// <summary>
         /// Called by the game to get mouse coordinates to handle Guns
-        /// If plugin Input is set to MOUSE, we do nothing
-        /// If plugin Input is set to DemulShooter, we will replace coordinates by our own calculated values
         /// </summary>
         [HarmonyPatch(typeof(Game_Device_data_gun_core), "get_gun_pos_by_mouse")]
         class get_gun_pos_by_mouse
         {
             static bool Prefix(Game_Device_data_gun_core __instance, ref Vector3 __result)
             {
-                //NightHunterArcade2_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.get_gun_pos_by_mouse() => player: " + __instance.mygame_player_num);                    
-                if (DemulShooter_Plugin.Configurator.InputMode == DemulShooter_Plugin.InputMode.Mouse)
-                {
-                    return true;
-                }
-                else
-                {
-                    //DemulShooter axis value
-                    Vector3 mouse_pos = new Vector3();
-                    int PlayerNum = __instance.get_player_num() - 1;
-                    mouse_pos.x = BitConverter.ToInt32(DemulShooter_Plugin.NHA2_Mmf.Payload, NHA2_MemoryMappedFile_Controller.INDEX_P1_INGAME_X + 8 * PlayerNum);
-                    mouse_pos.y = BitConverter.ToInt32(DemulShooter_Plugin.NHA2_Mmf.Payload, NHA2_MemoryMappedFile_Controller.INDEX_P1_INGAME_Y + 8 * PlayerNum);
-                    //NightHunterArcade2_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.get_gun_pos_by_mouse() => player: " + __instance.mygame_player_num + ", Value: " + mouse_pos.ToString());
-                    __result = zhichi_hanshu_pos.change_mouse_positon_to_gun_pos(mouse_pos);
-                    return false;
-                }
+                int PlayerNum = __instance.get_player_num() - 1;
+                Vector3 mouse_pos = DemulShooter_Plugin.PluginControllers[PlayerNum].GetAimingPosition();
+                //DemulShooter_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.get_gun_pos_by_mouse() => player: " + __instance.mygame_player_num + ", Value: " + mouse_pos.ToString());
+                __result = zhichi_hanshu_pos.change_mouse_positon_to_gun_pos(mouse_pos);
+                return false;
             }
         }
 
@@ -59,32 +46,23 @@ namespace UnityPlugin_BepInEx_NHA2
         {
             static bool Prefix(Game_Device_data_gun_core __instance, ref bool __result)
             {
-                //NightHunterArcade2_Plugin.MyLogger.LogMessage("mGame_Device_data_gun_core.is_gun_fire() => player: " + __instance.mygame_player_num);
-                if (DemulShooter_Plugin.Configurator.InputMode == DemulShooter_Plugin.InputMode.Mouse)
+                __result = false;
+                int PlayerNum = __instance.get_player_num() - 1;
+                if (__instance.is_single_fire())
                 {
-                    return true;
+                    if (DemulShooter_Plugin.PluginControllers[PlayerNum].GetButtonDown(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
+                    {
+                        __result = true;
+                    }
                 }
                 else
                 {
-                    //DemulShooter button value
-                    __result = false;
-                    int PlayerNum = __instance.get_player_num() - 1;
-                    if (__instance.is_single_fire())
+                    if (DemulShooter_Plugin.PluginControllers[PlayerNum].GetButton(UnityPlugin_BepInEx_Core.PluginController.MyInputButtons.Trigger))
                     {
-                        if (DemulShooter_Plugin.DemulShooter_Buttons[PlayerNum].IsTriggerPressed())
-                        {
-                            __result = true;
-                        }
+                        __result = true;
                     }
-                    else
-                    {
-                        if (DemulShooter_Plugin.DemulShooter_Buttons[PlayerNum].IsTriggerDown())
-                        {
-                            __result = true;
-                        }
-                    }
-                    return false;
                 }
+                return false;
             }
         }
     }

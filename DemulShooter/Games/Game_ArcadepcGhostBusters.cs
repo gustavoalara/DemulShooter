@@ -214,18 +214,18 @@ namespace DemulShooter
         {
             //Gun motor : Is activated permanently while trigger is pressed
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGunTip, OutputId.P1_LmpGunTip));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGunBack, OutputId.P1_LmpGunBack));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGunTip, OutputId.P2_LmpGunTip));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpGunBack, OutputId.P2_LmpGunBack));
-            _Outputs.Add(new GameOutput(OutputDesciption.BallAgitator_State, OutputId.BallAgitator_State));
-            _Outputs.Add(new GameOutput(OutputDesciption.BallAgitator_Direction, OutputId.BallAgitator_Direction));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_BallShooter, OutputId.P1_BallShooter));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_BallShooter, OutputId.P2_BallShooter));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGunTip));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGunBack));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGunTip));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpGunBack));
+            _Outputs.Add(new GameOutput(OutputId.BallAgitator_State));
+            _Outputs.Add(new GameOutput(OutputId.BallAgitator_Direction));
+            _Outputs.Add(new GameOutput(OutputId.P1_BallShooter));
+            _Outputs.Add(new GameOutput(OutputId.P2_BallShooter));
 
             //Custom Outputs
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
         }
 
         /// <summary>

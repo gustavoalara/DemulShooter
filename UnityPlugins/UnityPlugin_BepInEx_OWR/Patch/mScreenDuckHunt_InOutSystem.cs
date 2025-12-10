@@ -5,7 +5,7 @@ using UnityPlugin_BepInEx_Core;
 using Virtuallyz.VRShooter.IO;
 using UnityEngine;
 
-namespace OperationWolf_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {    
     class mScreenDuckHunt_InOutSystem
     {
@@ -52,72 +52,72 @@ namespace OperationWolf_BepInEx_DemulShooter_Plugin
             static bool Prefix(ScreenDuckHunt_InOutSystem __instance)
             {
                 /* Custom Inputs for Player 1 */
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FirePressed", new object[] { 0 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButton(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButton(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FireHold", new object[] { 0 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonUp(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonUp(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FireReleased", new object[] { 0 });
                 }
 
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.PluginButton.Reload))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.MyInputButtons.Reload))
                 {
                     UseMethodFromName(__instance, "Reload", new object[] { 0 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonUp(PluginController.PluginButton.Reload))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonUp(PluginController.MyInputButtons.Reload))
                 {
                     UseMethodFromName(__instance, "ReloadReleased", new object[] { 0 });
                 }
 
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.PluginButton.Action))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player1].GetButtonDown(PluginController.MyInputButtons.Action))
                 {
                     UseMethodFromName(__instance, "SelectNextWeapon", new object[] { 0 });
                 }
 
                 /* Custom Inputs for Player 2 */
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FirePressed", new object[] { 1 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButton(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButton(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FireHold", new object[] { 1 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonUp(PluginController.PluginButton.Trigger))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonUp(PluginController.MyInputButtons.Trigger))
                 {
                     UseMethodFromName(__instance, "FireReleased", new object[] { 1 });
                 }
 
 
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.PluginButton.Reload))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.MyInputButtons.Reload))
                 {
                     UseMethodFromName(__instance, "Reload", new object[] { 1 });
                 }
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonUp(PluginController.PluginButton.Reload))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonUp(PluginController.MyInputButtons.Reload))
                 {
                     UseMethodFromName(__instance, "ReloadReleased", new object[] { 1 });
                 }
 
-                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.PluginButton.Action))
+                if (DemulShooter_Plugin.PluginControllers[(int)DemulShooter_Plugin.PlayerType.Player2].GetButtonDown(PluginController.MyInputButtons.Action))
                 {
                     UseMethodFromName(__instance, "SelectNextWeapon", new object[] { 1 });
                 }
 
                 //Adding a keyboard key for Grenade P2
-                if (Input.GetKeyDown(DemulShooter_Plugin.P2_Grenade_KeyCode))
+                if (DemulShooter_Plugin.P2_Grenade_Key.GetButtonDown())
                 {
                     UseMethodFromName(__instance, "SelectGrenade", new object[] { 1 });
                 }
-                if (Input.GetKey(DemulShooter_Plugin.P2_Grenade_KeyCode))
+                if (DemulShooter_Plugin.P2_Grenade_Key.GetButton())
                 {
                     UseMethodFromName(__instance, "HoldGrenade", new object[] { 1 });
                 }
-                if (Input.GetKeyUp(DemulShooter_Plugin.P2_Grenade_KeyCode))
+                if (DemulShooter_Plugin.P2_Grenade_Key.GetButtonUp())
                 {
                     UseMethodFromName(__instance, "UnSelectAnyGrenade", new object[] { 1 });
                 }

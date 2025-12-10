@@ -44,7 +44,7 @@ namespace DsCore.MameOutput
             }
         }
 
-        public SyncBlinkingGameOutput(String Name, OutputId Id, int BlinkingTimerInterval): base(Name, Id)
+        public SyncBlinkingGameOutput(OutputId Id, int BlinkingTimerInterval): base(Id)
         {
             _SyncBlinkingTimer = new Timer();
             _SyncBlinkingTimer.Interval = BlinkingTimerInterval;

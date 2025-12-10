@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace UnityPlugin_BepInEx_NHA2
+namespace BepInEx_DemulShooter_Plugin
 {
     class mzhichi_hanshu_pos
     {
@@ -16,8 +16,8 @@ namespace UnityPlugin_BepInEx_NHA2
             {
                 //NightHunterArcadePlugin.MyLogger.LogMessage("mzhichi_hanshu_pos.change_to_min() => mouse_pos: " + vec_input.ToString());
                 __result = vec_input;
-                __result.x = (vec_input.x * zhichi_hanshu_pos.PIXEL_WIDTH / DemulShooter_Plugin.Configurator.ResolutionWidth) - (zhichi_hanshu_pos.PIXEL_WIDTH / 2);
-                __result.y = (vec_input.y * zhichi_hanshu_pos.PIXEL_HEIGHT / DemulShooter_Plugin.Configurator.ResolutionHeight) - (zhichi_hanshu_pos.PIXEL_HEIGHT / 2);
+                __result.x = (vec_input.x * zhichi_hanshu_pos.PIXEL_WIDTH / Screen.width) - (zhichi_hanshu_pos.PIXEL_WIDTH / 2);
+                __result.y = (vec_input.y * zhichi_hanshu_pos.PIXEL_HEIGHT / Screen.height) - (zhichi_hanshu_pos.PIXEL_HEIGHT / 2);
                 return false;
             }
         }

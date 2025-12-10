@@ -1,9 +1,23 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
-namespace NerfArcade_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mGame
     {
+        /// <summary>
+        /// Remove mouse cursor
+        /// </summary>
+        [HarmonyPatch(typeof(Game), "Awake")]
+        class Awake
+        {
+            static void Postfix()
+            {
+                //DemulShooter_Plugin.MyLogger.LogMessage("Game.Awake()");
+                UnityEngine.Cursor.visible = false;
+            }
+        }
+
         /// <summary>
         /// Force periodic reboot to always OFF
         /// </summary>
@@ -12,10 +26,28 @@ namespace NerfArcade_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(ref bool __result)
             {
-                //NerfArcade_Plugin.MyLogger.LogMessage("Game.ShouldPeriodicReboot()");
+                //DemulShooter_Plugin.MyLogger.LogMessage("Game.ShouldPeriodicReboot()");
                 __result = false;
                 return false;
             }
         }
+
+        /// <summary>
+        /// Force periodic reboot to always OFF
+        /// </summary>
+        //[HarmonyPatch(typeof(Game), "Start")]
+        //class Start
+        //{
+        //    static bool Prefix()
+        //    {
+        //        //DemulShooter_Plugin.MyLogger.LogMessage("Game.Start()");
+        //        if (DemulShooter_Plugin.ForceResolution)
+        //            Screen.SetResolution(DemulShooter_Plugin.ScreenWidth, DemulShooter_Plugin.ScreenHeight, DemulShooter_Plugin.Fullscreen);                    
+                
+        //        return true;
+        //    }
+        //}
+        
+            
     }
 }

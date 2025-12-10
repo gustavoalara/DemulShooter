@@ -188,10 +188,6 @@ namespace DemulShooter_GUI
             TXT_OPGHOST_ACTION_P1.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_OpGhost_Action_P1);
             TXT_OPGHOST_ACTION_P2.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_OpGhost_Action_P2);
 
-            //Fill Rabbids Hollywood tab
-            Logger.WriteLog("Initializing GUI [Rabbids Hollywood] pages...");
-            Txt_Rha_GamePath.Text = Configurator.GetInstance().Rha_Path;
-
             //Fill RPCS3 Tab
             Logger.WriteLog("Initializing GUI [RPCS3] pages...");
             Txt_Rpcs3_P1_Start.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Rpcs3_P1_Start);
@@ -201,13 +197,6 @@ namespace DemulShooter_GUI
             Txt_Rpcs3_Down.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Rpcs3_Down);
             Txt_Rpcs3_Enter.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Rpcs3_Enter);
             Txt_Rpcs3_3D_Switch.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Rpcs3_3D_Switch);
-
-            //Fill Wild West Shoutout tab
-            Logger.WriteLog("Initializing GUI [Wild West Shoutout] pages...");
-            Txt_Wws_GamePath.Text = Configurator.GetInstance().Wws_Path;
-            Txt_Wws_P1Coin.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Wws_P1Coin);
-            Txt_Wws_P2Coin.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Wws_P2Coin);
-            Txt_Wws_Test.Text = GetKeyStringFromScanCode((int)Configurator.GetInstance().DIK_Wws_Test);
 
             //Fill Output Tab
             Logger.WriteLog("Initializing GUI [Output] pages...");
@@ -1006,68 +995,45 @@ namespace DemulShooter_GUI
         }
 
         #endregion
+              
+        #region Unity Plugin Installation Tab
 
-        #region Wild West Shoutoout tab
-
-        private void Btn_Wws_GamePath_Click(object sender, EventArgs e)
+        private void Btn_InstallUnityPlugin_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog1.Description = "Please select \"CowBoy.exe\" installation folder";
+            Button Btn = (Button)sender;
+            string SrcUnityFolder = string.Empty;
+            string ExeName = string.Empty;
+            switch (Btn.Name)
+            {
+                case "Btn_Dcop": SrcUnityFolder = "DCOP"; break;
+                case "Btn_Drk": SrcUnityFolder = "Drakon"; break;
+                case "Btn_MarsS": SrcUnityFolder = "MarsSortie"; break;
+                case "Btn_Mia": SrcUnityFolder = "MissionImpossible"; break;
+                case "Btn_Mib": SrcUnityFolder = "MenInBlack"; break;
+                case "Btn_Nerfa": SrcUnityFolder = "NerfArcade"; break;
+                case "Btn_Nha": SrcUnityFolder = "NightHunter"; break;
+                case "Btn_Owr": SrcUnityFolder = "OperationWolfReturn"; break;
+                case "Btn_PvZ": SrcUnityFolder = "PlantsVsZombies"; break;
+                case "Btn_Pbx": SrcUnityFolder = "PointBlankX"; break;
+                case "Btn_Rha": SrcUnityFolder = "RabbidsHollywood"; break;
+                case "Btn_Tra": SrcUnityFolder = "TombRaider"; break;
+                case "Btn_Wws": SrcUnityFolder = "WildWestShootout"; break;
+                default: break;
+            }
+
+            folderBrowserDialog1.Description = "Please select the Unity game executable installation folder";
             if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Configurator.GetInstance().Wws_Path = folderBrowserDialog1.SelectedPath;
-                Txt_Wws_GamePath.Text = Configurator.GetInstance().Wws_Path;
+                Install_Unity_Plugin(SrcUnityFolder, folderBrowserDialog1.SelectedPath);
             }
         }
-
-        private void Btn_Wws_InstallUnity_Click(object sender, EventArgs e)
+        private void Install_Unity_Plugin(string SrcFolder, string DstFolder)
         {
-            //foreach (FileInfo file in new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + "\\Unity\\WildWestShoutout").GetFiles())
-            //    file.CopyTo(folderBrowserDialog1.SelectedPath + "\\artwork\\crosshairs\\" + file.Name, true);
-            if ( !CloneDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Unity\\WildWestShoutout", Txt_Wws_GamePath.Text))
-                MessageBox.Show("Impossible to copy Unity plugin in the followinf folder :\n" + Txt_Wws_GamePath.Text, "DemulShooter", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            if (!CloneDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Unity\\" + SrcFolder, DstFolder))
+                MessageBox.Show("Impossible to copy Unity plugin in the following folder :\n" + DstFolder, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
-                MessageBox.Show("Unity plugin installed !");
-
-            if (Configurator.GetInstance().WriteConf(AppDomain.CurrentDomain.BaseDirectory + @"\" + CONF_FILENAME))
-                MessageBox.Show("Configuration saved !");
-            else
-                MessageBox.Show("Impossible to save DemulShooter config file.", "DemulShooter", MessageBoxButtons.OK, MessageBoxIcon.Error);            
+                MessageBox.Show("Unity Plugin successfully installed !");
         }
-
-        private void Btn_Wws_SaveKeys_Click(object sender, EventArgs e)
-        {
-            if (Configurator.GetInstance().WriteConf(AppDomain.CurrentDomain.BaseDirectory + @"\" + CONF_FILENAME))
-                MessageBox.Show("Configuration saved !");
-            else
-                MessageBox.Show("Impossible to save DemulShooter config file.", "DemulShooter", MessageBoxButtons.OK, MessageBoxIcon.Error);            
-        }
-
-        #endregion
-
-        #region Rabbids Hollywood Tab
-
-        private void Btn_Rha_GamePath_Click(object sender, EventArgs e)
-        {
-            folderBrowserDialog1.Description = "Please select \"Game.exe\" installation folder";
-            if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                Configurator.GetInstance().Rha_Path = folderBrowserDialog1.SelectedPath;
-                Txt_Rha_GamePath.Text = Configurator.GetInstance().Rha_Path;
-            }
-        }
-
-        private void Btn_Rha_InstallUnity_Click(object sender, EventArgs e)
-        {
-            if (!CloneDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Unity\\RabbidsHollywood", Txt_Rha_GamePath.Text))
-                MessageBox.Show("Impossible to copy Unity plugin in the followinf folder :\n" + Txt_Rha_GamePath.Text, "DemulShooter", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            else
-                MessageBox.Show("Unity plugin installed !");
-
-            if (Configurator.GetInstance().WriteConf(AppDomain.CurrentDomain.BaseDirectory + @"\" + CONF_FILENAME))
-                MessageBox.Show("Configuration saved !");
-            else
-                MessageBox.Show("Impossible to save DemulShooter config file.", "DemulShooter", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }        
 
         #endregion
 
@@ -1409,13 +1375,7 @@ namespace DemulShooter_GUI
                         else if (_SelectedTextBox == TXT_GSOZ_PEDAL_1)
                             Configurator.GetInstance().DIK_Gsoz_Pedal_P1 = s.scanCode;
                         else if (_SelectedTextBox == TXT_GSOZ_PEDAL_2)
-                            Configurator.GetInstance().DIK_Gsoz_Pedal_P2 = s.scanCode;
-                        else if (_SelectedTextBox == Txt_Wws_P1Coin)
-                            Configurator.GetInstance().DIK_Wws_P1Coin = s.scanCode;
-                        else if (_SelectedTextBox == Txt_Wws_P2Coin)
-                            Configurator.GetInstance().DIK_Wws_P2Coin = s.scanCode;
-                        else if (_SelectedTextBox == Txt_Wws_Test)
-                            Configurator.GetInstance().DIK_Wws_Test = s.scanCode;
+                            Configurator.GetInstance().DIK_Gsoz_Pedal_P2 = s.scanCode;                        
                         else if (_SelectedTextBox == Txt_Rpcs3_P1_Start)
                             Configurator.GetInstance().DIK_Rpcs3_P1_Start = s.scanCode;
                         else if (_SelectedTextBox == Txt_Rpcs3_P2_Start)

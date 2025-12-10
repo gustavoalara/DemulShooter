@@ -6,28 +6,34 @@ using System.Reflection;
 using System.Threading;
 using BepInEx;
 using HarmonyLib;
+using UnityEngine;
 using UnityPlugin_BepInEx_Core;
 using UnityPlugin_BepInEx_IniFile;
-using UnityEngine;
 
-namespace MissionImpossible_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
     public class DemulShooter_Plugin : BaseUnityPlugin
     {
         public const String pluginGuid = "argonlefou.demulshooter.missionimpossible";
         public const String pluginName = "MissionImpossible_BepInEx_DemulShooter_Plugin";
-        public const String pluginVersion = "2.0.0.0";
+        public const String pluginVersion = "17.0.0.0";
         public const String pluginConfigFile = "MissionImpossible_BepInEx_DemulShooter_Plugin.ini";
 
         public static BepInEx.Logging.ManualLogSource MyLogger;
 
         public static DemulShooter_Plugin Instance = null;
 
+        public static readonly int MAX_PLAYERS = 2;
+
         //custom Input Data
-        public static PluginController[] PluginControllers = new PluginController[TcpInputData.MAX_PLAYER];
+        public static PluginController[] PluginControllers = new PluginController[MAX_PLAYERS];
         public static bool EnableInputHack = false;         //By default, no input hack on the plugin. Enabled once DemulShooter is connected (without -noinput flag)
-        
+
+        //Using custom Button as Input.GetKeyDown is not correctly detected in non-unity Thread
+        public static PluginControllerButton Exit_Key = new PluginControllerButton((int)KeyCode.Escape);
+        public static PluginControllerButton Test_Key = new PluginControllerButton((int) KeyCode.Alpha0);
+
         //TCP server data for Inputs/Outputs
         private TcpListener _TcpListener;
         private Thread _TcpListenerThread;
@@ -46,10 +52,10 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
         public static readonly float ORIGINAL_HEIGHT = 1080.0f;
 
         //Custom resolution
-        public static bool ChangeResolution = false;
         public static int ScreenWidth = 1920;
         public static int ScreenHeight = 1080;
         public static bool Fullscreen = true;
+        public static bool ForceResolution = false;
 
         public void Awake()
         {
@@ -59,11 +65,11 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
             MyLogger.LogMessage("Plugin Loaded");
             Harmony harmony = new Harmony(pluginGuid);
 
-            OutputData = new TcpOutputData();
-            _OutputDataBefore = new TcpOutputData();
-            _InputData = new TcpInputData();
+            OutputData = new TcpOutputData(MAX_PLAYERS);
+            _OutputDataBefore = new TcpOutputData(MAX_PLAYERS);
+            _InputData = new TcpInputData(MAX_PLAYERS);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
                 PluginControllers[i] = new PluginController(i);
             }
@@ -80,14 +86,21 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
             {
                 try
                 {
-                    if (Plugin_IniFile.IniReadValue("Video", "CHANGE_RES").Equals("1"))
-                        ChangeResolution = true;
-                    ScreenWidth = Int32.Parse(Plugin_IniFile.IniReadValue("Video", "WIDTH"));
-                    ScreenHeight = Int32.Parse(Plugin_IniFile.IniReadValue("Video", "HEIGHT"));
-                    if (Plugin_IniFile.IniReadValue("Video", "FULLSCREEN").Equals("0"))
-                        Fullscreen = false;
-                    else
-                        Fullscreen = true;
+                    Plugin_IniFile.IniReadIntValue("Video", "WIDTH", ref ScreenWidth);
+                    Plugin_IniFile.IniReadIntValue("Video", "HEIGHT", ref ScreenHeight);
+
+                    Plugin_IniFile.IniReadBoolValue("Video", "FULLSCREEN", ref Fullscreen);
+                    Plugin_IniFile.IniReadBoolValue("Video", "FORCE_RESOLUTION", ref ForceResolution);
+
+                    for (int i = 0; i < MAX_PLAYERS; i++)
+                    {
+
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_START"));
+                        PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "P" + (i + 1).ToString() + "_COIN"));
+                    }
+
+                    Exit_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "EXIT"));
+                    Test_Key.SetKeyCode(Plugin_IniFile.IniReadValue("INPUT_KEYS", "TEST"));
                 }
                 catch (Exception Ex)
                 {
@@ -100,6 +113,8 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
                 MyLogger.LogWarning(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "():" + Plugin_IniFile.FInfo.FullName + " not found");
             }
 
+            MyLogger.LogMessage("Graphics Engine: " + SystemInfo.graphicsDeviceVersion);
+
             harmony.PatchAll();
         }
 
@@ -108,65 +123,58 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
 
         public void Update()
         {
-            //Using Input.GEtKeyDown + Input.GEtKeyUp cause trouble because the KeyUp is sometimes not detected/executed
-            //Buttons then stay pressed and cause issue
-            //Recreating our own Up/Down detection :
-
-            //START Buttons
-            if (Input.GetKey(KeyCode.Alpha1))
-                PluginControllers[0].SetButton(PluginController.MyInputButtons.Start, 1);
-            else
-                PluginControllers[0].SetButton(PluginController.MyInputButtons.Start, 0);
-            if (Input.GetKey(KeyCode.Alpha2))
-                PluginControllers[1].SetButton(PluginController.MyInputButtons.Start, 1);
-            else
-                PluginControllers[1].SetButton(PluginController.MyInputButtons.Start, 0);
-
-            
-            if (!EnableInputHack)
+            //Custom Button handling
+            Exit_Key.SetButton(Input.GetKey((KeyCode)Exit_Key.KeyCode));
+            Test_Key.SetButton(Input.GetKey((KeyCode)Test_Key.KeyCode));
+            for (int i = 0; i < MAX_PLAYERS; i++)
             {
-                //Player 2 = Mouse + SHIFT
-                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
-                {
-                    if (Input.GetKey(KeyCode.Mouse0))
-                        PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerLeft, 1);
-                    else
-                        PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerLeft, 0);
-                    if (Input.GetKey(KeyCode.Mouse1))
-                        PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerRight, 1);
-                    else
-                        PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerRight, 0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Start, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Start].KeyCode) ? (byte)1 : (byte)0);
+                PluginControllers[i].SetButton(PluginController.MyInputButtons.Coin, Input.GetKey((KeyCode)PluginControllers[i].InputButtons[(int)PluginController.MyInputButtons.Coin].KeyCode) ? (byte)1 : (byte)0);
 
-                    PluginControllers[1].SetAimingValues(Input.mousePosition);
+                if (!EnableInputHack)
+                {
+                    PluginControllers[i].SetAimingValues(Input.mousePosition);
+
+                    //Player 2 = Mouse + SHIFT
+                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    {
+                        if (Input.GetKey(KeyCode.Mouse0))
+                            PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerLeft, 1);
+                        else
+                            PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerLeft, 0);
+                        if (Input.GetKey(KeyCode.Mouse1))
+                            PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerRight, 1);
+                        else
+                            PluginControllers[1].SetButton(PluginController.MyInputButtons.TriggerRight, 0);
+                    }
+                    else
+                    {
+                        if (Input.GetKey(KeyCode.Mouse0))
+                            PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerLeft, 1);
+                        else
+                            PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerLeft, 0);
+                        if (Input.GetKey(KeyCode.Mouse1))
+                            PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerRight, 1);
+                        else
+                            PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerRight, 0);
+                    }
                 }
-                else
-                {
-                    if (Input.GetKey(KeyCode.Mouse0))
-                        PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerLeft, 1);
-                    else
-                        PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerLeft, 0);
-                    if (Input.GetKey(KeyCode.Mouse1))
-                        PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerRight, 1);
-                    else
-                        PluginControllers[0].SetButton(PluginController.MyInputButtons.TriggerRight, 0);
-
-                    PluginControllers[0].SetAimingValues(Input.mousePosition);
-                }                
-            }
-
-            //Coin
-            if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                CreditManager.Instance.AddOneCoin();
             }
 
             //Quit
-            if (Input.GetKeyDown(KeyCode.Escape))
-                Application.Quit();
+            if (Exit_Key.GetButtonDown())
+                UnityEngine.Application.Quit();
+
+            //Coin
+            for (int i = 0; i < MAX_PLAYERS; i++)
+            {
+                if (PluginControllers[i].GetButtonDown(PluginController.MyInputButtons.Coin))
+                    CreditManager.Instance.AddOneCoin();
+            }
 
             //Retrieving Output data
             if (CreditManager.Instance != null)
-                DemulShooter_Plugin.OutputData.Credits = CreditManager.Instance.CurrentCredit;
+                DemulShooter_Plugin.OutputData.Credits = (int)CreditManager.Instance.CurrentCredit;
             if (PlayerManager.Instance != null)
             {
                 for (int i = 0; i < 2; i++)
@@ -174,7 +182,7 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
                     Player p = PlayerManager.Instance.GetPlayer(i);
                     if (p != null)
                     {
-                        DemulShooter_Plugin.OutputData.Life[i] = (uint)p.Life;
+                        DemulShooter_Plugin.OutputData.Life[i] = p.Life;
                         if (p.PMode >= PlayerMode.PM_GAME && p.PMode <= PlayerMode.PM_GAME_OVER)
                             DemulShooter_Plugin.OutputData.IsPlaying[i] = 1;
                         else
@@ -252,11 +260,11 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
 
                                     //lock (MutexLocker_Inputs)
                                     //{
-                                    for (int i = 0; i < TcpInputData.MAX_PLAYER; i++)
+                                    for (int i = 0; i < MAX_PLAYERS; i++)
                                     {
                                         PluginControllers[i].SetAimingValues(new Vector3(_InputData.Axis_X[i], _InputData.Axis_Y[i]));
-                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.TriggerLeft, _InputData.Trigger[i]);
-                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.TriggerRight, _InputData.Action[i]);
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.TriggerLeft, _InputData.TriggerL[i]);
+                                        PluginControllers[i].SetButton(PluginController.MyInputButtons.TriggerRight, _InputData.TriggerR[i]);
                                     }
                                     CrossHairVisibility = _InputData.HideCrosshairs == 1 ? false : true;
                                     EnableInputHack = _InputData.EnableInputsHack == 1 ? true : false;
@@ -303,7 +311,7 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
                     //lock (MutexLocker_Outputs)
                     //{
                     //Resetting event flags for next packets                    
-                    for (int i = 0; i < TcpOutputData.MAX_PLAYER; i++)
+                    for (int i = 0; i < MAX_PLAYERS; i++)
                     {
                         OutputData.Recoil[i] = 0;
                         OutputData.Damaged[i] = 0;
@@ -316,6 +324,14 @@ namespace MissionImpossible_BepInEx_DemulShooter_Plugin
             {
                 MyLogger.LogMessage(Instance.GetType().Name + "." + MethodBase.GetCurrentMethod().Name + "(): Socket exception: " + Ex);
             }
+        }
+
+        /// <summary>
+        /// For deebug, printing StackTrace to trace calls to API we're looking for
+        /// </summary>
+        public static void PrintStackTrace()
+        {
+            MyLogger.LogMessage(System.Environment.StackTrace);
         }
     }
 }

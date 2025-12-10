@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace NerfArcade_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mSys_Linux
     {

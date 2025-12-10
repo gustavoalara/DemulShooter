@@ -4,24 +4,22 @@ namespace UnityPlugin_BepInEx_Core
 {
     public class PluginController
     {
-        private const int INPUTBUTTONS_LENGTH = 3;
+        private const int INPUTBUTTONS_LENGTH = 5;
 
         public enum MyInputButtons
         {
             Start = 0,
             Trigger,
             Action,
-            Reload
+            Reload,
+            Coin
         }
 
         private int _ID = 0;
         public int ID
         { get { return _ID; } }
 
-        public byte[] InputButtons { get; set; }
-
-        private bool _TriggerButtonPressed = false;
-        private bool _TriggerButtonReleased = false;        
+        public PluginControllerButton[] InputButtons;
 
         public float Axis_X { get; private set; }
         public float Axis_Y { get; private set; }
@@ -29,10 +27,16 @@ namespace UnityPlugin_BepInEx_Core
         public PluginController(int ID)
         {
             _ID = ID;
-            InputButtons = new byte[INPUTBUTTONS_LENGTH];
+            InputButtons = new PluginControllerButton[INPUTBUTTONS_LENGTH];
+            for (int i = 0; i < INPUTBUTTONS_LENGTH; i++)
+            {
+                InputButtons[i] = new PluginControllerButton();
+            }
+            InputButtons[(int)MyInputButtons.Start].SetKeyCode(49 + ID);
+            InputButtons[(int)MyInputButtons.Coin].SetKeyCode(53 + ID);
         }
 
-        public void SetAimingValues(Vector2 Position)
+        public void SetAimingValues(Vector3 Position)
         {
             Axis_X = Position.x;
             Axis_Y = Position.y;
@@ -40,52 +44,27 @@ namespace UnityPlugin_BepInEx_Core
 
         public void SetButton(MyInputButtons ButtonId, byte Value)
         {
-            if (InputButtons[(int)ButtonId] != Value)
-            {
-                if (InputButtons[(int)ButtonId] == 1)
-                {
-                    _TriggerButtonPressed = false;
-                    _TriggerButtonReleased = true;
-                }
-                else
-                {
-                    _TriggerButtonPressed = true;
-                    _TriggerButtonReleased = false;
-                }
-                InputButtons[(int)ButtonId] = Value;
-            }            
+            InputButtons[(int)ButtonId].SetButton(Value == 1 ? true : false);
         }
 
         public bool GetButton(MyInputButtons ButtonId)
         {
-            if (InputButtons[(int)ButtonId] == 1)
-                return true;
-            return false;
+            return InputButtons[(int)ButtonId].GetButton();
         }
 
         public bool GetButtonDown(MyInputButtons ButtonId)
         {
-            if (_TriggerButtonPressed)
-            {
-                _TriggerButtonPressed = false;
-                return true;
-            }
-            return false;
+            return InputButtons[(int)ButtonId].GetButtonDown();
         }
 
         public bool GetButtonUp(MyInputButtons ButtonId)
-        {            
-            if (_TriggerButtonReleased)
-            {
-                _TriggerButtonReleased = false;
-                return true;
-            }
-            return false;
+        {
+            return InputButtons[(int)ButtonId].GetButtonUp();
         }
 
-        public Vector2 GetAiming()
+        public Vector3 GetAimingPosition()
         {
-            return new Vector2(Axis_X, Axis_Y);
+            return new Vector3(Axis_X, Axis_Y);
         }
     }
 }

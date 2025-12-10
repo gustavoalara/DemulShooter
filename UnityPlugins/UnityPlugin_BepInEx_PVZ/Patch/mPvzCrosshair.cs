@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Pvz;
 
-namespace PvZ_BepInEx_DemulShooter_Plugin.Patch
+namespace BepInEx_DemulShooter_Plugin.Patch
 {
     class mPvzCrosshair
     {

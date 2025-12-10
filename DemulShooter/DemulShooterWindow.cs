@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
+using DemulShooter.Games;
 using DsCore;
 using DsCore.Config;
 using DsCore.MameOutput;
@@ -359,6 +360,12 @@ namespace DemulShooter
                                 _Game = new Game_ArcadepcPvzLastStand(_Rom.ToLower());
                             }; break;
 
+                        case "rhood":
+                            {
+                                _Game = new Game_ArcadepcRobinHood(_Rom.ToLower());
+                            }
+                            ; break;
+
                         case "wws":
                             {
                                 _Game = new Game_ArcadepcWws(_Rom.ToLower());
@@ -451,7 +458,7 @@ namespace DemulShooter
                     {
                         case "akuma":
                             {
-                                _Game = new Game_WaxAkuma(_Rom.ToLower());
+                                _Game = new Game_GameWaxAkuma(_Rom.ToLower());
                             } break;
 
                         default : 
@@ -813,6 +820,11 @@ namespace DemulShooter
                             }; break;
 
 
+                        case "fha":
+                            {
+                                _Game = new Game_ArcadepcFireHero(_Rom.ToLower());
+                            }
+                            break;
                         case "hsfr":
                             {
                                 _Game = new Game_ArcadepcHsfr(_Rom.ToLower());
@@ -821,6 +833,11 @@ namespace DemulShooter
                             {
                                 _Game = new Game_ArcadepcMechaTornado(_Rom.ToLower());
                             }break;
+                        case "topgun":
+                            {
+                                _Game = new Game_ArcadepcTopGun(_Rom.ToLower());
+                            }
+                            break;
                         case "hwspr2":
                             {
                                 _Game = new Game_ArcadepcWaterSprite2(_Rom.ToLower());
@@ -835,12 +852,6 @@ namespace DemulShooter
                             {
                                 _Game = new Game_WndBlueEstate(_Rom.ToLower());
                             };break;
-
-                        case "rhood":
-                            {
-                                _Game = new Game_ArcadepcRobinHood(_Rom.ToLower());
-                            }
-                            ; break;
 
                         default:
                             break;
@@ -1209,8 +1220,11 @@ namespace DemulShooter
 
         private void OnGameHooked(object sender, EventArgs e)
         {
-            _TrayIcon.Icon = DemulShooter.Properties.Resources.DemulShooter_Hooked_Icon;
-            _TrayIcon.Text += "[Hooked]";
+            if (_TrayIcon != null)
+            {
+                _TrayIcon.Icon = DemulShooter.Properties.Resources.DemulShooter_Hooked_Icon;
+                _TrayIcon.Text += "[Hooked]";
+            }
 
             //Stopping the Timeout timer
             _TimerHookTimeout.Stop();

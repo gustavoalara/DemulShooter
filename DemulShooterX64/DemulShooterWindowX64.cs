@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
+using DemulShooterX64.Games;
 using DsCore;
 using DsCore.Config;
 using DsCore.MameOutput;
@@ -291,9 +292,13 @@ namespace DemulShooterX64
                             {
                                 _Game = new Game_ArcadepcMarsSortie(_Rom.ToLower());
                             }; break;
+                        case "mib":
+                            {
+                                _Game = new Game_ArcadepcMIB(_Rom.ToLower());
+                            }; break;
                         case "misimp":
                             {
-                                _Game = new Game_ArcadePcMissionImpossible(_Rom.ToLower());
+                                _Game = new Game_ArcadepcMissionImpossible(_Rom.ToLower());
                             }; break;
                         case "nha":
                             {
@@ -377,6 +382,11 @@ namespace DemulShooterX64
                             {
                                 _Game = new Game_S357DarkEscape(_Rom.ToLower());
                             }; break;
+                        case "razstorm":
+                            {
+                                _Game = new Game_S357RazingStorm(_Rom.ToLower());
+                            }
+                            ; break;
                         case "sailorz":
                             {
                                 _Game = new Game_S357SailorZombie(_Rom.ToLower());
@@ -440,6 +450,11 @@ namespace DemulShooterX64
                 {
                     switch (_Rom.ToLower())
                     {
+                        case "bullseye":
+                            {
+                                _Game = new Game_ArcadepcBullseye(_Rom.ToLower());
+                            }
+                            ; break;
                         case "drakon":
                             {
                                 _Game = new Game_ArcadepcDrakon_NoPlugin(_Rom.ToLower());
@@ -450,12 +465,17 @@ namespace DemulShooterX64
                             }; break;
                         case "mechd":
                             {
-                                _Game = new Game_ArcadePcMechaDino(_Rom.ToLower());
+                                _Game = new Game_ArcadepcMechaDino(_Rom.ToLower());
                             }; break;
                         case "onept":
                             {
                                 _Game = new Game_ArcadepcOnePoint(_Rom.ToLower());
                             }; break;
+                        case "topgun2":
+                            {
+                                _Game = new Game_ArcadepcTopGun2(_Rom.ToLower());
+                            }
+                            ; break;
                         case "wzombies":
                             {
                                 _Game = new Game_ArcadepcWisdomZombies(_Rom.ToLower());
@@ -820,8 +840,11 @@ namespace DemulShooterX64
 
         private void OnGameHooked(object sender, EventArgs e)
         {
-            _TrayIcon.Icon = DemulShooterX64.Properties.Resources.DemulShooter_Hooked_Icon;
-            _TrayIcon.Text += "[Hooked]";
+            if (_TrayIcon != null)
+            {
+                _TrayIcon.Icon = DemulShooterX64.Properties.Resources.DemulShooter_Hooked_Icon;
+                _TrayIcon.Text += "[Hooked]";
+            }
 
             //Stopping the Timeout timer
             _TimerHookTimeout.Stop();

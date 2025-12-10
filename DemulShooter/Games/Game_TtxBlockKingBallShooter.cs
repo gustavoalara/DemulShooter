@@ -239,16 +239,16 @@ namespace DemulShooter
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpCannonBtn, OutputId.LmpCannonBtn));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpCannon_R, OutputId.LmpCannon_R));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpCannon_G, OutputId.LmpCannon_G));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpCannon_B, OutputId.LmpCannon_B));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.LmpCannonBtn));
+            _Outputs.Add(new GameOutput(OutputId.LmpCannon_R));
+            _Outputs.Add(new GameOutput(OutputId.LmpCannon_G));
+            _Outputs.Add(new GameOutput(OutputId.LmpCannon_B));
             //Need to separate Attract from game
-            //_Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, MameOutputHelper.CustomDamageDelay, 100, 0));
-            //_Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, MameOutputHelper.CustomDamageDelay, 100, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            //_Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, MameOutputHelper.CustomDamageDelay, 100, 0));
+            //_Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, MameOutputHelper.CustomDamageDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

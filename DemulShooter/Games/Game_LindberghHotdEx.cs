@@ -95,26 +95,26 @@ namespace DemulShooter
         {
             //Gun motor : Is activated permanently while trigger is pressed
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.LmpPanel, OutputId.LmpPanel));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp1, OutputId.Lmp1));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp2, OutputId.Lmp2));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp3, OutputId.Lmp3));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp4, OutputId.Lmp4));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp5, OutputId.Lmp5));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp6, OutputId.Lmp6));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpFoot, OutputId.P1_LmpFoot));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpFoot, OutputId.P2_LmpFoot));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Life, OutputId.P1_Life));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_Life, OutputId.P2_Life));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_Damaged, OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.LmpPanel));
+            _Outputs.Add(new GameOutput(OutputId.Lmp1));
+            _Outputs.Add(new GameOutput(OutputId.Lmp2));
+            _Outputs.Add(new GameOutput(OutputId.Lmp3));
+            _Outputs.Add(new GameOutput(OutputId.Lmp4));
+            _Outputs.Add(new GameOutput(OutputId.Lmp5));
+            _Outputs.Add(new GameOutput(OutputId.Lmp6));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpFoot));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpFoot));
+            _Outputs.Add(new GameOutput(OutputId.P1_Life));
+            _Outputs.Add(new GameOutput(OutputId.P2_Life));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
             /*
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, MameOutputHelper.CustomRecoilOnDelay, MameOutputHelper.CustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P2_CtmRecoil, OutputId.P2_CtmRecoil, MameOutputHelper.CustomRecoilOnDelay, MameOutputHelper.CustomRecoilOffDelay, 0));            
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, MameOutputHelper.CustomRecoilOnDelay, MameOutputHelper.CustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P2_CtmRecoil, MameOutputHelper.CustomRecoilOnDelay, MameOutputHelper.CustomRecoilOffDelay, 0));            
              */
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

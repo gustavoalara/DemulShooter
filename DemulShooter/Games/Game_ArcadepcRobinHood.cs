@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows.Forms;
 using DsCore;
 using DsCore.Config;
@@ -42,7 +41,7 @@ namespace DemulShooter
            _KnownMd5Prints.Add("Robin Hood v2.04-E", "1bee8a829b18f5e33b0ba22ba467dcc9");
 
             _tProcess.Start();
-            Logger.WriteLog("Waiting for Konami " + _RomName + " game to hook.....");
+            Logger.WriteLog("Waiting for " + _RomName + " game to hook.....");
         }
         /// <summary>
         /// Timer event when looking for Process (auto-Hook and auto-close)
@@ -177,10 +176,10 @@ namespace DemulShooter
         {
             _Outputs = new List<GameOutput>();
 
-            _Outputs.Add(new SyncBlinkingGameOutput(OutputDesciption.P1_CtmLmpStart, OutputId.P1_CtmLmpStart, 500));
-            _Outputs.Add(new GameOutput(OutputDesciption.BonusDisplay, OutputId.BonusDisplay));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new SyncBlinkingGameOutput(OutputId.P1_CtmLmpStart, 500));
+            _Outputs.Add(new GameOutput(OutputId.BonusDisplay));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

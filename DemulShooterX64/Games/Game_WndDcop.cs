@@ -1,127 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Forms;
 using DsCore;
 using DsCore.Config;
 using DsCore.IPC;
 using DsCore.MameOutput;
 
-namespace DemulShooterX64
+namespace DemulShooterX64.Games
 {
-    class Game_WndDcop : Game
+    internal class Game_WndDcop : Game__Unity
     {
-        private DsTcp_Client _Tcpclient;
-        private DsTcp_OutputData_Dcop _OutputData;
-        private DsTcp_InputData_Dcop _InputData;
+        private class InputData : Base_InputData
+        {          
+            public InputData(int PlayerNumber) : base(PlayerNumber)
+            {
+            }
+        }
 
-        //Thread-safe operation on input/output data
-        //public static System.Object MutexLocker;
+        private class OutputData : Base_OutputData
+        {
+            public byte GunRecoil = 0;
+            public byte DirectHit = 0;
+            public byte Police_LightBar = 0;
+            public byte GreenTestLight = 0;
+            public byte RedLight = 0;
+            public byte WhiteStrobe = 0;
+            public byte GunLight = 0;
+            public byte P1_Life = 0;
+            public byte P1_Ammo = 0;
+
+            public OutputData(int PlayerNumber) : base(PlayerNumber)
+            {
+            }
+        }
+
+        private const int MAX_PLAYERS = 1;
 
         /// <summary>
         /// Constructor
         /// </summary>
         public Game_WndDcop(String RomName)
-            : base(RomName, "DCOP")
+            : base(RomName, "DCOP", "DCOP")
         {
             _KnownMd5Prints.Add("DCOP - Tenoke ISO - Original", "3940b478b0069635b579c8bd2a6729c1");
-            
+
+            _InputData = new InputData(MAX_PLAYERS);
+            _OutputData = new OutputData(MAX_PLAYERS);
+
             _tProcess.Start();
             Logger.WriteLog("Waiting for " + _RomName + " game to hook.....");
-        }
-
-        /// <summary>
-        /// Timer event when looking for Process (auto-Hook and auto-close)
-        /// </summary>
-        protected override void tProcess_Elapsed(Object Sender, EventArgs e)
-        {
-            if (!_ProcessHooked)
-            {
-                try
-                {
-                    Process[] processes = Process.GetProcessesByName(_Target_Process_Name);
-                    if (processes.Length > 0)
-                    {
-                        _TargetProcess = processes[0];
-                        _ProcessHandle = _TargetProcess.Handle;
-                        _TargetProcess_MemoryBaseAddress = _TargetProcess.MainModule.BaseAddress;
-
-                        //Looking for the game's window based on it's Title
-                        _GameWindowHandle = IntPtr.Zero;
-                        if (_TargetProcess_MemoryBaseAddress != IntPtr.Zero)
-                        {
-                            // The game may start with other Windows than the main one (BepInEx console, other stuff.....) so we need to filter
-                            // the displayed window according to the Title, if DemulShooter is started before the game,  to hook the correct one
-                            if (FindGameWindow_Equals("DCOP"))
-                            {
-                                String AssemblyDllPath = _TargetProcess.MainModule.FileName.Replace(_Target_Process_Name + ".exe", @"DCOP_Data\Managed\Assembly-CSharp.dll");
-                                CheckMd5(AssemblyDllPath); 
-                              
-                                _InputData = new DsTcp_InputData_Dcop();
-
-                                //Start TcpClient to dial with Unity Game
-                                _OutputData = new DsTcp_OutputData_Dcop();
-                                _Tcpclient = new DsTcp_Client("127.0.0.1", DsTcp_Client.DS_TCP_CLIENT_PORT);
-                                _Tcpclient.PacketReceived += DsTcp_Client_PacketReceived;
-                                _Tcpclient.TcpConnected += DsTcp_client_TcpConnected;
-                                _Tcpclient.Connect();
-
-                                
-
-                                if (_DisableInputHack)
-                                    Logger.WriteLog("Input Hack disabled");
-
-
-                                
-
-                                _ProcessHooked = true;
-                                RaiseGameHookedEvent();
-                            }
-                            else
-                            {
-                                Logger.WriteLog("Game Window not found");
-                                return;
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    Logger.WriteLog("Error trying to hook " + _Target_Process_Name + ".exe");
-                }
-            }
-            else
-            {
-                Process[] processes = Process.GetProcessesByName(_Target_Process_Name);
-                if (processes.Length <= 0)
-                {
-                    _ProcessHooked = false;
-                    _TargetProcess = null;
-                    _ProcessHandle = IntPtr.Zero;
-                    _TargetProcess_MemoryBaseAddress = IntPtr.Zero;
-                    Logger.WriteLog(_Target_Process_Name + ".exe closed");
-                    Application.Exit();
-                }
-            }
-        }
-
-        ~Game_WndDcop()
-        {
-            if (_Tcpclient != null)
-                _Tcpclient.Disconnect();
-        }
-
-        /// <summary>
-        /// Sending a TCP message on connection
-        /// </summary>
-        private void DsTcp_client_TcpConnected(Object Sender, EventArgs e)
-        {
-            if (_HideCrosshair)
-                _InputData.HideCrosshairs = 1;
-            else
-                _InputData.HideCrosshairs = 0;
-
-            _Tcpclient.SendMessage(_InputData.ToByteArray());
         }
 
         #region Outputs
@@ -132,17 +58,17 @@ namespace DemulShooterX64
         protected override void CreateOutputList()
         {
             _Outputs = new List<GameOutput>();
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_GunRecoil, OutputId.P1_GunRecoil));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_DirectHit, OutputId.Lmp_DirectHit));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_PoliceBar, OutputId.Lmp_PoliceBar));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_GreenTestLight, OutputId.Lmp_GreenTestLight));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_RedLight, OutputId.Lmp_RedLight));
-            _Outputs.Add(new GameOutput(OutputDesciption.Lmp_WhiteStrobe, OutputId.Lmp_WhiteStrobe));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpGun, OutputId.P1_LmpGun));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_CtmRecoil, OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
-            _Outputs.Add(new AsyncGameOutput(OutputDesciption.P1_Damaged, OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));            
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Ammo, OutputId.P1_Ammo));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_Life, OutputId.P1_Life));
+            _Outputs.Add(new GameOutput(OutputId.P1_GunRecoil));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_DirectHit));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_PoliceBar));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_GreenTestLight));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_RedLight));
+            _Outputs.Add(new GameOutput(OutputId.Lmp_WhiteStrobe));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpGun));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_CtmRecoil, Configurator.GetInstance().OutputCustomRecoilOnDelay, Configurator.GetInstance().OutputCustomRecoilOffDelay, 0));
+            _Outputs.Add(new AsyncGameOutput(OutputId.P1_Damaged, Configurator.GetInstance().OutputCustomDamagedDelay, 100, 0));
+            _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
+            _Outputs.Add(new GameOutput(OutputId.P1_Life));
         }
 
         /// <summary>
@@ -153,32 +79,31 @@ namespace DemulShooterX64
             //Nothing to do here, update will be done by the Tcp packet received event
         }
 
-        private void DsTcp_Client_PacketReceived(Object Sender, DsTcp_Client.PacketReceivedEventArgs e)
+        protected override void DsTcp_Client_PacketReceived(Object Sender, DsTcp_Client.PacketReceivedEventArgs e)
         {
             if (e.Packet.GetHeader() == DsTcp_TcpPacket.PacketHeader.Outputs)
             {
                 _OutputData.Update(e.Packet.GetPayload());
 
-                SetOutputValue(OutputId.P1_GunRecoil, _OutputData.GunRecoil);
-                SetOutputValue(OutputId.Lmp_DirectHit, _OutputData.DirectHit);
-                SetOutputValue(OutputId.Lmp_PoliceBar, _OutputData.Police_LightBar);
-                SetOutputValue(OutputId.Lmp_GreenTestLight, _OutputData.GreenTestLight);
-                SetOutputValue(OutputId.Lmp_RedLight, _OutputData.RedLight);
-                SetOutputValue(OutputId.Lmp_WhiteStrobe, _OutputData.WhiteStrobe);
-                SetOutputValue(OutputId.P1_LmpGun, _OutputData.GunLight);
-                SetOutputValue(OutputId.P1_Ammo, _OutputData.P1_Ammo);
-                SetOutputValue(OutputId.P1_Life, _OutputData.P1_Life);
+                SetOutputValue(OutputId.P1_GunRecoil, ((OutputData)_OutputData).GunRecoil);
+                SetOutputValue(OutputId.Lmp_DirectHit, ((OutputData)_OutputData).DirectHit);
+                SetOutputValue(OutputId.Lmp_PoliceBar, ((OutputData)_OutputData).Police_LightBar);
+                SetOutputValue(OutputId.Lmp_GreenTestLight, ((OutputData)_OutputData).GreenTestLight);
+                SetOutputValue(OutputId.Lmp_RedLight, ((OutputData)_OutputData).RedLight);
+                SetOutputValue(OutputId.Lmp_WhiteStrobe, ((OutputData)_OutputData).WhiteStrobe);
+                SetOutputValue(OutputId.P1_LmpGun, ((OutputData)_OutputData).GunLight);
+                SetOutputValue(OutputId.P1_Ammo, ((OutputData)_OutputData).P1_Ammo);
+                SetOutputValue(OutputId.P1_Life, ((OutputData)_OutputData).P1_Life);
 
-                SetOutputValue(OutputId.P1_CtmRecoil, _OutputData.GunRecoil);
+                SetOutputValue(OutputId.P1_CtmRecoil, ((OutputData)_OutputData).GunRecoil);
 
-                if (_P1_LastLife > _OutputData.P1_Life)
+                if (_P1_LastLife > ((OutputData)_OutputData).P1_Life)
                     SetOutputValue(OutputId.P1_Damaged, 1);
 
-                _P1_LastLife = _OutputData.P1_Life;
+                _P1_LastLife = ((OutputData)_OutputData).P1_Life;
             }
         }
 
         #endregion
-
     }
 }

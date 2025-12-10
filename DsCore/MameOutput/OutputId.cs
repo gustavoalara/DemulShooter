@@ -10,73 +10,73 @@ namespace DsCore.MameOutput
         P1_LmpPanel,
         P2_LmpPanel,
         LmpPanel2,
-        Lmp2D3D,
-        LmpRoom,
-        LmpCoin,
+        Lmp2D3D,        //LGI 3D button 2D/3D
+        LmpRoom,        //Let's Go Jungle
+        LmpCoin,        //Let's Go Jungle
         LmpPanel,        
         LmpBillboard,
-        LmpSpeaker,
-        LmpDinoHead,
-        LmpLogo,
-        LmpDinoEyes,
-        LmpRoof,
-        LmpMarquee,
-        LmpDash,
-        LmpFoliage,
-        LmpSeat_R,
-        LmpSeat_G,
-        LmpSeat_B,
-        LmpBenchLogo,
-        LmpSeatBase,
-        LmpEstop,
-        LmpCompressor,
-        LmpRoof_R,
-        LmpRoof_G,
-        LmpRoof_B,
-        LmpLgMarquee,
-        LmpSqMarquee,
-        LmpWalker_R,
-        LmpWalker_G,
-        LmpWalker_B,
-        LmpWalkerEyes,
-        LmpWalkerCeiling,
+        LmpSpeaker,     //Time Crisis 5
+        LmpDinoHead,    //\
+        LmpLogo,        //
+        LmpDinoEyes,    //
+        LmpRoof,        //
+        LmpMarquee,     //
+        LmpDash,        //
+        LmpFoliage,     //--Jurassic Park (Rawh Trill)
+        LmpSeat_R,      //
+        LmpSeat_G,      //
+        LmpSeat_B,      //
+        LmpBenchLogo,   //
+        LmpSeatBase,    //
+        LmpEstop,       //
+        LmpCompressor,  ///
+        LmpRoof_R,          //\
+        LmpRoof_G,          //
+        LmpRoof_B,          //
+        LmpLgMarquee,       //
+        LmpSqMarquee,       //
+        LmpWalker_R,        //  Walking Dead (Raw Thrill)
+        LmpWalker_G,        //
+        LmpWalker_B,        //  
+        LmpWalkerEyes,      //
+        LmpWalkerCeiling,   ///
         LmpPosts,
-        Lmp1,
-        Lmp2,
-        Lmp3,
-        Lmp4,
-        Lmp5,
-        Lmp6,
+        Lmp1,   //\
+        Lmp2,   //
+        Lmp3,   //
+        Lmp4,   // 2 Spicy, HOD EX
+        Lmp5,   //
+        Lmp6,   ///
         LmpLeft,
-        LmpSide_R,
-        LmpSide_G,
-        LmpSide_B,
+        LmpSide_R,  //\
+        LmpSide_G,  //  Elevator Action Death Parade
+        LmpSide_B,  ///
         LmpRight,
         LmpRear_R,
         LmpRear_G,
         LmpRear_B,
-        LmpLBtn,
-        LmpMBtn,
-        LmpRBtn,
-        LmpUpBtn,
-        LmpDownBtn,
-        LmpCloseBtn,
-        LmpCannonBtn,
-        LmpCannon_R,
-        LmpCannon_G,
-        LmpCannon_B,
-        P1_LmpGun_R,
-        P1_LmpGun_G,
-        P1_LmpGun_B,
-        P2_LmpGun_R,
-        P2_LmpGun_G,
-        P2_LmpGun_B,
-        P1_LmpWindow_R,
-        P1_LmpWindow_G,
-        P1_LmpWindow_B,
-        P2_LmpWindow_R,
-        P2_LmpWindow_G,
-        P2_LmpWindow_B,
+        LmpLBtn,    //\
+        LmpMBtn,    //  Music Gun Gun 2 Buttons < o >
+        LmpRBtn,    ///
+        LmpUpBtn,       //\
+        LmpDownBtn,     //  Elevator Action Death Parade
+        LmpCloseBtn,    ///
+        LmpCannonBtn,   //\
+        LmpCannon_R,    //  Block King Ball Shooter
+        LmpCannon_G,    //
+        LmpCannon_B,    ///
+        P1_LmpGun_R,        //\
+        P1_LmpGun_G,        //
+        P1_LmpGun_B,        //
+        P2_LmpGun_R,        //
+        P2_LmpGun_G,        //
+        P2_LmpGun_B,        //  Luigi Mansion Arcade
+        P1_LmpWindow_R,     //
+        P1_LmpWindow_G,     //
+        P1_LmpWindow_B,     //
+        P2_LmpWindow_R,     //
+        P2_LmpWindow_G,     //
+        P2_LmpWindow_B,     ///
         P1_LmpGun,
         P2_LmpGun,
         P3_LmpGun,
@@ -85,8 +85,8 @@ namespace DsCore.MameOutput
         P2_LmpHolder,
         P3_LmpHolder,
         P4_LmpHolder,
-        P1_LmpBreak,
-        P2_LmpBreak,
+        P1_LmpBreak,    //\
+        P2_LmpBreak,    /// Transformers
         P1_Lmp_R,
         P1_Lmp_G,
         P1_Lmp_B,
@@ -97,19 +97,20 @@ namespace DsCore.MameOutput
         P1_LmpCard_G,
         P2_LmpCard_R,
         P2_LmpCard_G,
-        P1_LedAmmo1,
-        P1_LedAmmo2,
-        P2_LedAmmo1,
-        P2_LedAmmo2,
-        P1_LmpGunGrenadeBtn,
-        P2_LmpGunGrenadeBtn,
-        P1_LmpGunMolding,
-        P2_LmpGunMolding,
-        LmpMarqueeBacklight,
-        LmpMarqueeUplight,
-        LmpUpperCtrlPanel,
-        LmpLowerCtrlPanel,
-        P1_GunRecoil = 100,
+        P1_LedAmmo1,    //\
+        P1_LedAmmo2,    //  Aliens Extermination, Ammo digits
+        P2_LedAmmo1,    //
+        P2_LedAmmo2,    ///
+        P1_LmpGunGrenadeBtn,    //\
+        P2_LmpGunGrenadeBtn,    //
+        P1_LmpGunMolding,       //
+        P2_LmpGunMolding,       //  Aliens Armageddon
+        LmpMarqueeBacklight,    //    
+        LmpMarqueeUplight,      //
+        LmpUpperCtrlPanel,      //
+        LmpLowerCtrlPanel,      ///
+
+        P1_GunRecoil,
         P2_GunRecoil,
         P3_GunRecoil,
         P4_GunRecoil,
@@ -117,7 +118,7 @@ namespace DsCore.MameOutput
         P2_GunMotor,
         P3_GunMotor,
         P4_GunMotor,        
-        P1_AirFront = 200,
+        P1_AirFront,
         P2_AirFront,
         P1_AirRear,
         P2_AirRear,
@@ -224,14 +225,33 @@ namespace DsCore.MameOutput
         P3_ChairShake,
         P4_ChairShake,
         SmokeSwitch,
-        P1_Shaker,
-        P2_Shaker,
-        P3_Shaker,
-        P4_Shaker,
-        BonusDisplay,
-        CoinBlocker,
-        MotorUnit_1,
-        MotorUnit_2,
+        P1_Shaker,          //\
+        P2_Shaker,          //  Mech Tornado
+        P3_Shaker,          //
+        P4_Shaker,          ///
+        BonusDisplay,       //Robin Hood
+        CoinBlocker,        //\
+        MotorUnit_1,        //  Gashaaaan 2
+        MotorUnit_2,        ///
+        P1_WaterRotate,     //\
+        P2_WaterRotate,     ///  Hero Fire arcade
+        P1_GunType,
+        P2_GunType,
+        Neuralizer,         //MIB
+        Lmp_Disinfection,
+        Lmp_P1_P2_OutOfTickets,
+        Lmp_P3_P4_OutOfTickets,
+        Lmp_Marquee_1,
+        Lmp_Marquee_2,
+        P1_InnerWater,
+        P2_InnerWater,
+        P3_InnerWater,
+        P4_InnerWater,
+        P1_OuterWater,
+        P2_OuterWater,
+        P3_OuterWater,
+        P4_OuterWater,
+
 
         Credits = 1000,
         P1_CtmLmpStart,

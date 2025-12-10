@@ -235,18 +235,18 @@ namespace DemulShooter
         {
             _Outputs = new List<GameOutput>();
 
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpStart, OutputId.P1_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpStart, OutputId.P2_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_LmpStart, OutputId.P3_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_LmpStart, OutputId.P4_LmpStart));
-            _Outputs.Add(new GameOutput(OutputDesciption.P1_LmpFront, OutputId.P1_LmpFront));
-            _Outputs.Add(new GameOutput(OutputDesciption.P2_LmpFront, OutputId.P2_LmpFront));
-            _Outputs.Add(new GameOutput(OutputDesciption.P3_LmpFront, OutputId.P3_LmpFront));
-            _Outputs.Add(new GameOutput(OutputDesciption.P4_LmpFront, OutputId.P4_LmpFront));
-            _Outputs.Add(new GameOutput(OutputDesciption.MotorUnit_1, OutputId.MotorUnit_1));
-            _Outputs.Add(new GameOutput(OutputDesciption.MotorUnit_2, OutputId.MotorUnit_2));
-            _Outputs.Add(new GameOutput(OutputDesciption.CoinBlocker, OutputId.CoinBlocker));
-            _Outputs.Add(new GameOutput(OutputDesciption.Credits, OutputId.Credits));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P3_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P4_LmpStart));
+            _Outputs.Add(new GameOutput(OutputId.P1_LmpFront));
+            _Outputs.Add(new GameOutput(OutputId.P2_LmpFront));
+            _Outputs.Add(new GameOutput(OutputId.P3_LmpFront));
+            _Outputs.Add(new GameOutput(OutputId.P4_LmpFront));
+            _Outputs.Add(new GameOutput(OutputId.MotorUnit_1));
+            _Outputs.Add(new GameOutput(OutputId.MotorUnit_2));
+            _Outputs.Add(new GameOutput(OutputId.CoinBlocker));
+            _Outputs.Add(new GameOutput(OutputId.Credits));
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
+namespace BepInEx_DemulShooter_Plugin
 {
     class mWorldSelectorWindow
     {
@@ -24,7 +24,7 @@ namespace RabbidsHollywood_BepInEx_DemulShooter_Plugin
         {
             static bool Prefix(Vector3 i_Pos, ID i_Player)
             {
-                DemulShooter_Plugin.MyLogger.LogMessage("mWorldSelectorWindow.PlayerPressTrigger() : i_Player=" + i_Player.ToString() + ", v=" + i_Pos.ToString());                  
+                //DemulShooter_Plugin.MyLogger.LogMessage("mWorldSelectorWindow.PlayerPressTrigger() : i_Player=" + i_Player.ToString() + ", v=" + i_Pos.ToString());                  
                 return true;                
             }
         }
