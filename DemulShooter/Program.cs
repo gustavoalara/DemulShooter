@@ -158,6 +158,7 @@ namespace DemulShooter
                 {"mng","Medaru no Gunman"},
                 {"og","Operation G.H.O.S.T"},
                 {"sdr","SEGA Dream Raiders"},
+                {"tb","Target Bravo" },
                 {"tha","Transformers : Human Alliance"}
             };
 

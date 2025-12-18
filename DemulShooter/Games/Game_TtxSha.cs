@@ -20,14 +20,9 @@ namespace DemulShooter
         private UInt32 _P2_X_Offset = 0x002E3970;
         private UInt32 _P2_Y_Offset = 0x002E3974;
         private UInt32 _P2_Out_Offset = 0x002E396C;
+        private UInt32 _DisableAxisUpdate_Offset = 0x000D12E0;
 
-        private NopStruct _Nop_X = new NopStruct(0x000D1305, 6);
-        private NopStruct _Nop_Y = new NopStruct(0x000D130B, 6);
-        private NopStruct _Nop_P1_Out = new NopStruct(0x000D12FC, 7);
-        private NopStruct _Nop_P2_Out = new NopStruct(0x000D147E, 4);
-
-        private UInt32 _Triggers_Injection_Offset = 0x000D1464;
-        private UInt32 _Triggers_Injection_Return_Offset = 0x000D146A;
+        private InjectionStruct _Triggers_InjectionStruct = new InjectionStruct(0x000D1464, 6);
         private UInt32 _Triggers_CaveAddress;
         private UInt32 _Recoil_Injection_Offset = 0x000D0CD0;
         private UInt32 _P1_Recoil_CaveAddress;
@@ -110,6 +105,12 @@ namespace DemulShooter
         /// </summary>
         public override bool GameScale(PlayerSettings PlayerData)
         {
+            //Win11 + AMD need this ?
+            //Using DgVoodoo (or ReShade) results in bigger window and the base process resolution stays at 640x480.
+            //Using original method to compute axis into the process resolution, shots get blocked in upper left 640x480 square.
+            //Keeping the window coordinates solves this.
+            return true;
+
             if (_ProcessHandle != IntPtr.Zero)
             {
                 try
@@ -126,13 +127,13 @@ namespace DemulShooter
                     Logger.WriteLog("Detected resolution (px) = [" + GameResX.ToString() + "x" + GameResY.ToString() + "]");
 
                     double dMinX = 0.0;
-                    double dMaxX = GameResX;
+                    double dMaxX = TotalResX;
                     double dMinY = 0.0;
-                    double dMaxY = GameResY;
+                    double dMaxY = TotalResY;
                     double dRangeX = dMaxX - dMinX + 1;
                     double dRangeY = dMaxY - dMinY + 1;
-                    
-                    PlayerData.RIController.Computed_X = Convert.ToInt16(Math.Round(dRangeX * PlayerData.RIController.Computed_X / GameResX)); 
+
+                    PlayerData.RIController.Computed_X = Convert.ToInt16(Math.Round(dRangeX * PlayerData.RIController.Computed_X / GameResX));
                     PlayerData.RIController.Computed_Y = Convert.ToInt16(Math.Round(dRangeY * PlayerData.RIController.Computed_Y / GameResY));
                     if (PlayerData.RIController.Computed_X < (int)dMinX)
                         PlayerData.RIController.Computed_X = (int)dMinX;
@@ -141,7 +142,7 @@ namespace DemulShooter
                     if (PlayerData.RIController.Computed_X > (int)dMaxX)
                         PlayerData.RIController.Computed_X = (int)dMaxX;
                     if (PlayerData.RIController.Computed_Y > (int)dMaxY)
-                        PlayerData.RIController.Computed_Y = (int)dMaxY;                                        
+                        PlayerData.RIController.Computed_Y = (int)dMaxY;
 
                     return true;
                 }
@@ -163,11 +164,16 @@ namespace DemulShooter
             _Triggers_CaveAddress = _InputsDatabank_Address;
 
             SetHack_Triggers();
+
+            //Function is called whenever a trigger press is detected.
+            //Function is computing Axis based on data + calibration values, and clamp it
+            //Just RET at start to disable all of this
+            WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _DisableAxisUpdate_Offset, 0xC3);
             
-            SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_X);
-            SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_Y);
-            SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_P1_Out);
-            SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_P2_Out);
+            //SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_X);
+            //SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_Y);
+            //SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_P1_Out);
+            //SetNops((UInt32)_TargetProcess_MemoryBaseAddress, _Nop_P2_Out);
             
             //Set P2 IN_SCREEN
             WriteByte((UInt32)_TargetProcess_MemoryBaseAddress + _P1_Out_Offset, 0x01);
@@ -185,7 +191,6 @@ namespace DemulShooter
             Codecave CaveMemory = new Codecave(_TargetProcess, _TargetProcess.MainModule.BaseAddress);
             CaveMemory.Open();
             CaveMemory.Alloc(0x800);
-            List<Byte> Buffer;
             //push eax
             CaveMemory.Write_StrBytes("50");
             //mov eax, esi
@@ -208,20 +213,9 @@ namespace DemulShooter
             CaveMemory.Write_StrBytes("83 7F FC 00");
             //je KSHG_no_cursor.exe+D1497
             CaveMemory.Write_je((UInt32)_TargetProcess_MemoryBaseAddress + 0xD1497);
-            CaveMemory.Write_jmp((UInt32)_TargetProcess_MemoryBaseAddress + _Triggers_Injection_Return_Offset);
 
-            Logger.WriteLog("Adding Triggers Codecave at : 0x" + CaveMemory.CaveAddress.ToString("X8"));
-
-            //Code injection
-            IntPtr ProcessHandle = _TargetProcess.Handle;
-            UInt32 bytesWritten = 0;
-            UInt32 jumpTo = 0;
-            jumpTo = CaveMemory.CaveAddress - ((UInt32)_TargetProcess_MemoryBaseAddress + _Triggers_Injection_Offset) - 5;
-            Buffer = new List<byte>();
-            Buffer.Add(0xE9);
-            Buffer.AddRange(BitConverter.GetBytes(jumpTo));
-            Buffer.Add(0x90);
-            Win32API.WriteProcessMemory(ProcessHandle, (UInt32)_TargetProcess_MemoryBaseAddress + _Triggers_Injection_Offset, Buffer.ToArray(), (UInt32)Buffer.Count, ref bytesWritten);              
+            //Inject it
+            CaveMemory.InjectToOffset(_Triggers_InjectionStruct, "Triggers");      
         }
 
         protected override void Apply_OutputsMemoryHack()

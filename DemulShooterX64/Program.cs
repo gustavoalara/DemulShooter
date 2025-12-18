@@ -96,6 +96,7 @@ namespace DemulShooterX64
             Dictionary<String, String> _RPCS3_System357Roms = new Dictionary<String, String>(){
                 {"deadstorm","Dead Storm Pirates"},
                 {"de4d","Dark Escape 4D"},
+                {"razstorm","Razing Storm"},
                 {"sailorz","Sailor Zombies"}
             };            
 

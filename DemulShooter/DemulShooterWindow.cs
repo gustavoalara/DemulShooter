@@ -679,6 +679,10 @@ namespace DemulShooter
                             {
                                 _Game = new Game_RwSDR(_Rom.ToLower());
                             }; break;
+                        case "tb":
+                            {
+                                _Game = new Game_RwTargetBravo(_Rom.ToLower());
+                            }                            ; break;
                         case "tha":
                             {
                                 _Game = new Game_RwTransformers(_Rom.ToLower());
@@ -720,7 +724,7 @@ namespace DemulShooter
                         case "hmuseum2":
                             {
                                 _Game = new Game_TtxHauntedMuseum2(_Rom.ToLower(), _HardFfl);
-                            } break;
+                            }break;
                         case "mgungun2":
                             {
                                 _Game = new Game_TtxGungun2(_Rom.ToLower());

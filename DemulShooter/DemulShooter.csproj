@@ -97,6 +97,7 @@
     <Compile Include="Games\Game_RtTerminatorSalvation.cs" />
     <Compile Include="Games\Game_RtWalkingDead.cs" />
     <Compile Include="Games\Game_RwGunman.cs" />
+    <Compile Include="Games\Game_RwTargetBravo.cs" />
     <Compile Include="Games\Game_TtxGundam_V2.cs" />
     <Compile Include="Games\Game_GameWaxAkuma.cs" />
     <Compile Include="Games\Game_WndAdCop95.cs" />

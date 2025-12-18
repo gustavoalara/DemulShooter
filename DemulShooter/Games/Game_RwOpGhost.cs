@@ -14,13 +14,14 @@ namespace DemulShooter
 {
     class Game_RwOpGhost : Game
     {
-        private const string GAMEDATA_FOLDER = @"MemoryData\ringwide\og";
+        private const string GAMEDATA_FOLDER = @"MemoryData\ringwide\op";
 
         /*** MEMORY ADDRESSES **/
         private UInt32 _JvsEnabled_Offset = 0x23D2E7;
         private UInt32 _AmLibData_Ptr_Offset = 0x026662C0;
         private UInt32 _AmLibData_BaseAddress = 0;
-                
+        private UInt32 _GetKeyboardState_Function_Offset = 0x001DF304;
+
         //JVS emulation mode (TEKNOPARROT + Jconfig)
         //JVS checksum @5992D7 = SUM(64681F:64683E) -> LowNibble in 64683F     
         //Buttons injection will be made at the source of JVS data and need to remove checksum
@@ -42,26 +43,32 @@ namespace DemulShooter
         private NopStruct _Nop_Axix_X_3 = new NopStruct(0x0009DF47, 3);
         private NopStruct _Nop_Axix_Y_3 = new NopStruct(0x0009DF4A, 3);
 
-        //DirectInput mode (no JVS emulation)
-        private UInt32 _P1_X_CaveAddress;
-        private UInt32 _P1_Y_CaveAddress;
+        //DirectInput mode (no JVS emulation)        
         private UInt32 _Axis_Address_Ptr_Offset = 0x0265C20C;
         private UInt32 _P2_X_Address;
         private UInt32 _P2_Y_Address;
         private NopStruct _Nop_Axis_X = new NopStruct(0x0009E0A4, 3);
         private NopStruct _Nop_Axis_Y = new NopStruct(0x0009E082, 3);
-        private UInt32 _P1_Trigger_CaveAddress;
-        private UInt32 _P1_Action_CaveAddress;
-        private UInt32 _P1_Change_CaveAddress;
-        private UInt32 _P1_Reload_CaveAddress;
+        
         private UInt32 _Buttons_Injection_Offset = 0x0009EF26;
         private UInt32 _Buttons_Injection_Return_Offset = 0x0009EF2C;
         private UInt32 _Axis_Injection_Offset = 0x0009DF7E;
         private UInt32 _Axis_Injection_Return_Offset = 0x0009DF84;
 
         //Outputs
-        private UInt32 _Outputs_Offset = 0x00246428;
-        
+        private UInt32 _JVS_Outputs_Offset = 0x00246428;
+        private UInt32 _InternalLedOutputs_Ptr_Offset = 0x0065C1F4;
+        private InjectionStruct _InternalRecoil_InjectionStruct = new InjectionStruct(0x00030A10, 5);
+
+        //Custom Data
+        private UInt32 _P1_X_CaveAddress;
+        private UInt32 _P1_Y_CaveAddress;
+        private UInt32 _P1_Trigger_CaveAddress;
+        private UInt32 _P1_Action_CaveAddress;
+        private UInt32 _P1_Change_CaveAddress;
+        private UInt32 _P1_Reload_CaveAddress;
+        private UInt32 _Recoil_CaveAddress;
+
         //Keys (no JVS emulation)
         //START_P2 = NumPad +
         //START_P1 = ENTER
@@ -264,7 +271,7 @@ namespace DemulShooter
             List<Byte> Buffer = new List<Byte>();
             //call USER32.GetKEyboardState
             CaveMemory.Write_StrBytes("FF 15");
-            byte[] b = BitConverter.GetBytes((int)_TargetProcess_MemoryBaseAddress + 0x001DF304);
+            byte[] b = BitConverter.GetBytes((int)_TargetProcess_MemoryBaseAddress + _GetKeyboardState_Function_Offset);
             CaveMemory.Write_Bytes(b);
             //lpkeystate is in ESP register at that point :
             //and [esp + 1], 0x00FF0000
@@ -342,10 +349,57 @@ namespace DemulShooter
             WriteBytes(_P2_X_Address, bufferX);
             WriteBytes(_P2_Y_Address, bufferY);
 
-            Logger.WriteLog("Memory Hack complete !");
-            Logger.WriteLog("-");
-
             //Win32.keybd_event(Win32.VK_NUMLOCK, 0x45, Win32.KEYEVENTF_EXTENDEDKEY | 0, 0);
+        }
+
+        /// <summary>
+        /// OutputsHack will only be needed when JVS is disabled to get recoil from internal calls
+        /// </summary>
+        protected override void Apply_OutputsMemoryHack()
+        {
+            if (!_IsJvsEnabled)
+            {
+                //Create Databak to store our value
+                Create_OutputsDataBank();
+                _Recoil_CaveAddress = _OutputsDatabank_Address;
+
+                SetHack_Recoil();
+
+                Logger.WriteLog("Outputs Memory Hack complete !");
+                Logger.WriteLog("-");
+            }
+        }
+
+        /// <summary>
+        /// In that function 'RequestRecoil()' the game calls a procedure to get the WeaponManager corresponding to the event
+        /// When JVS emulation is enabled, it returns 3(P1) or 4(P2)
+        /// When JVS emulation is disabled, it returns 1(P1) or 2(P2)
+        /// When JVS emulation is enabled, output can be obtained by the JVS report bytes, so this injection will only be needed for non-JVS
+        /// </summary>
+        private void SetHack_Recoil()
+        {
+            Codecave CaveMemory = new Codecave(_TargetProcess, _TargetProcess.MainModule.BaseAddress);
+            CaveMemory.Open();
+            CaveMemory.Alloc(0x800);
+
+            //mov eax,[eax]
+            CaveMemory.Write_StrBytes("8B 00");
+            //push eax
+            CaveMemory.Write_StrBytes("50");
+            //sub eax,01
+            CaveMemory.Write_StrBytes("83 E8 01");
+            //add eax,_Recoil_CaveAddress
+            CaveMemory.Write_StrBytes("05");
+            CaveMemory.Write_Bytes(BitConverter.GetBytes(_Recoil_CaveAddress));
+            //mov byte ptr [eax],01
+            CaveMemory.Write_StrBytes("C6 00 01");
+            //pop eax
+            CaveMemory.Write_StrBytes("58");
+            //sub eax,03
+            CaveMemory.Write_StrBytes("83 E8 03");
+
+            //Inject it
+            CaveMemory.InjectToOffset(_InternalRecoil_InjectionStruct, "Recoil");
         }
 
         #endregion
@@ -704,18 +758,51 @@ namespace DemulShooter
         /// </summary>
         public override void UpdateOutputValues()
         {
-            byte bOutput = ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _Outputs_Offset);
-            SetOutputValue(OutputId.P1_LmpStart, bOutput >> 7 & 0x01);
-            SetOutputValue(OutputId.P2_LmpStart, bOutput >> 4 & 0x01);
-            SetOutputValue(OutputId.LmpBillboard, bOutput >> 5 & 0x01);
-            SetOutputValue(OutputId.P1_LmpHolder, bOutput >> 1 & 0x01);
-            SetOutputValue(OutputId.P2_LmpHolder, bOutput & 0x01);
-            SetOutputValue(OutputId.P1_GunRecoil, bOutput >> 6 & 0x01);
-            SetOutputValue(OutputId.P2_GunRecoil, bOutput >> 3 & 0x01);
-            
-            //Custom recoil will be enabled just like original recoil
-            SetOutputValue(OutputId.P1_CtmRecoil, bOutput >> 6 & 0x01);
-            SetOutputValue(OutputId.P2_CtmRecoil, bOutput >> 3 & 0x01);
+            if (_IsJvsEnabled)
+            {
+                byte bOutput = ReadByte((UInt32)_TargetProcess_MemoryBaseAddress + _JVS_Outputs_Offset);
+                SetOutputValue(OutputId.P1_LmpStart, bOutput >> 7 & 0x01);
+                SetOutputValue(OutputId.P2_LmpStart, bOutput >> 4 & 0x01);
+                SetOutputValue(OutputId.LmpBillboard, bOutput >> 5 & 0x01);
+                SetOutputValue(OutputId.P1_LmpHolder, bOutput >> 1 & 0x01);
+                SetOutputValue(OutputId.P2_LmpHolder, bOutput & 0x01);
+                SetOutputValue(OutputId.P1_GunRecoil, bOutput >> 6 & 0x01);
+                SetOutputValue(OutputId.P2_GunRecoil, bOutput >> 3 & 0x01);
+
+                //Custom recoil will be enabled just like original recoil
+                SetOutputValue(OutputId.P1_CtmRecoil, bOutput >> 6 & 0x01);
+                SetOutputValue(OutputId.P2_CtmRecoil, bOutput >> 3 & 0x01);
+
+            }
+            else
+            {
+                //ReadPtr() + 15E0 = Outputs
+                //1 Byte per output (0 / 1)
+                // +0 = Billboard
+                // +1 = P1 Holder
+                // +2 = P2 Holder
+                // +3 = Unused --
+                // +4 = P1 START
+                // +5 = P2 START
+                UInt32 LedStatusAddress = ReadPtr((UInt32)_TargetProcess_MemoryBaseAddress + _InternalLedOutputs_Ptr_Offset) + 0x15E0;
+                SetOutputValue(OutputId.P1_LmpStart, ReadByte(LedStatusAddress + 4));
+                SetOutputValue(OutputId.P2_LmpStart, ReadByte(LedStatusAddress + 5));
+                SetOutputValue(OutputId.LmpBillboard, ReadByte(LedStatusAddress));
+                SetOutputValue(OutputId.P1_LmpHolder, ReadByte(LedStatusAddress + 1));
+                SetOutputValue(OutputId.P2_LmpHolder, ReadByte(LedStatusAddress + 2));
+
+                if (ReadByte(_Recoil_CaveAddress) == 1)
+                {
+                    SetOutputValue(OutputId.P1_CtmRecoil, 1);
+                    WriteByte(_Recoil_CaveAddress, 0x00);
+                }
+
+                if (ReadByte(_Recoil_CaveAddress + 1) == 1)
+                {
+                    SetOutputValue(OutputId.P2_CtmRecoil, 1);
+                    WriteByte(_Recoil_CaveAddress + 1, 0x00);
+                }
+            }
 
             //Credits will be calculated by using the formula  : Credits = Coins / CoinsByCredits
             //Warning : Need to handle "Divide by 0" error if game is closed brutally ! 
