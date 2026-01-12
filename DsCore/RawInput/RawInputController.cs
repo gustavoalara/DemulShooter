@@ -11,9 +11,6 @@ namespace DsCore.RawInput
     {
         private IntPtr _hDevice;
         private RawInputDeviceType _dwType;
-        //Device path is full HID string retured from RAWINPUT. Mandatory to access the file and gets manufacturer strings
-        private string _DevicePath;
-        //Device name used to be the same as Device Path, but only the first part of it is needed to find devices. Rest is GUID and changes from one computer to another
         private String _DeviceName;
         private RawInputDeviceInfo _DeviceInfo;
         private string _ManufacturerName;
@@ -297,7 +294,7 @@ namespace DsCore.RawInput
             GetDeviceInfo();
 
             //DeviceName is also the path to acces the device with OpenFile
-            GetManufacturerAndProductString(_DevicePath);
+            GetManufacturerAndProductString(_DeviceName);
 
             if (_dwType == RawInputDeviceType.RIM_TYPEHID)
             {
@@ -604,13 +601,8 @@ namespace DsCore.RawInput
             IntPtr pData = Marshal.AllocHGlobal((int)pcbSize);
             Win32API.GetRawInputDeviceInfo(_hDevice, RawInputUiCommand.RIDI_DEVICENAME, pData, ref pcbSize);
 
-            _DevicePath = Marshal.PtrToStringAnsi(pData);
+            _DeviceName = Marshal.PtrToStringAnsi(pData);
             Marshal.FreeHGlobal(pData);
-            string[] HidBuffer = _DevicePath.Split('#');
-            if (HidBuffer.Length >= 2)
-                _DeviceName = HidBuffer[0] + "#" + HidBuffer[1];
-            else
-                _DeviceName = _DevicePath;
         }
 
         /// <summary>

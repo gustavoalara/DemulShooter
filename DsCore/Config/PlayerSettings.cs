@@ -237,13 +237,7 @@ namespace DsCore.Config
             } 
             else if (StrKey.Equals("devicename"))
             {
-                //For compatibility purpose, getting the first part of the device fullname (which was used before) if it's in that format
-                //Newer format is only the beginning of the HID string (for better portability, removing GUID)
-                string[] HidBuffer = StrValue.Split('#');
-                if (HidBuffer.Length >= 2)
-                    _DeviceName = HidBuffer[0] + "#" + HidBuffer[1];
-                else
-                    _DeviceName = StrValue;
+                _DeviceName = StrValue;
             }
             else if (StrKey.Equals("hidaxisx"))
             {
