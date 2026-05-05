@@ -611,7 +611,7 @@ namespace DemulShooter
             }
             if (ReadByte(_P4_RecoilStatus_CaveAddress) == 1)
             {
-                SetOutputValue(OutputId.P3_CtmRecoil, 1);
+                SetOutputValue(OutputId.P4_CtmRecoil, 1);
                 WriteByte(_P4_RecoilStatus_CaveAddress, 0x00);
             }
 

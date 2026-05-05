@@ -471,6 +471,11 @@ namespace DemulShooterX64
                             {
                                 _Game = new Game_ArcadepcOnePoint(_Rom.ToLower());
                             }; break;
+                        case "skullos":
+                            {
+                                _Game = new Game_ArcadepcSkullOfShadow(_Rom.ToLower());
+                            }
+                            ; break;
                         case "topgun2":
                             {
                                 _Game = new Game_ArcadepcTopGun2(_Rom.ToLower());

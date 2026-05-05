@@ -20,8 +20,10 @@ namespace DemulShooter
         //Outputs Address
         private UInt32 _P1_Struct_Address = 0x08DAB920;
         private UInt32 _P2_Struct_Address = 0x08DABAF0;
-        private UInt32 _Lamp_Address = 0x8ECEC5C;    
-        
+        private UInt32 _Lamp_Address = 0x8ECEC5C;
+        private UInt32 _RecoilStatus_CaveAddress;
+        private InjectionStruct _Recoil_InjectionStruct = new InjectionStruct(0x080883B5, 11);
+
         private int _P1_Last_Weapon = 0;
         private int _P2_Last_Weapon = 0;
 
@@ -97,6 +99,43 @@ namespace DemulShooter
         }
 
         #region Memory Hack
+
+        /// <summary>
+        /// At that place, game acknoledged a gun0 or gun1 fired
+        /// [ESP+4D] has a pointer to the struct containing the weapon's name, so it's possible to exclude flamethrower from custom recoil
+        /// Names can be assault_rifle, shotgun, minigun, turret, fthrower, sniper, gunpod_2, launcher
+        /// </summary>
+        protected override void Apply_OutputsMemoryHack()
+        {
+            Create_OutputsDataBank();
+            _RecoilStatus_CaveAddress = _OutputsDatabank_Address;
+
+            Codecave CaveMemory = new Codecave(_TargetProcess, _TargetProcess.MainModule.BaseAddress);
+            CaveMemory.Open();
+            CaveMemory.Alloc(0x800);
+
+            //mov eax,[esp+000000D4]
+            CaveMemory.Write_StrBytes("8B 84 24 D4 00 00 00");
+            //add eax,04
+            CaveMemory.Write_StrBytes("83 C0 04");
+            //cmp [eax],72687466
+            CaveMemory.Write_StrBytes("81 38 66 74 68 72"); //HEX equivalent of "fthr to exclude flamethrower (quicket than strcmp)
+            //je originalcode
+            CaveMemory.Write_StrBytes("74 07");
+            //mov byte ptr [ebx+_RecoilStatus_CaveAddress],01
+            CaveMemory.Write_StrBytes("C6 83");
+            CaveMemory.Write_Bytes(BitConverter.GetBytes(_RecoilStatus_CaveAddress));   
+            CaveMemory.Write_StrBytes("01");
+            //Originalcode:
+            //mov [esp+04],edi
+            CaveMemory.Write_StrBytes("89 7C 24 04");
+            //mov [esp],00000000
+            CaveMemory.Write_StrBytes("C7 04 24 00 00 00 00");
+
+            //Inject it
+            CaveMemory.InjectToAddress(_Recoil_InjectionStruct, "Recoil");
+
+        }
 
         /// <summary>
         /// To remove crosshair, we will change the cursor drawinf location to -1.0 to hide it.
@@ -177,8 +216,8 @@ namespace DemulShooter
             _Outputs.Add(new GameOutput(OutputId.LmpLowerCtrlPanel));
             _Outputs.Add(new GameOutput(OutputId.LmpBillboard));
             //In Teknoparrot, Guns hardware is not emulated, so the game is not running original gun recoil procedures 
-            /*_Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
-            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));*/
+            _Outputs.Add(new GameOutput(OutputId.P1_GunMotor));
+            _Outputs.Add(new GameOutput(OutputId.P2_GunMotor));
             _Outputs.Add(new GameOutput(OutputId.P1_Ammo));
             _Outputs.Add(new GameOutput(OutputId.P2_Ammo));
             _Outputs.Add(new GameOutput(OutputId.P1_Clip));
@@ -244,32 +283,12 @@ namespace DemulShooter
                 if (_P1_Life < _P1_LastLife)
                     SetOutputValue(OutputId.P1_Damaged, 1);
 
-                //Check if the weapon has changed : moving from one weapon to another with less ammo can cause a "recoil" to be activated otherwise
-                //No acces to some int value for the selected gun, but string value (@P1_Ammo - 0x20). Instead we will use the "Max Ammo" value that is different for almost each weapon (and faster to compute)
-                //assault_rifle : 0x4B (75)
-                //shotgun : 0x0F (15)
-                //minigun : 0x46 (70)
-                //turret : 0x0F4240 (1 000 000) => Octet à lire = 0x40
-                //fthrower : 0x32 (50)
-                //sniper : 0x0A (10)
-                //gunpod_2 : 0x0F4240 (1 000 000) => Octet à lire = 0x40
-                //launcher : 0x0A (10)
-                int P1_Weapon = ReadByte(_P1_Struct_Address + 0x6C);
-                if (P1_Weapon == _P1_Last_Weapon)
-                {   
-                    //Exception for flamethrower, no recoil but rumble motor continuously (for later ?)
-                    if (P1_Weapon != 0x32)
-                    {
-                        //Recoil Custom Output
-                        if (_P1_Ammo < _P1_LastAmmo)
-                            SetOutputValue(OutputId.P1_CtmRecoil, 1);
-                    }
-                    else
-                    {
-                        //How to compute continuously rumble ??
-                    }
+                //Custom recoil by reading and resetting FLAG
+                if (ReadByte(_RecoilStatus_CaveAddress) == 1)
+                {
+                    SetOutputValue(OutputId.P1_CtmRecoil, 1);
+                    WriteByte(_RecoilStatus_CaveAddress, 0);
                 }
-                _P1_Last_Weapon = P1_Weapon;
             }
 
             //Check if the Player is currently playing
@@ -283,10 +302,6 @@ namespace DemulShooter
                 if (_P2_Ammo > 0)
                     P2_Clip = 1;
 
-                //Recoil Custom Output
-                if (_P2_Ammo < _P2_LastAmmo)
-                    SetOutputValue(OutputId.P2_CtmRecoil, 1);
-
                 _P2_Life = BitConverter.ToInt32(ReadBytes(_P2_Struct_Address + 0x10, 4), 0);
                 if (_P2_Life < 0)
                     _P2_Life = 0;
@@ -295,22 +310,12 @@ namespace DemulShooter
                 if (_P2_Life < _P2_LastLife)
                     SetOutputValue(OutputId.P2_Damaged, 1);
 
-                int P2_Weapon = ReadByte(_P2_Struct_Address + 0x6C);
-                if (P2_Weapon == _P2_Last_Weapon)
+                //Custom recoil by reading and resetting FLAG
+                if (ReadByte(_RecoilStatus_CaveAddress + 1) == 1)
                 {
-                    //Exception for flamethrower, no recoil but rumble motor continuously (for later ?)
-                    if (P2_Weapon != 0x32)
-                    {
-                        //Recoil Custom Output
-                        if (_P2_Ammo < _P2_LastAmmo)
-                            SetOutputValue(OutputId.P2_CtmRecoil, 1);
-                    }
-                    else
-                    {
-                        //How to compute continuously rumble ??
-                    }
+                    SetOutputValue(OutputId.P2_CtmRecoil, 1);
+                    WriteByte(_RecoilStatus_CaveAddress + 1, 0);
                 }
-                _P2_Last_Weapon = P2_Weapon;
             }
             _P1_LastLife = _P1_Life;
             _P2_LastLife = _P2_Life;
@@ -323,6 +328,7 @@ namespace DemulShooter
             SetOutputValue(OutputId.P2_Clip, P2_Clip);
             SetOutputValue(OutputId.P1_Life, _P1_Life);
             SetOutputValue(OutputId.P2_Life, _P2_Life);
+            
 
             //Recoil : reading updated value from the game
             //SetOutputValue(OutputId.Credits, ReadByte(_Credits_Address));

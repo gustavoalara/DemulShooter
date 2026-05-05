@@ -147,16 +147,20 @@ namespace DemulShooter_GUI
         private void Pnl_AxisViewer_Paint(object sender, PaintEventArgs e)
         {
             base.OnPaint(e);
-            int X = Pnl_AxisViewer.Width / 2;
-            int Y = Pnl_AxisViewer.Height / 2;
+
+            double XRange = (double)(_PlayerData.RIController.Axis_X_Max - _PlayerData.RIController.Axis_X_Min);
+            double YRange = (double)(_PlayerData.RIController.Axis_Y_Max - _PlayerData.RIController.Axis_Y_Min);
+
+            double XPositionPercent = (double)(_PlayerData.RIController.Computed_X - _PlayerData.RIController.Axis_X_Min) / XRange;
+            double YPositionPercent = (double)(_PlayerData.RIController.Computed_Y - _PlayerData.RIController.Axis_Y_Min) / YRange;
+
+            int X = 0;
+            int Y = 0;
 
             try
-            {
-                double Xratio = (double)_PlayerData.RIController.Axis_X_Max / (double)Pnl_AxisViewer.Width;
-                double Yratio = (double)_PlayerData.RIController.Axis_Y_Max / (double)Pnl_AxisViewer.Height;
-
-                X = Convert.ToInt32(Math.Round((double)_PlayerData.RIController.Computed_X / Xratio));
-                Y = Convert.ToInt32(Math.Round((double)_PlayerData.RIController.Computed_Y / Yratio));
+            {               
+                X = Convert.ToInt32(Math.Round((double)Pnl_AxisViewer.Width * XPositionPercent));
+                Y = Convert.ToInt32(Math.Round((double)Pnl_AxisViewer.Height * YPositionPercent));
 
                 if (_PlayerData.InvertAxis_X)
                     X = Pnl_AxisViewer.Width - X;

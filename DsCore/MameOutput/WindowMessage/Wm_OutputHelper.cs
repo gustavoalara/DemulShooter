@@ -215,14 +215,17 @@ namespace DsCore.MameOutput
                 {
                     try
                     {
-                        //DEBUG only :
-                        //Logger.WriteLog(Outputs[i].Name + " : Before=" + _OutputsBefore[i].OutputValue + ", Current=" + Outputs[i].OutputValue); 
-                        if (Outputs[i].OutputValue != _OutputsBefore[i].OutputValue)
+                        if (_OutputsBefore != null)
                         {
-                            SendValue(Outputs[i].Id, Outputs[i].OutputValue);
                             //DEBUG only :
-                            Logger.WriteLog("MAME Output sent : " + Outputs[i].Name + " [Value=" + Outputs[i].OutputValue.ToString() + "]");
-                            _OutputsBefore[i].OutputValue = Outputs[i].OutputValue;
+                            //Logger.WriteLog(Outputs[i].Name + " : Before=" + _OutputsBefore[i].OutputValue + ", Current=" + Outputs[i].OutputValue); 
+                            if (Outputs[i].OutputValue != _OutputsBefore[i].OutputValue)
+                            {
+                                SendValue(Outputs[i].Id, Outputs[i].OutputValue);
+                                //DEBUG only :
+                                Logger.WriteLog("MAME Output sent : " + Outputs[i].Name + " [Value=" + Outputs[i].OutputValue.ToString() + "]");
+                                _OutputsBefore[i].OutputValue = Outputs[i].OutputValue;
+                            }
                         }
                     }
                     //Rare unhandled exception when the Game.Hook() output send is overlapping the Threaded loop while _OutputBefore not yet created ??
